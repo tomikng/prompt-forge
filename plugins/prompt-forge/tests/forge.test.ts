@@ -1,6 +1,6 @@
 import { describe, expect, mock, test } from 'claude-code/testing'
 
-import { parseReply, recentContext, wantsForge } from '../hooks/register'
+import { isClearEnough, parseReply, recentContext, wantsForge } from '../hooks/register'
 
 describe('parseReply', () => {
   test('reads the prompt and the notes', async () => {
@@ -154,4 +154,32 @@ test('if the answer pass fails, the original and the answer go out together', as
   await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
   await $.prompt.submit({ text: 'the forge plugin', origin: { kind: 'composer' }, wait: false })
   expect(seen).toBe('rename it so it is independent from the other one\n\nthe forge plugin')
+})
+
+describe('isClearEnough', () => {
+  test('specific prompts skip the forge', async () => {
+    expect(isClearEnough('In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.')).toBe(true)
+    expect(isClearEnough("In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.")).toBe(true)
+    expect(isClearEnough('Fix the flaky retry test in tests/retry.test.ts by mocking the clock; npm test must pass 10 runs in a row.')).toBe(true)
+    expect(wantsForge('In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.')).toBe(false)
+  })
+  test('vague, ambiguous and target-less prompts still get forged', async () => {
+    expect(isClearEnough('can u make the orders page faster its really slow, dont touch the api')).toBe(false)
+    expect(isClearEnough('the cart total is wrong when ppl buy more than one of something fix it')).toBe(false)
+    expect(isClearEnough("rename it to something clearer, everywhere it's used")).toBe(false)
+    expect(isClearEnough('make the tests pass, they should all be green')).toBe(false)
+    expect(isClearEnough('it should work like before in src/app.ts')).toBe(false)
+  })
+})
+
+test('a clear prompt makes no model call at all', async ($, on) => {
+  let calls = 0
+  let seen = ''
+  mock.store(on)
+  on('model.complete', () => { calls += 1; return reply('UNCHANGED') })
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  const text = 'In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.'
+  await $.prompt.submit({ text, origin: { kind: 'composer' }, wait: false })
+  expect(calls).toBe(0)
+  expect(seen).toBe(text)
 })

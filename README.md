@@ -7,7 +7,7 @@
 **Sharper prompts for [Claude Code](https://claude.com/claude-code), without retyping them.**
 Type the way you think. Prompt Forge rewrites it into a clear, actionable prompt before Claude sees it, and shows you exactly what it changed.
 
-[![Version](https://img.shields.io/badge/version-0.2.0-f5a6e6)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-0.3.0-f5a6e6)](.claude-plugin/marketplace.json)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-d97757)](https://claude.com/claude-code)
 [![License: MIT](https://img.shields.io/github/license/tomikng/prompt-forge?color=22c55e)](LICENSE)
 [![Rewrites with](https://img.shields.io/badge/rewrites%20with-Haiku-38bdf8)](#cost-and-privacy)
@@ -100,6 +100,7 @@ claude plugin update prompt-forge@prompt-forge
 you press Enter
    │
    ├─ slash command, "raw:", fewer than 5 words, or /forge off? ──▶ sent as typed
+   ├─ already names a file/identifier AND a finish line? ──▶ sent as typed (local check, no tokens)
    │
    ▼
 ✨ Forging your prompt…            (status line, usually 1–2 s)
@@ -120,6 +121,7 @@ rewritten prompt is sent to Claude ──▶ before/after card, and the agent ge
 | What happens | When |
 | --- | --- |
 | Rewritten | Prompts you typed with **5 or more words** |
+| Skipped by the local check, no model call | Prompts that already name a target (a file, path, `code` or identifier) **and** a finish line (*run npm test*, *should*, *make sure*…), with no unresolved "it"/"that" |
 | Sent as typed | Slash commands, short replies ("yes go ahead"), prompts starting with `raw:`, and anything while `/forge off` |
 | Left alone, with a notice | Haiku judges the prompt already clear and specific |
 | Held, with questions | Haiku can't tell what you want even with the conversation. Your next message answers it; **Send as typed** or **Cancel** skip it |
@@ -181,7 +183,7 @@ The forge also costs you a round of questions on these prompts. It asked where t
 
 ### ❌ Where the forge costs more: prompts that are already clear
 
-**C1 and C2** named the file, the change and the check. The forge has nothing to add, so its Haiku call (~$0.001) is pure overhead. On C2 it made a cosmetic rewrite in 2 of 3 runs (+$0.002, +1%). The forge left C1 unchanged, so its −$0.008 is noise (see above), not a saving. If most of your prompts look like this, `/forge off` or `raw:` is the cheaper choice.
+**C1 and C2** named the file, the change and the check. The forge has nothing to add, so its Haiku call (~$0.001) is pure overhead. On C2 it made a cosmetic rewrite in 2 of 3 runs (+$0.002, +1%). The forge left C1 unchanged, so its −$0.008 is noise (see above), not a saving. **Since 0.3.0 this overhead is gone:** a local pattern check spots prompts like C1 and C2 (they name a file or identifier *and* a finish line such as *run npm test*) and sends them straight to Claude with no Haiku call, so they cost exactly what they would without the forge. The check runs on your machine and uses no tokens.
 
 ### What each kind of prompt costs at the forge itself
 

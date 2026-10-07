@@ -35,6 +35,7 @@ Every time you press Enter, Prompt Forge checks the prompt in this order:
 | Starts with `/` (a slash command) | Passed through untouched |
 | Fewer than 5 words ("yes", "go ahead", "try again") | Passed through untouched |
 | `/forge off` is set | Passed through untouched |
+| Already names a target (file, path, `code`, identifier) **and** a finish line (*run npm test*, *should*, *make sure*…), with no unresolved "it"/"that" | Passed through untouched, no model call |
 | Otherwise | Sent to Haiku for a rewrite |
 
 While the rewrite runs, the status line under the prompt shows **✨ Forging your prompt…**.
@@ -157,11 +158,11 @@ You're asked at most once per prompt.
 | --- | --- |
 | can u make the dashboard load faster its really slow on the orders page, dont touch the api | Make the dashboard's orders page load faster; it is currently slow.<br><br>Constraints: do not change the API.<br>Done when: the orders page renders noticeably faster than now, measured before and after. |
 
-**A clear prompt is left alone.**
+**A clear prompt skips the forge.**
 
 | You typed | Sent |
 | --- | --- |
-| Fix the flaky retry test in tests/retry.test.ts by mocking the clock; npm test must pass 10 runs in a row. | *(unchanged: "already sharp")* |
+| Fix the flaky retry test in tests/retry.test.ts by mocking the clock; npm test must pass 10 runs in a row. | *(unchanged: the local check sees a file and a finish line, so no Haiku call is made)* |
 
 **An ambiguous prompt gets a question first.**
 

@@ -143,11 +143,11 @@ def pipeline() -> str:
           edge("M775,318 C775,352 525,362 525,327", dashed=True),
           edge("M300,325 L300,488 L1000,488 L1000,327", dashed=True)]
     b.append(text(650, 360, "your answer", 11.5, PEACH, 600, "middle"))
-    b.append(text(650, 478, "skipped: short reply, /command, raw:, or /forge off → sent exactly as typed", 12, GRAY, 400, "middle"))
+    b.append(text(650, 478, "skipped: short reply, /command, raw:, /forge off, or already specific → sent exactly as typed", 12, GRAY, 400, "middle"))
 
     # node highlight spans per scenario (see timeline below)
     b.append(node(clk, 30, 255, 140, 70, "⏎ You press Enter", "in the prompt box", BLUE, [(0.2, 1.3), (7.0, 8.0), (15.6, 16.6)]))
-    b.append(node(clk, 215, 255, 170, 70, "Worth forging?", "5+ words · not / · not raw:", YELLOW, [(1.2, 2.1), (7.9, 8.8), (16.5, 17.5)]))
+    b.append(node(clk, 215, 255, 170, 70, "Worth forging?", "local check, no tokens", YELLOW, [(1.2, 2.1), (7.9, 8.8), (16.5, 17.5)]))
     b.append(node(clk, 440, 255, 170, 70, "✨ Haiku forge", "one small model call", PINK, [(2.4, 3.9), (9.1, 10.3), (13.3, 14.2)]))
     b.append(node(clk, 440, 115, 170, 60, "Recent conversation", "last ≤ 6 messages", GRAY, [(2.0, 3.0), (8.6, 9.6)]))
     b.append(node(clk, 680, 150, 190, 56, "PROMPT → rewrite", "before/after card", GREEN, [(4.4, 5.3), (14.6, 15.2)]))
@@ -178,7 +178,7 @@ def pipeline() -> str:
 
     caps = [(0.0, 7.0, "1", "A rough prompt is rewritten: goal first, your limits kept, a finish line added.", GREEN),
             (7.0, 15.6, "2", "An unclear prompt is held. The forge asks, you answer, Claude continues with both.", PEACH),
-            (15.6, 21.0, "3", "Short replies, /commands and raw: prompts skip the forge entirely.", GRAY)]
+            (15.6, 21.0, "3", "Short replies, /commands and already-specific prompts skip the forge: no model call.", GRAY)]
     for t0, t1, num, cap, col in caps:
         b.append(fading(clk, t0, t1, f'<circle cx="45" cy="529" r="10" fill="{col}"/>' + text(45, 533.5, num, 12, "#11111b", 700, "middle")
                         + text(64, 534, cap, 14, FG), fade=0.35))
