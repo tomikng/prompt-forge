@@ -17,7 +17,12 @@ Rewrite the prompt so the agent can act on it well:
 - never invent file names, APIs, facts or requirements the user did not imply
 - keep the user's voice and language; fix typos; stay short (at most about 3x the original)
 
+You only see this one prompt, never the conversation before it. Never answer the user, ask
+them questions or explain anything: your output is either a rewrite or one of these two words.
+
 If the prompt is already clear and specific, answer exactly: UNCHANGED
+If it leans on earlier context you cannot see ("it", "that", "the same", "like before") or is
+too vague to rewrite without guessing, answer exactly: UNCLEAR
 
 Otherwise answer exactly in this form and nothing else:
 PROMPT:
@@ -26,17 +31,29 @@ ADDED:
 - <3 to 6 word note on one thing you improved>
 - <...up to 4 notes>`
 
-/** Reads the model's reply; null when it said UNCHANGED or the reply is malformed. */
-export function parseReply(reply: string): { enhanced: string; added: string[] } | null {
+export type Reply =
+  | { kind: 'rewrite'; enhanced: string; added: string[] }
+  | { kind: 'unchanged' | 'unclear' | 'malformed' }
+
+/**
+ * Reads the model's reply. Only a reply in the PROMPT:/ADDED: form is a rewrite: anything
+ * else (a question back, an explanation) is malformed and must never be sent as the prompt.
+ */
+export function parseReply(reply: string): Reply {
   const text = reply.trim()
-  if (/^UNCHANGED\b/.test(text)) return null
-  const m = text.match(/PROMPT:\s*\n([\s\S]*?)\n\s*ADDED:\s*\n?([\s\S]*)$/)
-  const enhanced = (m ? m[1] ?? '' : text.replace(/^PROMPT:\s*/, '')).trim()
-  if (!enhanced) return null
-  const added = m
-    ? (m[2] ?? '').split('\n').map(l => l.replace(/^\s*[-*•]\s*/, '').trim()).filter(Boolean).slice(0, 4)
-    : []
-  return { enhanced, added }
+  if (/^UNCHANGED\b/.test(text)) return { kind: 'unchanged' }
+  if (/^UNCLEAR\b/.test(text)) return { kind: 'unclear' }
+  const m = text.match(/^PROMPT:[ \t]*\n([\s\S]*?)\n\s*ADDED:[ \t]*\n?([\s\S]*)$/)
+  const enhanced = (m?.[1] ?? '').trim()
+  if (!m || !enhanced) return { kind: 'malformed' }
+  const added = (m[2] ?? '').split('\n').map(l => l.replace(/^\s*[-*•]\s*/, '').trim()).filter(Boolean).slice(0, 4)
+  return { kind: 'rewrite', enhanced, added }
+}
+
+const SKIP_NOTE: Record<Exclude<Reply['kind'], 'rewrite'>, string> = {
+  unchanged: 'already sharp, sent as typed.',
+  unclear: 'it builds on earlier context, so it was sent as typed.',
+  malformed: 'no usable rewrite, sent as typed.',
 }
 
 /** Whether a prompt is worth forging: typed by the person, not a command, not a short reply. */
@@ -91,8 +108,8 @@ export const register: Register = on => {
         return next(e)
       }
       const out = parseReply(r.text)
-      if (!out || norm(out.enhanced) === norm(e.text)) {
-        $.ui.toast('✨ Prompt Forge: already sharp, sent as typed.')
+      if (out.kind !== 'rewrite' || norm(out.enhanced) === norm(e.text)) {
+        $.ui.toast(`✨ Prompt Forge: ${SKIP_NOTE[out.kind === 'rewrite' ? 'unchanged' : out.kind]}`)
         return next(e)
       }
       const item: Forged = { original: e.text, enhanced: out.enhanced, added: out.added }

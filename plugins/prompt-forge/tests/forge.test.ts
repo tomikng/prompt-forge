@@ -5,11 +5,15 @@ import { parseReply, wantsForge } from '../hooks/register'
 describe('parseReply', () => {
   test('reads the prompt and the notes', async () => {
     const r = parseReply('PROMPT:\nFix the login bug in auth.ts.\nDone when tests pass.\nADDED:\n- stated the goal\n- added done check\n')
-    expect(r?.enhanced).toBe('Fix the login bug in auth.ts.\nDone when tests pass.')
-    expect(r?.added).toEqual(['stated the goal', 'added done check'])
+    expect(r).toEqual({ kind: 'rewrite', enhanced: 'Fix the login bug in auth.ts.\nDone when tests pass.', added: ['stated the goal', 'added done check'] })
   })
   test('UNCHANGED means leave it alone', async () => {
-    expect(parseReply('UNCHANGED')).toBeNull()
+    expect(parseReply('UNCHANGED')).toEqual({ kind: 'unchanged' })
+    expect(parseReply('UNCLEAR')).toEqual({ kind: 'unclear' })
+  })
+  test('a question back to the user is never a rewrite', async () => {
+    expect(parseReply('I need more context to help sharpen this prompt. What is "it"?')).toEqual({ kind: 'malformed' })
+    expect(parseReply('Sure! Here is a better prompt:\nPROMPT:\nDo X\nADDED:\n- y')).toEqual({ kind: 'malformed' })
   })
 })
 
@@ -70,4 +74,17 @@ test('the transcript row shows the before/after card', async ($, on) => {
     expect(await ui.find({ type: 'Text', text: /\+ stated the goal/ })).toBeDefined()
     await ui.unmount()
   }
+})
+
+test('a chatty model reply is never sent as the prompt', async ($, on) => {
+  let seen = ''
+  mock.store(on)
+  on('model.complete', () => ({ value: {
+    isAnswered: true,
+    text: 'I need more context to help sharpen this prompt. What is "it"?',
+    usage: { inputTokens: 1, outputTokens: 1 },
+  } }) as never)
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
+  expect(seen).toBe('rename it so it is independent from the other one')
 })
