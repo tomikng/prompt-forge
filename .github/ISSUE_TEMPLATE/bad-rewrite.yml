@@ -1,0 +1,23 @@
+name: ✏️ Bad rewrite
+description: The forge changed your meaning, invented a detail, or made a prompt worse.
+title: "Bad rewrite: "
+labels: ["rewrite-quality"]
+body:
+  - type: textarea
+    id: typed
+    attributes:
+      label: What you typed
+      description: Remove anything private first.
+    validations:
+      required: true
+  - type: textarea
+    id: sent
+    attributes:
+      label: What the forge sent
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What was wrong with it?
+      placeholder: "It added a file I never mentioned / it dropped my constraint about …"

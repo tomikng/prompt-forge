@@ -1,0 +1,15 @@
+name: 💡 Idea
+description: Suggest a feature, a setting or a better rewrite rule.
+title: "Idea: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What would it help you do better?

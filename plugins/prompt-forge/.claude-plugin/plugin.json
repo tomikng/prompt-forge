@@ -1,0 +1,11 @@
+{
+  "name": "prompt-forge",
+  "version": "0.1.0",
+  "description": "Rewrites each prompt you send into a sharper one before Claude sees it, and shows you exactly what it changed.",
+  "author": { "name": "tomikng", "url": "https://github.com/tomikng" },
+  "homepage": "https://github.com/tomikng/prompt-forge",
+  "repository": "https://github.com/tomikng/prompt-forge",
+  "license": "MIT",
+  "keywords": ["prompting", "prompt-engineering", "rewrite", "productivity"],
+  "types": "./types/index.d.ts"
+}

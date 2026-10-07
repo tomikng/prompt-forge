@@ -1,0 +1,20 @@
+name: 🐞 Bug
+description: Something is broken or looks wrong.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Screenshots of the terminal help a lot.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Claude Code version (`claude --version`)
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal and OS
+      placeholder: "Ghostty on Arch Linux"

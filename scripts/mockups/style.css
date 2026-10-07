@@ -1,0 +1,28 @@
+:root { --bg: #1e1e2e; --fg: #cdd6f4; --dim: #7f849c; --gold: #ffd166; --purple: #a78bfa; --line: 20px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #11111b; padding: 24px; font: 15px/var(--line) 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace; color: var(--fg); }
+.win { background: var(--bg); border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px #0008; border: 1px solid #313244; }
+.bar { height: 34px; background: #181825; display: flex; align-items: center; gap: 8px; padding: 0 14px; color: var(--dim); font-size: 13px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.body { padding: 14px 18px 18px; }
+.row { white-space: pre; height: var(--line); display: flex; align-items: center; }
+.dim { color: var(--dim); } .b { font-weight: 700; } .i { font-style: italic; }
+.user { color: #cdd6f4; } .user::before { content: '> '; color: var(--dim); }
+.chip { color: #111; font-weight: 700; padding: 0 1ch; }
+.tag { background: #3a3a52; color: var(--gold); padding: 0 1ch; margin-right: 1ch; }
+.px { image-rendering: pixelated; display: block; }
+.prompt { border: 1px solid #45475a; border-radius: 6px; padding: 6px 10px; margin-top: 8px; color: var(--dim); }
+.sep { border-top: 1px solid #313244; margin: 10px 0; }
+.btn { padding: 0 .6ch; margin-right: 1ch; }
+.btn.on { color: #11111b; background: var(--gold); font-weight: 700; }
+.split { display: flex; gap: 0; }
+.left { flex: 1; padding-right: 18px; border-right: 1px solid #313244; }
+.right { width: 840px; padding-left: 18px; }
+.card { border: 1.5px solid #f5a6e6; border-radius: 10px; padding: 4px 1ch; margin: 4px 0 6px 2ch; width: 104ch; }
+.card .t { color: #f5a6e6; font-weight: 700; }
+.wrap { white-space: pre-wrap; line-height: var(--line); }
+.add { color: #a6e3a1; white-space: pre; }
+.status { color: #f5a6e6; margin-top: 4px; }
+.toast { display: inline-block; background: #313244; border-radius: 6px; padding: 2px 1ch; margin-top: 6px; }
+.typing::after { content: '▌'; color: var(--fg); }
+.ast { color: #fab387; }
