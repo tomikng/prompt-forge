@@ -13,7 +13,7 @@ Type the way you think. Prompt Forge rewrites it into a clear, actionable prompt
 [![Rewrites with](https://img.shields.io/badge/rewrites%20with-Haiku-38bdf8)](#cost-and-privacy)
 [![Stars](https://img.shields.io/github/stars/tomikng/prompt-forge?style=flat&color=fde047)](https://github.com/tomikng/prompt-forge/stargazers)
 
-[Install](#install) · [See it](#see-it) · [How it works](#how-it-works) · [Commands](#commands) · [📖 Full guide](HELP.md)
+[Install](#install) · [See it](#see-it) · [How it works](#how-it-works) · [Benchmarks](#benchmarks) · [Commands](#commands) · [📖 Full guide](HELP.md)
 
 </div>
 
@@ -91,6 +91,11 @@ claude plugin update prompt-forge@prompt-forge
 
 ## How it works
 
+<img src="assets/pipeline.svg" alt="Animated diagram: a prompt goes from Enter through the 'worth forging?' check to the Haiku forge, which rewrites it, asks a question first, or leaves it unchanged, before Claude works. Short replies skip the forge." width="100%">
+
+<details>
+<summary>The same flow as text</summary>
+
 ```text
 you press Enter
    │
@@ -110,6 +115,8 @@ still ambiguous? ──▶ prompt held, questions shown above the prompt
 rewritten prompt is sent to Claude ──▶ before/after card, and the agent gets to work
 ```
 
+</details>
+
 | What happens | When |
 | --- | --- |
 | Rewritten | Prompts you typed with **5 or more words** |
@@ -120,7 +127,89 @@ rewritten prompt is sent to Claude ──▶ before/after card, and the agent ge
 
 Only prompts **you type** are forged. Messages from other plugins, background tasks or other agents pass straight through.
 
+### What a rewrite changes
+
+Every detail you typed stays word for word. The forge reorders it so the goal comes first, labels your limits, and adds a finish line only when your words imply one:
+
+<img src="assets/anatomy.svg" alt="Animated diagram: the typed prompt's phrases light up and become Goal, Constraints and an added Done-when line, followed by the notes shown on the card" width="100%">
+
+### Context first, questions second
+
+Before asking you anything, the forge reads the last few messages of the conversation to work out what "it" or "that" means. Only what nobody has said yet becomes a question:
+
+<img src="assets/context.svg" alt="Animated diagram: 'prompt-forge' in the conversation resolves 'it' in the new prompt; the forge asks only for the missing new name, the answer is folded in, and Claude starts working" width="100%">
+
 The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
+
+## Benchmarks
+
+**In short:** the forge costs **under $0.003 per prompt**, about 1% of a typical Claude Code task. It paid for itself many times over on an ambiguous prompt, where it prevented a wrong result. On prompts that were already clear it's a small net cost, and on vague-but-guessable prompts it broke even.
+
+<img src="assets/bench-net.svg" alt="Bar chart of net dollars per task with the forge minus without: V1 −$0.013, V2 +$0.010, V3 −$0.003, A1 −$0.073 with correct runs rising from 1/3 to 3/3, C1 −$0.008, C2 +$0.002. A shaded band marks ±$0.008 of run-to-run noise." width="100%">
+
+Six coding tasks on a small Node project, each run 3 times **without** the forge (prompt as typed → Claude) and 3 times **with** it (prompt → Haiku forge → Claude). Every run was checked automatically: tests pass, the behaviour asked for works, and the protected API file is untouched.
+
+| Task | $ without | $ with | Net $ per task | $ per correct result | Correct runs |
+| --- | --- | --- | --- | --- | --- |
+| A1 · ambiguous | $0.2824 | $0.2099 | **−$0.0725** | $0.847 → $0.210 | 1/3 → 3/3 |
+| V1 · vague | $0.2372 | $0.2239 | **−$0.0133** | $0.237 → $0.224 | 3/3 → 3/3 |
+| V3 · vague | $0.2133 | $0.2107 | **−$0.0026** | $0.213 → $0.211 | 3/3 → 3/3 |
+| V2 · vague | $0.1822 | $0.1922 | **+$0.0100** | $0.182 → $0.192 | 3/3 → 3/3 |
+| C1 · already clear | $0.1800 | $0.1718 | **−$0.0082** | $0.180 → $0.172 | 3/3 → 3/3 |
+| C2 · already clear | $0.1727 | $0.1751 | **+$0.0023** | $0.173 → $0.175 | 3/3 → 3/3 |
+
+Totals include every Haiku forge call and every Claude call, including follow-up replies when Claude stopped to ask a question.
+
+### ✅ Where the forge saves money: ambiguous prompts
+
+**A1: *"rename it to something clearer, everywhere it's used"*** at the start of a session.
+
+- **Without the forge**, Claude has to guess or stop. In 1 run it asked what "it" meant, and the follow-up re-read the whole context: **$0.47** for one correct result. In the other 2 runs it didn't ask: it chose what to rename and a new name itself. The result wasn't the rename you meant (`getUser` → `findUserById`), and each run still billed **$0.19** for work you'd have to undo and redo.
+- **With the forge**, Haiku asked *"What is 'it'?"* and *"What should the new name be?"* for **$0.002**, before Claude ran at all. Your answer was folded into one clear prompt, and Claude got it right on the first try in all 3 runs, at **$0.21** each.
+- **Net:** −$0.073 per task (−26%), and **$0.21 instead of $0.85 per correct result**.
+
+The pattern: the forge saves money when a prompt can send Claude down the wrong path. A wrong result costs a full run plus the redo; a question from the forge costs a fraction of a cent.
+
+### ➖ Where the forge breaks even: vague but guessable prompts
+
+**V1–V3** (*"can u make the orders page faster…"*, *"the cart total is wrong…"*, *"signup lets ppl in with junk emails…"*): Claude Opus found the right file and fixed it in every run, with or without the forge. The differences (−$0.013, −$0.003, +$0.010) are all within about one noise band of zero.
+
+> [!NOTE]
+> **How big is the noise?** C1 sent the *identical* prompt in both arms, since the forge left it unchanged, yet its average still differed by $0.008. Treat anything within about ±$0.01 as noise, not an effect.
+
+The forge also costs you a round of questions on these prompts. It asked where the code lives even though Claude finds that itself. That's a known weakness of the current rewrite rules, and the benchmark is how we caught it.
+
+### ❌ Where the forge costs more: prompts that are already clear
+
+**C1 and C2** named the file, the change and the check. The forge has nothing to add, so its Haiku call (~$0.001) is pure overhead. On C2 it made a cosmetic rewrite in 2 of 3 runs (+$0.002, +1%). The forge left C1 unchanged, so its −$0.008 is noise (see above), not a saving. If most of your prompts look like this, `/forge off` or `raw:` is the cheaper choice.
+
+### What each kind of prompt costs at the forge itself
+
+| Prompt | Haiku calls | Tokens in / out | Forge cost |
+| --- | --- | --- | --- |
+| short reply (under 5 words: no forge call) | 0 | 0 / 0 | $0.0000 |
+| clear prompt (C2: file, change and check all named) | 1 | 774 / 56 | $0.0011 |
+| vague prompt (V2: no file, no expected result) | 2 | 1,628 / 136 | $0.0023 |
+| ambiguous prompt (A1: "it" with nothing to resolve it) | 2 | 1,614 / 123 | $0.0022 |
+| follow-up + context (short follow-up, 6 messages (~3k chars) of conversation) | 1 | 1,190 / 156 | $0.0020 |
+
+Including conversation context adds about 400 input tokens (~$0.0004) and lets the forge rewrite a short follow-up like *"ok do it, the fast way"* directly, without asking.
+
+<details>
+<summary>Method, caveats and how to reproduce</summary>
+
+- **Models:** Claude Code with Claude Opus 5.5 does the work; Claude Haiku 4.5 runs the forge. Dollar amounts come from Claude Code's own cost accounting (`claude -p --output-format json`), at list prices.
+- **Forge cost is an upper bound.** Forge calls ran through `claude -p --model haiku` with the forge's exact system prompt and message shape, with skills, MCP servers and settings switched off. The CLI's identity block (~335 tokens) is still counted, so the real plugin call costs the same or less.
+- **Replies:** if Claude ended a run by asking a question instead of working, the task's canned answer was sent on the same session, in both arms, and both calls were counted. The same canned answer was used to answer the forge's questions.
+- **Scope:** a small fixture project (`bench/fixture`: 8 source files, 4 test files), 6 tasks, 3 runs each (36 Claude runs, $7.35 in total). In a large codebase, a vague prompt can cost more file searching, which these numbers don't capture. Your results will differ.
+- **Every number** is in [`bench/RESULTS.md`](bench/RESULTS.md), generated from the raw [`bench/results.json`](bench/results.json).
+
+```bash
+python3 bench/bench.py run --reps 3     # the benchmark (~$7 at Opus prices)
+python3 bench/bench.py strategies       # forge cost per prompt type (< $0.05)
+python3 bench/bench.py report           # RESULTS.md and assets/bench-net.svg
+```
+</details>
 
 ## Commands
 
@@ -135,7 +224,7 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
 ## Cost and privacy
 
-- **One small Haiku call per rewritten prompt**, made through your own Claude Code session, so it's billed like the rest of your usage. The rules plus a typical prompt come to a few hundred tokens. Short replies and commands cost nothing.
+- **One or two small Haiku calls per forged prompt** (two when it asks a question), made through your own Claude Code session and billed like the rest of your usage: **under $0.003 per prompt** in the [benchmarks](#benchmarks). Short replies and commands cost nothing.
 - **What Haiku sees:** the rewrite rules, your prompt, and the text of the last few messages (at most 6 messages and about 3,000 characters), so it can resolve "it" and "that". No files, tool output or attachments.
 - **Nothing leaves your machine any other way.** No telemetry, no third-party services.
 - The on/off switch is stored in the plugin's own store under `~/.claude/plugins/store/`. Before/after pairs for the cards live in session memory (the last 50) and are never written to disk by the plugin.
@@ -156,7 +245,9 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 claude --plugin-dir ./plugins/prompt-forge      # run it from source
 claude plugin validate ./plugins/prompt-forge   # check the manifest and hooks
 claude plugin test ./plugins/prompt-forge       # run the tests
-./scripts/render-assets.sh                      # regenerate README images (chromium + ImageMagick)
+./scripts/render-assets.sh                      # regenerate README screenshots (chromium + ImageMagick)
+python3 scripts/diagrams.py                     # regenerate the animated diagrams
+python3 bench/bench.py report                   # rebuild benchmark tables and chart
 ```
 
 ```text

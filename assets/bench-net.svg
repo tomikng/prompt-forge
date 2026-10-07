@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520" width="1100" height="520" role="img" aria-label="Net cost change from using Prompt Forge, per benchmark task">
+<title>Net cost change from using Prompt Forge, per task</title>
+<rect width="1100" height="520" rx="16" fill="#1e1e2e"/>
+<rect x=".5" y=".5" width="1099" height="519" rx="16" fill="none" stroke="#313244"/>
+<text x="36" y="46" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20" font-weight="700" fill="#cdd6f4">Dollars saved or added by the forge, per task</text>
+<text x="36" y="70" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#9399b2">Total $ with the forge (Haiku + Claude) minus $ with Claude alone, mean of 3 runs each. Left of zero: the forge saved money.</text>
+<rect x="36" y="86" width="12" height="12" rx="3" fill="#3987e5"/><text x="54" y="97" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" fill="#cdd6f4">forge saved</text>
+<rect x="186" y="86" width="12" height="12" rx="3" fill="#e66767"/><text x="204" y="97" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" fill="#cdd6f4">forge cost more</text>
+<line x1="441.4" y1="124" x2="441.4" y2="456" stroke="#313244" stroke-width="1"/>
+<text x="441.4" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">−$0.075</text>
+<line x1="527.6" y1="124" x2="527.6" y2="456" stroke="#313244" stroke-width="1"/>
+<text x="527.6" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">−$0.05</text>
+<line x1="613.8" y1="124" x2="613.8" y2="456" stroke="#313244" stroke-width="1"/>
+<text x="613.8" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">−$0.025</text>
+<line x1="700.0" y1="124" x2="700.0" y2="456" stroke="#585b70" stroke-width="1.5"/>
+<text x="700.0" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">$0</text>
+<line x1="786.2" y1="124" x2="786.2" y2="456" stroke="#313244" stroke-width="1"/>
+<text x="786.2" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">+$0.025</text>
+<line x1="872.4" y1="124" x2="872.4" y2="456" stroke="#313244" stroke-width="1"/>
+<text x="872.4" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">+$0.05</text>
+<line x1="958.6" y1="124" x2="958.6" y2="456" stroke="#313244" stroke-width="1"/>
+<text x="958.6" y="476" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">+$0.075</text>
+<rect x="671.8" y="124" width="56.5" height="332" fill="#cdd6f4" opacity="0.07"/>
+<text x="700.0" y="118" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="middle">noise ±$0.008</text>
+<text x="36" y="155.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="700" fill="#cdd6f4">V1 · vague</text>
+<text x="36" y="173.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#9399b2">can u make the orders page faster its r…</text>
+<path d="M700.0,150.0 L658.0839778517931,150.0 Q654.0839778517931,150.0 654.0839778517931,154.0 L654.0839778517931,164.0 Q654.0839778517931,168.0 658.0839778517931,168.0 L700.0,168.0 Z" fill="#3987e5"/>
+<text x="646.1" y="163.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4" text-anchor="end">−$0.013 per task  (−6%)</text>
+<text x="1064" y="163.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2" text-anchor="end">right 3/3 → 3/3</text>
+<text x="36" y="209.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="700" fill="#cdd6f4">V2 · vague</text>
+<text x="36" y="227.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#9399b2">the cart total is wrong when ppl buy mo…</text>
+<path d="M700.0,204.0 L730.5139520281532,204.0 Q734.5139520281532,204.0 734.5139520281532,208.0 L734.5139520281532,218.0 Q734.5139520281532,222.0 730.5139520281532,222.0 L700.0,222.0 Z" fill="#e66767"/>
+<text x="742.5" y="217.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4" text-anchor="start">+$0.010 per task  (+5%)</text>
+<text x="1064" y="217.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2" text-anchor="end">right 3/3 → 3/3</text>
+<text x="36" y="263.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="700" fill="#cdd6f4">V3 · vague</text>
+<text x="36" y="281.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#9399b2">signup lets ppl in with junk emails, fi…</text>
+<path d="M700.0,258.0 L695.1051396305996,258.0 Q691.1051396305996,258.0 691.1051396305996,262.0 L691.1051396305996,272.0 Q691.1051396305996,276.0 695.1051396305996,276.0 L700.0,276.0 Z" fill="#3987e5"/>
+<text x="683.1" y="271.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4" text-anchor="end">−$0.003 per task  (−1%)</text>
+<text x="1064" y="271.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2" text-anchor="end">right 3/3 → 3/3</text>
+<text x="36" y="317.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="700" fill="#cdd6f4">A1 · ambiguous</text>
+<text x="36" y="335.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#9399b2">rename it to something clearer, everywh…</text>
+<path d="M700.0,312.0 L454.0,312.0 Q450.0,312.0 450.0,316.0 L450.0,326.0 Q450.0,330.0 454.0,330.0 L700.0,330.0 Z" fill="#3987e5"/>
+<text x="460.0" y="325.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#11111b" text-anchor="start">−$0.073 per task  (−26%)</text>
+<text x="1064" y="325.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2" text-anchor="end">right 1/3 → 3/3</text>
+<text x="36" y="371.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="700" fill="#cdd6f4">C1 · already clear</text>
+<text x="36" y="389.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#9399b2">In src/users.js rename getUser to fetch…</text>
+<path d="M700.0,366.0 L675.7599330001113,366.0 Q671.7599330001113,366.0 671.7599330001113,370.0 L671.7599330001113,380.0 Q671.7599330001113,384.0 675.7599330001113,384.0 L700.0,384.0 Z" fill="#3987e5"/>
+<text x="663.8" y="379.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4" text-anchor="end">−$0.008 per task  (−5%)</text>
+<text x="1064" y="379.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2" text-anchor="end">right 3/3 → 3/3</text>
+<text x="36" y="425.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="700" fill="#cdd6f4">C2 · already clear</text>
+<text x="36" y="443.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#9399b2">In src/cart.js, make cartTotal multiply…</text>
+<path d="M700.0,420.0 L704.0529949998299,420.0 Q708.0529949998299,420.0 708.0529949998299,424.0 L708.0529949998299,434.0 Q708.0529949998299,438.0 704.0529949998299,438.0 L700.0,438.0 Z" fill="#e66767"/>
+<text x="716.1" y="433.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4" text-anchor="start">+$0.002 per task  (+1%)</text>
+<text x="1064" y="433.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2" text-anchor="end">right 3/3 → 3/3</text>
+<text x="36" y="502" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2">"right a → b": runs that passed the task's automatic check, without → with the forge. Source: bench/results.json</text>
+</svg>

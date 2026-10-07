@@ -1,0 +1,163 @@
+[
+ {
+  "strategy": "short reply",
+  "desc": "under 5 words: no forge call",
+  "prompt": "yes push them",
+  "routes": [
+   "skip"
+  ],
+  "calls": 0,
+  "input": 0,
+  "output": 0,
+  "cost": 0.0,
+  "runs": [
+   {
+    "route": "skip",
+    "input": 0,
+    "output": 0,
+    "calls": 0
+   },
+   {
+    "route": "skip",
+    "input": 0,
+    "output": 0,
+    "calls": 0
+   },
+   {
+    "route": "skip",
+    "input": 0,
+    "output": 0,
+    "calls": 0
+   }
+  ]
+ },
+ {
+  "strategy": "clear prompt",
+  "desc": "C2: file, change and check all named",
+  "prompt": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+  "routes": [
+   "rewrite",
+   "unchanged"
+  ],
+  "calls": 1,
+  "input": 774,
+  "output": 55.666666666666664,
+  "cost": 0.0010523333333333333,
+  "runs": [
+   {
+    "route": "rewrite",
+    "input": 774,
+    "output": 84,
+    "calls": 1
+   },
+   {
+    "route": "unchanged",
+    "input": 774,
+    "output": 5,
+    "calls": 1
+   },
+   {
+    "route": "rewrite",
+    "input": 774,
+    "output": 78,
+    "calls": 1
+   }
+  ]
+ },
+ {
+  "strategy": "vague prompt",
+  "desc": "V2: no file, no expected result",
+  "prompt": "the cart total is wrong when ppl buy more than one of something fix it",
+  "routes": [
+   "ask+answer"
+  ],
+  "calls": 2,
+  "input": 1628,
+  "output": 136.33333333333334,
+  "cost": 0.0023096666666666665,
+  "runs": [
+   {
+    "route": "ask+answer",
+    "input": 1625,
+    "output": 139,
+    "calls": 2
+   },
+   {
+    "route": "ask+answer",
+    "input": 1625,
+    "output": 126,
+    "calls": 2
+   },
+   {
+    "route": "ask+answer",
+    "input": 1634,
+    "output": 144,
+    "calls": 2
+   }
+  ]
+ },
+ {
+  "strategy": "ambiguous prompt",
+  "desc": "A1: \"it\" with nothing to resolve it",
+  "prompt": "rename it to something clearer, everywhere it's used",
+  "routes": [
+   "ask+answer"
+  ],
+  "calls": 2,
+  "input": 1614.3333333333333,
+  "output": 122.66666666666667,
+  "cost": 0.002227666666666667,
+  "runs": [
+   {
+    "route": "ask+answer",
+    "input": 1594,
+    "output": 103,
+    "calls": 2
+   },
+   {
+    "route": "ask+answer",
+    "input": 1623,
+    "output": 124,
+    "calls": 2
+   },
+   {
+    "route": "ask+answer",
+    "input": 1626,
+    "output": 141,
+    "calls": 2
+   }
+  ]
+ },
+ {
+  "strategy": "follow-up + context",
+  "desc": "short follow-up, 6 messages (~3k chars) of conversation",
+  "prompt": "ok do it, the fast way",
+  "routes": [
+   "rewrite"
+  ],
+  "calls": 1,
+  "input": 1190,
+  "output": 156,
+  "cost": 0.00197,
+  "runs": [
+   {
+    "route": "rewrite",
+    "input": 1190,
+    "output": 140,
+    "calls": 1
+   },
+   {
+    "route": "rewrite",
+    "input": 1190,
+    "output": 182,
+    "calls": 1
+   },
+   {
+    "route": "rewrite",
+    "input": 1190,
+    "output": 146,
+    "calls": 1
+   }
+  ]
+ }
+]

@@ -29,7 +29,10 @@ Never answer the user or explain anything. Reply in exactly one of these three f
 UNCHANGED
 
 2. You cannot tell what the user wants even with the conversation, and a wrong guess would
-send the agent off track. Ask 1 to 3 short questions only the user can answer:
+send the agent off track. Ask 1 to 3 short questions only the user can answer: what they
+mean by an unclear reference, which of several options they want, a name or value only they
+know. Never ask where code lives, what the stack is, or for logs or metrics: the agent reads
+the code and finds those itself, so rewrite the prompt instead.
 ASK:
 - <question>
 
