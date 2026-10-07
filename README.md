@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="assets/flow.gif" alt="A rough prompt is typed, Prompt Forge rewrites it, and a card shows what was sent" width="760">
+<a href="assets/brag.mp4"><img src="assets/brag.gif" alt="Prompt Forge in 21 seconds: a typo-ridden prompt is rewritten into Goal, Constraints and Done when; the before/after card; the forge asking a question instead of guessing; $0.85 → $0.21 per correct result" width="760"></a>
+
+<sub>▶ <a href="assets/brag.mp4">Watch with sound</a> (21 s)</sub>
 
 # ✨ Prompt Forge
 
@@ -33,6 +35,8 @@ Claude does its best work when a prompt states the goal, the limits and what "do
 - ✋ **Easy to bypass.** Start a prompt with `raw:` or run `/forge off`.
 
 ## See it
+
+<img src="assets/flow.gif" alt="A rough prompt is typed, Prompt Forge rewrites it, and a card shows what was sent" width="100%">
 
 **Every rewritten prompt** appears in the transcript as a card: what you typed, what was sent, and what improved.
 
