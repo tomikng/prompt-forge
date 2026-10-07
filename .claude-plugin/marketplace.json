@@ -9,7 +9,7 @@
       "name": "prompt-forge",
       "source": "./plugins/prompt-forge",
       "description": "Rewrites each prompt into a sharper one with a small Haiku call, then shows a before/after card in the transcript. raw: to skip, /forge off to pause.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": { "name": "tomikng" },
       "category": "productivity",
       "keywords": ["prompting", "prompt-engineering", "rewrite", "productivity"]

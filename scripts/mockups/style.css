@@ -26,3 +26,6 @@ body { background: #11111b; padding: 24px; font: 15px/var(--line) 'JetBrainsMono
 .toast { display: inline-block; background: #313244; border-radius: 6px; padding: 2px 1ch; margin-top: 6px; }
 .typing::after { content: '▌'; color: var(--fg); }
 .ast { color: #fab387; }
+.btnbox { display: inline-block; border: 1px solid #45475a; border-radius: 4px; padding: 0 1ch; margin-right: 1ch; }
+.btnbox.focus { border-color: #f5a6e6; color: #f5a6e6; }
+.reason { color: #f5a6e6; }

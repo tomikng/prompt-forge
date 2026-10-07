@@ -11,7 +11,7 @@ shot() {
   chromium --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=2 \
     --window-size="$size" --screenshot="$tmp/$page.png" "file://$tmp/$page.html" >/dev/null 2>&1
 }
-for page in card controls; do
+for page in card ask controls; do
   shot "$page"
   magick "$tmp/$page.png" -fuzz 4% -trim +repage -bordercolor '#11111b' -border 40 -strip "assets/$page.png"
 done
