@@ -3,3 +3,4 @@ plugins/*/.claude-plugin/types/
 node_modules/
 bench/run.log
 bench/__pycache__/
+bench/session.log

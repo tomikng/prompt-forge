@@ -125,3 +125,24 @@ In src/users.js rename getUser to fetchUser and update every call site; run npm 
 In src/cart.js, make cartTotal multiply each item's price by its quantity. Add a test case to test/cart.test.js with quantity 3. Then run npm test to verify.
 ```
 
+
+## Session benchmark
+
+All six prompts in one Claude Code session, in the order V1 → V2 → C2 → V3 → C1 → A1; 3 sessions per arm.
+
+| Session total | Mean | Min | Max |
+| --- | --- | --- | --- |
+| without the forge | $2.193 | $2.071 | $2.397 |
+| with the forge | $2.120 | $2.108 | $2.127 |
+
+| Step | Task | Local check | Right call? | Forge route | Forge $ | Forge input tokens | $ without | $ with | Correct without → with |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | V1 | forge (0.6 µs) | yes | ask+answer | $0.0025 | 1,647 | $0.2353 | $0.2309 | 3/3 → 3/3 |
+| 2 | V2 | forge (0.5 µs) | yes | ask+answer | $0.0029 | 2,156 | $0.2895 | $0.2803 | 3/3 → 3/3 |
+| 3 | C2 | clear → skip (0.2 µs) | yes | skip (local check) | $0.0000 | 0 | $0.3212 | $0.3047 | 3/3 → 3/3 |
+| 4 | V3 | forge (0.3 µs) | yes | ask+answer | $0.0039 | 2,956 | $0.3846 | $0.3670 | 3/3 → 3/3 |
+| 5 | C1 | clear → skip (0.1 µs) | yes | skip (local check) | $0.0000 | 0 | $0.4330 | $0.4129 | 3/3 → 3/3 |
+| 6 | A1 | forge (0.4 µs) | yes | ask+answer | $0.0037 | 3,055 | $0.5292 | $0.5242 | 3/3 → 3/3 |
+
+Local check: 6/6 prompts routed as labelled. Cumulative: without $2.193, with $2.120.
+

@@ -152,5 +152,114 @@ def report(root: Path):
             md += [f"**{x['task']}** ({x['route']})", "", "```text", x["sent"], "```", ""]
             if x.get("questions"):
                 md += ["Questions it asked:", ""] + [f"- {q}" for q in x["questions"]] + [""]
+    md += session_report(root)
     (root / "RESULTS.md").write_text("\n".join(md) + "\n")
     print("\n".join(md[:14 + len(rows)]))
+
+
+# ── session benchmark ───────────────────────────────────────────────────────
+
+BASE_C, FORGE_C = "#3987e5", "#d55181"  # dataviz categorical slots 1 and 5, dark steps, validated on #1e1e2e
+
+
+def session_summary(data):
+    steps = data["steps"]
+    arms = {a: [s for s in data["sessions"] if s["arm"] == a] for a in ("baseline", "forge")}
+    rows = []
+    for i, tid in enumerate(steps):
+        row = dict(task=tid, local=data["verdicts"][tid], needs=data["needs_forge"][tid])
+        for a, ss in arms.items():
+            st = [s["steps"][i] for s in ss]
+            row[a] = dict(cost=statistics.mean(x["total_cost"] for x in st),
+                          forge_cost=statistics.mean(x["forge"]["cost"] for x in st),
+                          forge_in=statistics.mean(x["forge"]["input"] for x in st),
+                          claude_in=statistics.mean(tokens_in(x["claude"]) for x in st),
+                          claude_out=statistics.mean(x["claude"]["output"] for x in st),
+                          passed=sum(1 for x in st if not x["problems"]), n=len(st),
+                          clar=sum(x["clarifications"] for x in st),
+                          routes=sorted({x["route"] for x in st}))
+        rows.append(row)
+    totals = {a: [s["total_cost"] for s in ss] for a, ss in arms.items()}
+    return rows, totals
+
+
+def session_chart(data, rows, path: Path):
+    W, H = 1100, 500
+    lx, rx, ty, by = 110, 900, 130, 390
+    cum = {a: [] for a in ("baseline", "forge")}
+    for a in cum:
+        t = 0.0
+        for r in rows:
+            t += r[a]["cost"]
+            cum[a].append(t)
+    top = max(max(v) for v in cum.values()) * 1.12
+    step_y = next(s for s in (0.25, 0.5, 1.0, 2.0) if top / s <= 6)
+    sx = lambda i: lx + i * (rx - lx) / (len(rows) - 1)
+    sy = lambda v: by - v / top * (by - ty)
+    n = data["sessions"][0] and len([s for s in data["sessions"] if s["arm"] == "forge"])
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" '
+         f'aria-label="Cumulative dollars across a six-prompt session, with and without the forge">',
+         '<title>Cumulative cost across one session, with and without the forge</title>',
+         f'<rect width="{W}" height="{H}" rx="16" fill="{BG}"/>',
+         f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="none" stroke="{LINE}"/>',
+         f'<text x="36" y="46" font-family="{SANS}" font-size="20" font-weight="700" fill="{FG}">One session, six prompts: cumulative dollars</text>',
+         f'<text x="36" y="70" font-family="{SANS}" font-size="13" fill="{DIM}">Every prompt on the same Claude Code session, mean of {n} sessions per line. Chips: what the local check decided.</text>']
+    for i, (col, lab) in enumerate(((BASE_C, "without the forge"), (FORGE_C, "with the forge (Haiku + Claude)"))):
+        x = 36 + i * 190
+        o.append(f'<rect x="{x}" y="86" width="12" height="12" rx="3" fill="{col}"/>'
+                 f'<text x="{x + 18}" y="97" font-family="{SANS}" font-size="12.5" fill="{FG}">{lab}</text>')
+    v = 0.0
+    while v <= top:
+        y = sy(v)
+        o.append(f'<line x1="{lx}" y1="{y:.1f}" x2="{rx}" y2="{y:.1f}" stroke="{ZERO if v == 0 else LINE}" stroke-width="1"/>')
+        o.append(f'<text x="{lx - 12}" y="{y + 4:.1f}" font-family="{SANS}" font-size="11.5" fill="{DIM}" text-anchor="end">${v:.2f}</text>')
+        v += step_y
+    for i, r in enumerate(rows):
+        x = sx(i)
+        o.append(f'<text x="{x:.1f}" y="{by + 24}" font-family="{SANS}" font-size="13" font-weight="700" fill="{FG}" text-anchor="middle">{i + 1} · {r["task"]}</text>')
+        clear = r["local"]["clear"]
+        lab = "skip: clear" if clear else "forge"
+        w = 86 if clear else 54
+        o.append(f'<rect x="{x - w / 2:.1f}" y="{by + 34}" width="{w}" height="22" rx="11" fill="none" stroke="{DIM if clear else FORGE_C}" stroke-width="1.5"/>'
+                 f'<text x="{x:.1f}" y="{by + 49}" font-family="{SANS}" font-size="11.5" fill="{FG}" text-anchor="middle">{lab}</text>')
+    for a, col in (("baseline", BASE_C), ("forge", FORGE_C)):
+        pts = " ".join(f"{sx(i):.1f},{sy(v):.1f}" for i, v in enumerate(cum[a]))
+        o.append(f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="2" stroke-linejoin="round"/>')
+        for i, v in enumerate(cum[a]):
+            o.append(f'<circle cx="{sx(i):.1f}" cy="{sy(v):.1f}" r="4.5" fill="{col}" stroke="{BG}" stroke-width="2"/>')
+    # direct labels at the line ends, nudged apart if they'd collide
+    yb, yf = sy(cum["baseline"][-1]), sy(cum["forge"][-1])
+    if abs(yb - yf) < 18:
+        mid = (yb + yf) / 2
+        yb, yf = (mid - 10, mid + 10) if cum["baseline"][-1] >= cum["forge"][-1] else (mid + 10, mid - 10)
+    o.append(f'<text x="{rx + 14}" y="{yb + 4:.1f}" font-family="{SANS}" font-size="12.5" font-weight="700" fill="{FG}">without: ${cum["baseline"][-1]:.2f}</text>')
+    o.append(f'<text x="{rx + 14}" y="{yf + 4:.1f}" font-family="{SANS}" font-size="12.5" font-weight="700" fill="{FG}">with: ${cum["forge"][-1]:.2f}</text>')
+    o.append(f'<text x="36" y="{H - 18}" font-family="{SANS}" font-size="12" fill="{DIM}">Source: bench/session-results.json · generated by bench/report.py</text>')
+    o.append("</svg>")
+    path.write_text("\n".join(o))
+    return cum
+
+
+def session_report(root: Path):
+    p = root / "session-results.json"
+    if not p.exists():
+        return []
+    data = json.loads(p.read_text())
+    rows, totals = session_summary(data)
+    cum = session_chart(data, rows, root.parent / "assets" / "bench-session.svg")
+    right = sum(1 for r in rows if r["local"]["clear"] == (not r["needs"]))
+    md = ["", "## Session benchmark", "",
+          f"All six prompts in one Claude Code session, in the order {' → '.join(data['steps'])}; "
+          f"{len(totals['baseline'])} sessions per arm.", "",
+          "| Session total | Mean | Min | Max |", "| --- | --- | --- | --- |"]
+    for a, lab in (("baseline", "without the forge"), ("forge", "with the forge")):
+        md.append(f"| {lab} | ${statistics.mean(totals[a]):.3f} | ${min(totals[a]):.3f} | ${max(totals[a]):.3f} |")
+    md += ["", "| Step | Task | Local check | Right call? | Forge route | Forge $ | Forge input tokens | $ without | $ with | Correct without → with |",
+           "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
+    for i, r in enumerate(rows):
+        b, f = r["baseline"], r["forge"]
+        md.append(f"| {i + 1} | {r['task']} | {'clear → skip' if r['local']['clear'] else 'forge'} ({r['local']['micros']:.1f} µs) | "
+                  f"{'yes' if r['local']['clear'] == (not r['needs']) else 'no'} | {', '.join(f['routes'])} | ${f['forge_cost']:.4f} | "
+                  f"{f['forge_in']:,.0f} | ${b['cost']:.4f} | ${f['cost']:.4f} | {b['passed']}/{b['n']} → {f['passed']}/{f['n']} |")
+    md += ["", f"Local check: {right}/{len(rows)} prompts routed as labelled. Cumulative: without ${cum['baseline'][-1]:.3f}, with ${cum['forge'][-1]:.3f}.", ""]
+    return md

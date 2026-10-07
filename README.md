@@ -145,7 +145,7 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
 ## Benchmarks
 
-**In short:** the forge costs **under $0.003 per prompt**, about 1% of a typical Claude Code task. It paid for itself many times over on an ambiguous prompt, where it prevented a wrong result. On prompts that were already clear it's a small net cost, and on vague-but-guessable prompts it broke even.
+**In short:** the forge costs **under $0.003 per prompt**, about 1% of a typical Claude Code task. It paid for itself many times over on an ambiguous prompt, where it prevented a wrong result. On prompts that were already clear it's a small net cost, and on vague-but-guessable prompts it broke even. Over a whole six-prompt session it broke even ($2.12 vs $2.19), and the free local check routed every prompt correctly.
 
 <img src="assets/bench-net.svg" alt="Bar chart of net dollars per task with the forge minus without: V1 −$0.013, V2 +$0.010, V3 −$0.003, A1 −$0.073 with correct runs rising from 1/3 to 3/3, C1 −$0.008, C2 +$0.002. A shaded band marks ±$0.008 of run-to-run noise." width="100%">
 
@@ -197,18 +197,38 @@ The forge also costs you a round of questions on these prompts. It asked where t
 
 Including conversation context adds about 400 input tokens (~$0.0004) and lets the forge rewrite a short follow-up like *"ok do it, the fast way"* directly, without asking.
 
+### Over a whole session
+
+Real work is a string of prompts on one session, not single prompts. So the same six prompts ran **in order on one Claude Code session** (V1 → V2 → C2 → V3 → C1 → A1), 3 sessions with the forge and 3 without. Context grows with every step, and in the forge sessions Haiku also gets the recent conversation, as the plugin does.
+
+<img src="assets/bench-session.svg" alt="Line chart of cumulative dollars over six session steps: without the forge ends at $2.19, with the forge at $2.12; the two lines nearly overlap. Chips under each step show the local check skipping C2 and C1." width="100%">
+
+| Per session | Mean | Range (3 sessions) | Steps done right |
+| --- | --- | --- | --- |
+| Without the forge | **$2.19** | $2.07–$2.40 | 18/18 |
+| With the forge | **$2.12** | $2.11–$2.13 | 18/18 |
+
+- **💵 It breaks even over a session.** The forge sessions averaged $0.07 less (−3%), but that's inside the spread of the sessions without it ($2.07–$2.40), so treat it as break-even. The forge sessions were also more consistent ($0.02 spread vs $0.33), but three sessions can't prove that.
+- **🧮 The forge is a rounding error.** All its Haiku calls came to **$0.013 per session**, about 0.6% of the total. The big cost is Claude re-reading a growing conversation: its cost per step climbed from $0.23 to $0.53 as the session went on, in both arms.
+- **🎯 The local check made the right call 6/6 times, in about 1 µs, with zero tokens.** It skipped C2 and C1, which name a file and a finish line, and sent the four vague and ambiguous prompts to the forge. That's two Haiku calls saved per session.
+- **📈 The forge's input grows with the session, up to a cap.** Its input went from 1,647 tokens at step 1 to about 3,000 by step 4. It levels off there because the plugin sends at most 6 messages and ~3,000 characters of conversation.
+- **🔁 The ambiguous prompt stops being ambiguous mid-session.** Right after C1 renamed `getUser` to `fetchUser`, *"rename it to something clearer"* was clear enough from context: Claude got it right in all 3 sessions without the forge. The forge's big win on A1 above comes from cold starts, not long sessions.
+- **⚠️ The forge still asks too much.** It asked questions on **all four** prompts it handled, in every session: four interruptions per six prompts. On A1 it even had the answer (*"Do you mean `fetchUser` from the last task?"*) and asked anyway. The dollars hold up; the interruptions are the real cost today, and the next thing to fix is rewriting directly when the conversation makes the answer obvious.
+
 <details>
 <summary>Method, caveats and how to reproduce</summary>
 
 - **Models:** Claude Code with Claude Opus 5.5 does the work; Claude Haiku 4.5 runs the forge. Dollar amounts come from Claude Code's own cost accounting (`claude -p --output-format json`), at list prices.
 - **Forge cost is an upper bound.** Forge calls ran through `claude -p --model haiku` with the forge's exact system prompt and message shape, with skills, MCP servers and settings switched off. The CLI's identity block (~335 tokens) is still counted, so the real plugin call costs the same or less.
 - **Replies:** if Claude ended a run by asking a question instead of working, the task's canned answer was sent on the same session, in both arms, and both calls were counted. The same canned answer was used to answer the forge's questions.
-- **Scope:** a small fixture project (`bench/fixture`: 8 source files, 4 test files), 6 tasks, 3 runs each (36 Claude runs, $7.35 in total). In a large codebase, a vague prompt can cost more file searching, which these numbers don't capture. Your results will differ.
+- **Scope:** a small fixture project (`bench/fixture`: 8 source files, 4 test files), 6 tasks, 3 runs each (36 Claude runs, $7.35 in total), plus 6 six-step sessions (36 more Claude steps, $12.94).
+- **Sessions:** each step's check runs on the working tree right after that step. In the session, A1's target is `fetchUser` (renamed by C1), and the canned answer names it. The local check is the plugin's own `hooks/classify.ts`, run by Node. In a large codebase, a vague prompt can cost more file searching, which these numbers don't capture. Your results will differ.
 - **Every number** is in [`bench/RESULTS.md`](bench/RESULTS.md), generated from the raw [`bench/results.json`](bench/results.json).
 
 ```bash
 python3 bench/bench.py run --reps 3     # the benchmark (~$7 at Opus prices)
 python3 bench/bench.py strategies       # forge cost per prompt type (< $0.05)
+python3 bench/session.py run --reps 3   # the session benchmark (~$13 at Opus prices)
 python3 bench/bench.py report           # RESULTS.md and assets/bench-net.svg
 ```
 </details>
