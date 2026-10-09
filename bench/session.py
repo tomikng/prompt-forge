@@ -18,6 +18,7 @@ from pathlib import Path
 import bench
 from bench import HAIKU_IN, HAIKU_OUT, ROOT, TASKS, check, forge_text, haiku, parse, tally
 
+TOPIC = (ROOT / "policies" / "topic.txt").read_text()
 CLASSIFY = ROOT.parent / "plugins/prompt-forge/hooks/classify.ts"
 BY_ID = {t["id"]: t for t in TASKS}
 
@@ -98,10 +99,21 @@ def run_session(arm, rep, verdicts):
         answer = SESSION_ANSWER.get(tid, task["answer"])
         local = verdicts[tid]
         started = time.time()
-        if arm.startswith("forge") and not local["clear"]:
-            f = forge_in_session(task["prompt"], answer, convo, bench.policy_text(arm))
+        fresh = False
+        if arm.startswith("guard") and convo:
+            # the spend guard: a new, unrelated task starts a fresh session, like /clear
+            verdict, tin, tout = haiku(TOPIC, f"<recent_conversation>\n{recent_context(convo)}\n</recent_conversation>\n\n<prompt>\n{task['prompt']}\n</prompt>")
+            topic_cost = tin * HAIKU_IN + tout * HAIKU_OUT
+            fresh = verdict.strip().upper().startswith("NEW")
+            if fresh:
+                session, convo = None, []
         else:
-            f = dict(sent=task["prompt"], route="skip (local check)" if arm.startswith("forge") else "none", calls=[])
+            topic_cost = 0.0
+        policy_arm = "forge-" + arm.split("-", 1)[1] if arm.startswith("guard") else arm
+        if policy_arm.startswith("forge") and not local["clear"]:
+            f = forge_in_session(task["prompt"], answer, convo, bench.policy_text(policy_arm))
+        else:
+            f = dict(sent=task["prompt"], route="skip (local check)" if policy_arm.startswith("forge") else "none", calls=[])
         # commit what's there, so "asked back" means this step changed nothing
         subprocess.run("git add -A && git -c user.email=b@b -c user.name=bench commit -qm step --allow-empty",
                        shell=True, cwd=cwd, check=True)
@@ -119,9 +131,10 @@ def run_session(arm, rep, verdicts):
                     questions=f.get("questions"), clarifications=replies, claude=t,
                     forge=dict(calls=len(f["calls"]), input=fin, output=fout, cost=fin * HAIKU_IN + fout * HAIKU_OUT),
                     problems=session_check(tid, cwd), seconds=round(time.time() - started))
-        step["total_cost"] = t["cost"] + step["forge"]["cost"]
+        step["fresh"], step["topic_cost"] = fresh, topic_cost
+        step["total_cost"] = t["cost"] + step["forge"]["cost"] + topic_cost
         steps.append(step)
-        print(f"{arm:13} rep{rep} step{step['step']} {tid} route={f['route']:18} ${step['total_cost']:.4f} "
+        print(f"{arm:13} rep{rep} step{step['step']} {tid} {'FRESH ' if fresh else ''}route={f['route']:18} ${step['total_cost']:.4f} "
               f"problems={step['problems']}", flush=True)
     shutil.rmtree(cwd, ignore_errors=True)
     return dict(arm=arm, rep=rep, steps=steps, total_cost=sum(s["total_cost"] for s in steps))

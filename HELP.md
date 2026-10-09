@@ -131,6 +131,26 @@ Questions to the agent (*"so this MR does nothing?"*, *"why did you do that?"*) 
 
 You're asked at most once per prompt.
 
+## When it offers a fresh start
+
+In a long session, every prompt makes Claude re-read the whole conversation so far, and that re-reading is most of what a session costs. When your prompt starts something unrelated, carrying that history along buys nothing. So Prompt Forge holds the prompt and offers a fresh start:
+
+```text
+● Prompt dropped by a hook: ✨ Prompt Forge: this looks like a new task, and every step here
+  re-reads 85k tokens of old conversation.  ↳ reply "f" to /clear and send it fresh, or "h" to send it here
+```
+
+- **`f`** (or **Start fresh & send**) runs `/clear` and sends your prompt into the new, empty conversation.
+- **`h`** (or **Send here**) sends it in the current conversation, as if nothing happened.
+- **Anything else** you type replaces the held prompt and is handled normally.
+
+It only asks when both are true:
+
+1. **The session re-reads 30k+ tokens of conversation.** This counts only the conversation, above the fixed part every request carries: the system prompt, tools and MCP servers (27k tokens on a bare install, often much more with plugins), which `/clear` can't remove.
+2. **A Haiku check says the prompt starts a new task**: it names its own target and needs nothing from the conversation. Anything that says "it", "that", "again", or names a file or result from the conversation counts as a follow-up. When unsure, it answers follow-up.
+
+Prompts with an image or file attached are never held. `/forge fresh off` turns the offer off for good (`/forge fresh on` turns it back on); `/forge off` turns all of Prompt Forge off.
+
 ## Reading the card
 
 ```text
@@ -155,6 +175,8 @@ The card stays a few rows tall so it doesn't scroll away on a small terminal; a 
 | Start again | `/forge on` |
 | Check the state | `/forge` |
 | See the plain sent text | ctrl+o |
+| Start a new task fresh | Reply `f` to the fresh-start offer, or `h` to stay |
+| Never offer a fresh start | `/forge fresh off` |
 | Skip a question | **Send as typed** (sends your prompt unchanged) or **Cancel** (sends nothing) |
 | Fix a bad rewrite | Press Esc to interrupt, then resend with `raw:` |
 

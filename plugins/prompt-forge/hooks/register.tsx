@@ -1,13 +1,34 @@
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, Register } from 'claude-code'
+import type { EngineInterface, PromptSubmitInput, PromptSubmitResult, Register } from 'claude-code'
 
-import type { Forged, Pending } from '../types'
+import type { Forged, Fresh, Pending } from '../types'
 import { isClearEnough } from './classify'
 
 export { isClearEnough }
 
 const forgedA = atom({ plugin: 'prompt-forge', key: 'forged' } as const, [])
 const pendingA = atom({ plugin: 'prompt-forge', key: 'pending' } as const, null)
+const freshA = atom({ plugin: 'prompt-forge', key: 'fresh' } as const, null)
+
+/**
+ * Below this much conversation a fresh start saves too little to be worth a question. Counted
+ * above the session's floor: the system prompt, tools and MCP servers every request carries
+ * (27k on a bare install, far more with plugins), which /clear can't remove.
+ */
+export const FRESH_MIN_TOKENS = 30_000
+const FRESH = /^(?:f|fresh|y|yes|clear)$/i
+const HERE = /^(?:h|here|n|no)$/i
+
+const TOPIC = `You decide whether a developer's new prompt to an AI coding agent continues the work in the
+recent conversation or starts an unrelated task.
+
+CONTINUES: the prompt refers to anything in the conversation ("it", "that", "the same", "the
+bug", "again", a file, function or result mentioned there), follows up on the last change, or
+could go wrong without the conversation's context.
+NEW: a self-contained task that names its own target and needs nothing said in the conversation.
+
+When unsure, answer CONTINUES: starting fresh by mistake loses context the user needs.
+Reply with exactly one word: CONTINUES or NEW.`
 
 const RAW = /^raw:\s*/i
 const MIN_WORDS = 5
@@ -124,6 +145,13 @@ export function holdNote(questions: readonly string[]): string {
 const enhancedNote = (added: readonly string[]) =>
   `✨ Prompt enhanced${added.length ? `: ${added.slice(0, 2).join(', ')}` : ''} (ctrl+o on it shows the full text)`
 
+const kTokens = (n: number) => `${Math.round(n / 1000)}k`
+
+/** The drop notice of a prompt held as a new task. One line, like holdNote. */
+export function freshNote(tokens: number): string {
+  return `✨ Prompt Forge: this looks like a new task, and every step here re-reads ${kTokens(tokens)} tokens of old conversation.  ↳ reply "f" to /clear and send it fresh, or "h" to send it here`
+}
+
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ')
 
@@ -137,6 +165,48 @@ async function conversation($: EngineInterface) {
     return recentContext(await $.session.messages())
   } catch {
     return ''
+  }
+}
+
+let floor = Infinity
+
+/**
+ * Tokens of conversation the session re-reads each step: the context less its floor, the
+ * smallest context seen (taken as the fixed part). 0 when the engine can't say.
+ */
+async function conversationTokens($: EngineInterface) {
+  try {
+    const tokens = (await $.session.usage()).context.tokens
+    if (!tokens) return 0
+    floor = Math.min(floor, tokens)
+    return tokens - floor
+  } catch {
+    return 0
+  }
+}
+
+/** Whether the prompt starts an unrelated task. Any failure answers no: never clear by mistake. */
+async function isNewTopic($: EngineInterface, text: string) {
+  const convo = await conversation($)
+  if (!convo) return false
+  const r = await $.model.complete({
+    model: 'haiku',
+    system: TOPIC,
+    prompt: `<recent_conversation>\n${convo}\n</recent_conversation>\n\n<prompt>\n${text}\n</prompt>`,
+    maxTokens: 5,
+    timeoutMs: 8_000,
+  })
+  return r.isAnswered && /^\s*NEW\b/i.test(r.text)
+}
+
+/** /clear, then send the held prompt into the fresh conversation. */
+async function startFresh($: EngineInterface, text: string) {
+  await update($, freshA, () => null)
+  try {
+    await $.command.run({ command: 'clear' })
+    await $.prompt.submit({ text, asUser: true })
+  } catch (err) {
+    $.ui.toast(`✨ Prompt Forge couldn't start fresh (${String(err)}); your prompt: ${clip(text, 200)}`)
   }
 }
 
@@ -160,11 +230,46 @@ async function forge($: EngineInterface, text: string, answers?: string): Promis
   return out.kind === 'ask' && answers !== undefined ? { kind: 'malformed' } : out
 }
 
+/** Forges a composer prompt (or skips it) and sends the result on. */
+async function forgeAndSend($: EngineInterface, e: PromptSubmitInput, next: (e: PromptSubmitInput) => Promise<PromptSubmitResult>): Promise<PromptSubmitResult> {
+  if (!wantsForge(e.text)) return next(e)
+  // Haiku can't see an image or file, and holding the prompt would lose it: the answer is a
+  // new submission without it. The agent sees it, so send the prompt as typed.
+  if (e.attachments?.length) {
+    $.ui.toast(`✨ Prompt Forge: your prompt has an ${e.attachments[0]?.type ?? 'attachment'}, sent as typed.`)
+    return next(e)
+  }
+  $.ui.status('✨ Forging your prompt…')
+  try {
+    const out = await forge($, e.text)
+    if (out.kind === 'failed') {
+      $.ui.toast(`✨ Prompt Forge skipped (${out.reason}); sent as typed.`)
+      return next(e)
+    }
+    if (out.kind === 'ask') {
+      const pending: Pending = { original: e.text, questions: out.questions }
+      await update($, pendingA, () => pending)
+      return { drop: holdNote(out.questions) }
+    }
+    if (out.kind !== 'rewrite' || norm(out.enhanced) === norm(e.text)) {
+      $.ui.toast(`✨ Prompt Forge: ${SKIP_NOTE[out.kind === 'rewrite' ? 'unchanged' : out.kind]}`)
+      return next(e)
+    }
+    const item: Forged = { original: e.text, enhanced: out.enhanced, added: out.added }
+    await update($, forgedA, list => [...list, item].slice(-50))
+    $.ui.toast(enhancedNote(out.added))
+    return next({ ...e, text: out.enhanced })
+  } finally {
+    $.ui.status(undefined)
+  }
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'forge',
-      description: 'Prompt Forge: /forge on, /forge off, or /forge to see its state',
+      description: 'Prompt Forge: /forge on|off, /forge fresh on|off, or /forge to see its state',
+      argumentHint: '[on|off|fresh on|fresh off]',
     })
     return next(e)
   })
@@ -172,11 +277,17 @@ export const register: Register = on => {
   on('command.run', { command: 'forge' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
     if (arg === 'on' || arg === 'off') await $.store.set('enabled', arg === 'on')
-    if (arg === 'off') await update($, pendingA, () => null)
+    if (arg === 'off') {
+      await update($, pendingA, () => null)
+      await update($, freshA, () => null)
+    }
+    if (arg === 'fresh on' || arg === 'fresh off') await $.store.set('fresh', arg === 'fresh on')
     const onNow = await isOn($)
+    const freshNow = (await $.store.get('fresh')) !== false
     return {
       text: `✨ Prompt Forge is ${onNow ? 'ON' : 'OFF'}. ` +
-        (onNow ? 'Prompts of 5+ words get sharpened before sending; start one with "raw:" to send it untouched.' : 'Prompts go out exactly as typed.'),
+        (onNow ? 'Prompts of 5+ words get sharpened before sending; start one with "raw:" to send it untouched. ' : 'Prompts go out exactly as typed. ') +
+        `Fresh-start offers are ${freshNow ? 'ON' : 'OFF'} (/forge fresh on|off).`,
     }
   })
 
@@ -184,6 +295,17 @@ export const register: Register = on => {
     if (e.origin.kind !== 'composer') return next(e)
     const typed = e.text.trim()
     if (typed.startsWith('/')) return next(e)
+    // A prompt held as a new task: "f" starts fresh, "h" sends it here, anything else replaces it.
+    const freshHeld = await read($, freshA)
+    if (freshHeld) {
+      await update($, freshA, () => null)
+      if (FRESH.test(typed)) {
+        void startFresh($, freshHeld.text)
+        return { drop: '✨ Prompt Forge: starting fresh, your prompt follows the /clear.' }
+      }
+      if (HERE.test(typed)) return forgeAndSend($, { ...e, text: freshHeld.text }, next)
+    }
+
     const held = await read($, pendingA)
     if (RAW.test(typed)) {
       const rest = typed.replace(RAW, '')
@@ -209,36 +331,38 @@ export const register: Register = on => {
       }
     }
 
-    if (!wantsForge(e.text) || !(await isOn($))) return next(e)
-    // Haiku can't see an image or file, and holding the prompt would lose it: the answer is a
-    // new submission without it. The agent sees it, so send the prompt as typed.
-    if (e.attachments?.length) {
-      $.ui.toast(`✨ Prompt Forge: your prompt has an ${e.attachments[0]?.type ?? 'attachment'}, sent as typed.`)
-      return next(e)
+    if (!(await isOn($)) || typed.split(/\s+/).length < MIN_WORDS) return next(e)
+    // A new, unrelated task in a long session: offer a fresh start, which skips re-reading the
+    // old context on every step. Short sessions are never asked; it's not worth a question.
+    if (!e.attachments?.length && (await $.store.get('fresh')) !== false) {
+      const tokens = await conversationTokens($)
+      if (tokens >= FRESH_MIN_TOKENS && (await isNewTopic($, typed))) {
+        await update($, freshA, () => ({ text: e.text, tokens }))
+        return { drop: freshNote(tokens) }
+      }
     }
-    $.ui.status('✨ Forging your prompt…')
-    try {
-      const out = await forge($, e.text)
-      if (out.kind === 'failed') {
-        $.ui.toast(`✨ Prompt Forge skipped (${out.reason}); sent as typed.`)
-        return next(e)
-      }
-      if (out.kind === 'ask') {
-        const pending: Pending = { original: e.text, questions: out.questions }
-        await update($, pendingA, () => pending)
-        return { drop: holdNote(out.questions) }
-      }
-      if (out.kind !== 'rewrite' || norm(out.enhanced) === norm(e.text)) {
-        $.ui.toast(`✨ Prompt Forge: ${SKIP_NOTE[out.kind === 'rewrite' ? 'unchanged' : out.kind]}`)
-        return next(e)
-      }
-      const item: Forged = { original: e.text, enhanced: out.enhanced, added: out.added }
-      await update($, forgedA, list => [...list, item].slice(-50))
-      $.ui.toast(enhancedNote(out.added))
-      return next({ ...e, text: out.enhanced })
-    } finally {
-      $.ui.status(undefined)
-    }
+    return forgeAndSend($, e, next)
+  })
+
+  // A prompt held as a new task: the fresh-start offer, above the prompt.
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    const fresh = await read($, freshA)
+    if (!fresh || e.props.hasSurvey) return next(e)
+    const { Box, Button, Text } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" gap={1} borderStyle="round" borderColor="magenta" paddingX={1}>
+        <Text bold color="magenta">✨ New task? {kTokens(fresh.tokens)} tokens of old conversation ride along</Text>
+        <Button key="fresh" label="Start fresh & send" variant="primary" onPress={() => startFresh($, fresh.text)} />
+        <Button
+          key="here"
+          label="Send here"
+          onPress={async () => {
+            await update($, freshA, () => null)
+            await $.prompt.submit({ text: fresh.text, asUser: true })
+          }}
+        />
+      </Box>
+    )
   })
 
   // A held prompt's questions, above the prompt where the answer gets typed.

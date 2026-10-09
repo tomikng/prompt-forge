@@ -9,7 +9,7 @@
 **Sharper prompts for [Claude Code](https://claude.com/claude-code), without retyping them.**
 Type the way you think. Prompt Forge rewrites it into a clear, actionable prompt before Claude sees it, and shows you exactly what it changed.
 
-[![Version](https://img.shields.io/badge/version-0.4.1-f5a6e6)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-0.5.0-f5a6e6)](.claude-plugin/marketplace.json)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-d97757)](https://claude.com/claude-code)
 [![License: MIT](https://img.shields.io/github/license/tomikng/prompt-forge?color=22c55e)](LICENSE)
 [![Rewrites with](https://img.shields.io/badge/rewrites%20with-Haiku-38bdf8)](#cost-and-privacy)
@@ -30,6 +30,7 @@ Claude does its best work when a prompt states the goal, the limits and what "do
 - 🚫 **No inventions.** It never adds files, APIs or requirements you didn't mention.
 - 🧭 **Knows what "it" means.** The last few messages of the conversation are used to name what you're referring to.
 - 🤫 **Asks only when it must.** It asks you only for what nobody else can know (a value you agreed on, a name you have in mind). Everything the agent can work out itself, it leaves to the agent.
+- 💸 **Cuts spend on long sessions.** When a prompt starts an unrelated task in a long session, it offers to start fresh (`/clear`, then your prompt), so Claude stops re-reading the old conversation on every step: **−25% per session** in the benchmark. One keypress, and never on a follow-up.
 - 🖼️ **Keeps your images.** A prompt with a pasted image or file goes out exactly as typed, attachment and all.
 - 👀 **Nothing hidden.** Every rewrite shows up as a before/after card in the transcript.
 - ✋ **Easy to bypass.** Start a prompt with `raw:` or run `/forge off`.
@@ -128,6 +129,7 @@ rewritten prompt is sent to Claude ──▶ before/after card, and the agent ge
 | Skipped by the local check, no model call | Prompts that already name a target (a file, path, `code` or identifier) **and** a finish line (*run npm test*, *should*, *make sure*…), with no unresolved "it"/"that" |
 | Sent as typed | Slash commands, short replies ("yes go ahead"), prompts with an image or file attached, prompts starting with `raw:`, and anything while `/forge off` |
 | Left alone, with a notice | A rewrite would add nothing (most rough prompts Claude already understands), or it's not a task at all (a question to the agent like *"so this MR does nothing?"*) |
+| Held, with a fresh-start offer | A new, unrelated task while the session re-reads 30k+ tokens of earlier conversation. Reply `f` to `/clear` and send it fresh, `h` to send it here; or use the buttons |
 | Held, with questions | The work depends on something only you know (a value you agreed on, a name you have in mind). Your next message answers it; `raw:` alone, **Send as typed** or **Cancel** skip it |
 | Sent as typed, with a notice | The Haiku call fails or takes longer than 15 s |
 
@@ -149,7 +151,7 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
 ## Benchmarks
 
-**In short:** Prompt Forge 0.4.1 **costs about the same as not using it** (+3% over a six-prompt session, inside run-to-run noise), gets **every task right** (36/36 checks vs 35/36 without it), and **almost never interrupts you** (one question in 18 session steps). Its own Haiku calls cost **about $0.002 per prompt**.
+**In short:** with its fresh-start offer, Prompt Forge 0.5 **cut spend by 25%** over a six-prompt session ($1.64 vs $2.20), with **every step still right** (18/18). The rewriting alone (0.4.1) is break-even: +3%, inside run-to-run noise, with every task right and almost no questions. Its own Haiku calls cost **about $0.002 per prompt**. See [Starting fresh](#starting-fresh-050).
 
 That's the result of three rounds of benchmarking, each one changing the rewrite rules (full story [below](#how-we-got-here)):
 
@@ -157,7 +159,8 @@ That's the result of three rounds of benchmarking, each one changing the rewrite
 | --- | --- | --- | --- |
 | 0.2 | Asked whenever it was unsure | 4 | about even (its questions pulled file names out of you) |
 | 0.4.0 | Rarely asked, rewrote freely | 0–1 | **+17%**: rewrites added scope, so Claude did more work |
-| **0.4.1** | **Rarely asks, rewrites only to add information** | **0–1** | **+3%** (noise) |
+| 0.4.1 | Rarely asks, rewrites only to add information | 0–1 | +3% (noise) |
+| **0.5.0** | **0.4.1, plus a fresh-start offer for new tasks in long sessions** | **0, plus ~1 keypress for a fresh start** | **−25%** |
 
 <img src="assets/bench-net.svg" alt="Bar chart of net dollars per task with the forge minus without: V1 −$0.010, V2 −$0.003, V3 +$0.003, A1 +$0.104 with correct runs rising from 2/3 to 3/3, C1 +$0.001, C2 +$0.000." width="100%">
 
@@ -191,6 +194,35 @@ Real work is a string of prompts on one session. The same six prompts ran **in o
 - **🧮 The forge is a rounding error.** All its Haiku calls came to about **$0.011 per session**. The big cost is Claude re-reading a growing conversation: about $0.23 at step 1, $0.55 by step 6, in both arms.
 - **🎯 The local check made the right call 6/6 times, in about 1 µs, with zero tokens.** It skipped C2 and C1, which name a file and a finish line, and sent the other four to the forge.
 - **🔁 In a session, "it" resolves itself.** Right after C1 renamed `getUser` to `fetchUser`, A1 (*"rename it to something clearer"*) was clear from context: the forge named `fetchUser` in its rewrite, and Claude got it right in all 3 sessions.
+
+### Starting fresh (0.5.0)
+
+Rewording a prompt can't save much: in the sessions above, **99% of the money is Claude re-reading the conversation** on every step, $0.23 at step 1 and $0.55 by step 6. The one lever that moves that number is a smaller conversation. So when a prompt starts an unrelated task in a long session, Prompt Forge holds it and offers to start fresh:
+
+```text
+● Prompt dropped by a hook: ✨ Prompt Forge: this looks like a new task, and every step here
+  re-reads 85k tokens of old conversation.  ↳ reply "f" to /clear and send it fresh, or "h" to send it here
+╭─────────────────────────────────────────────────────────────────────────────────────────╮
+│ ✨ New task? 85k tokens of old conversation ride along [ Start fresh & send ] [ Send here ] │
+╰─────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+- **One tiny Haiku call decides** whether the prompt continues the conversation or starts something new, and it answers "continues" when unsure: anything that says "it", "that", "again" or names something from the conversation stays.
+- **Only in long sessions.** It counts only the conversation, not the system prompt and tools every request carries (27k tokens on a bare install, more with plugins), and asks only above 30k tokens of it.
+- **`f`** runs `/clear` and sends your prompt into the fresh conversation; **`h`** sends it where you are. `/forge fresh off` turns the offer off.
+
+The same six-prompt session, with the fresh-start offer accepted every time it was made:
+
+| Per session | Mean | Range (3 sessions) | Steps done right | Fresh starts |
+| --- | --- | --- | --- | --- |
+| Without the forge | $2.20 | $2.13–$2.25 | 18/18 | – |
+| With the forge 0.4.1 | $2.27 | $2.13–$2.35 | 18/18 | – |
+| **With the forge 0.5, fresh starts accepted** | **$1.64** | **$1.48–$1.76** | **18/18** | 4 in 3 sessions |
+
+- **💸 −25% per session.** After a fresh start, steps 5 and 6 cost **$0.15 and $0.24** instead of $0.44 and $0.55.
+- **🎯 No harmful clears.** It started fresh before the signup task (V3) once and before the users rename (C1) in every session, both self-contained. It never started fresh before A1 (*"rename it to something clearer"*), which needs the rename just before it, and A1 stayed right in all 3 sessions.
+- **🧮 The check is nearly free:** about $0.006 per session.
+- **Caveats:** each fresh start is one keypress from you. The benchmark offered it on every topic change; the plugin also requires 30k+ tokens of conversation, which every one of these steps had. In your own work, a fresh start is only as good as the new task's independence: if it needs something from earlier, answer `h`.
 
 ### Asking less
 
@@ -230,6 +262,7 @@ python3 bench/bench.py report           # RESULTS.md and assets/bench-net.svg
 python3 bench/policy.py routing --reps 3                                        # ask-policy routing (Haiku only, cents)
 python3 bench/bench.py run --reps 3 --arms forge-ask,forge-minimal --out results-policy.json  # policies end to end
 python3 bench/session.py run --reps 3 --arms forge-minimal --out session-final.json
+python3 bench/session.py run --reps 3 --arms guard-lean --out session-guard.json   # fresh-start offer, always accepted
 ```
 </details>
 
@@ -242,13 +275,15 @@ python3 bench/session.py run --reps 3 --arms forge-minimal --out session-final.j
 | `/forge on` | Turn rewriting back on |
 | `raw: <prompt>` | Send this one prompt untouched; the `raw:` prefix is removed (also drops a held prompt) |
 | `raw:` alone | While a prompt is held: send it as typed |
+| `f` / `h` | While a new task is held: start fresh (`/clear`, then send it) / send it here |
+| `/forge fresh off` | Never offer a fresh start (`/forge fresh on` turns it back on) |
 | **Send as typed** / **Cancel** | On the question box: send the held prompt unchanged, or drop it |
 | **ctrl+o** | Expand the transcript to see the plain sent text without the card |
 
 ## Cost and privacy
 
-- **One small Haiku call per forged prompt** (two in the rare case it asks you something), made through your own Claude Code session and billed like the rest of your usage: **under $0.003 per prompt** in the [benchmarks](#benchmarks). Short replies and commands cost nothing.
-- **What Haiku sees:** the rewrite rules, your prompt, and the text of the last few messages (at most 6 messages and about 3,000 characters), so it can resolve "it" and "that". No files, tool output or attachments: a prompt with an attachment isn't sent to Haiku at all.
+- **One small Haiku call per forged prompt** (two in the rare case it asks you something, plus a tiny new-task check in long sessions), made through your own Claude Code session and billed like the rest of your usage: **under $0.003 per prompt** in the [benchmarks](#benchmarks). Short replies and commands cost nothing.
+- **What Haiku sees:** the rewrite rules (or, in a long session, the new-task check), your prompt, and the text of the last few messages (at most 6 messages and about 3,000 characters), so it can resolve "it" and "that". No files, tool output or attachments: a prompt with an attachment isn't sent to Haiku at all.
 - **Nothing leaves your machine any other way.** No telemetry, no third-party services.
 - The on/off switch is stored in the plugin's own store under `~/.claude/plugins/store/`. Before/after pairs for the cards live in session memory (the last 50) and are never written to disk by the plugin.
 

@@ -208,3 +208,79 @@ test('a clear prompt makes no model call at all', async ($, on) => {
   expect(calls).toBe(0)
   expect(seen).toBe(text)
 })
+
+// ── the fresh-start offer ───────────────────────────────────────────────────
+
+// The first reading is the floor (the fixed system prompt and tools); later ones add conversation.
+const bigSession = (on: Parameters<Parameters<typeof test>[1]>[1], tokens = 90_000, floor = 30_000) => {
+  let calls = 0
+  on('session.usage', () => ({ value: { startedAt: 0, context: { tokens: calls++ === 0 ? floor : floor + tokens, window: 200_000 }, rateLimits: [] } }) as never)
+  on('session.messages', () => ({ value: [
+    { role: 'user', text: 'the orders page is slow' },
+    { role: 'assistant', text: 'Fixed ordersPageRows in src/orders.js; tests pass.' },
+  ] }) as never)
+}
+const NEW_TASK = 'In src/signup.js make validateSignup reject emails without an @, and run npm test.'
+
+test('a new task in a long session is held with a fresh-start offer; "h" sends it here', async ($, on) => {
+  let seen = ''
+  mock.store(on)
+  bigSession(on)
+  on('model.complete', (_$, e) => reply(e.system.startsWith('You decide whether') ? 'NEW' : 'UNCHANGED'))
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  await $.prompt.submit({ text: 'look at the orders page first please', origin: { kind: 'composer' }, wait: false })
+  seen = ''
+  const first = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect('drop' in first && first.drop).toContain('re-reads 90k tokens of old conversation')
+  expect(seen).toBe('')
+  const ui = await $.ui.mount({ plugin: 'prompt-forge', surface: 'terminal', ...ABOVE } as never)
+  expect(await ui.find({ type: 'Button', label: /Start fresh & send/ })).toBeDefined()
+  await ui.unmount()
+  await $.prompt.submit({ text: 'h', origin: { kind: 'composer' }, wait: false })
+  expect(seen).toBe(NEW_TASK)
+})
+
+test('"f" runs /clear, then sends the held prompt into the fresh conversation', async ($, on) => {
+  const order: string[] = []
+  mock.store(on)
+  bigSession(on)
+  on('model.complete', (_$, e) => reply(e.system.startsWith('You decide whether') ? 'NEW' : 'UNCHANGED'))
+  on('command.run', { command: 'clear' }, () => { order.push('clear'); return { text: '' } })
+  on('prompt.submit', (_$, e) => { order.push(e.text); return { text: e.text } })
+  await $.prompt.submit({ text: 'look at the orders page first please', origin: { kind: 'composer' }, wait: false })
+  order.length = 0
+  await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
+  await new Promise(r => setTimeout(r, 50))
+  expect(order).toEqual(['clear', NEW_TASK])
+})
+
+test('a follow-up, or any prompt in a short session, is never held', async ($, on) => {
+  let seen = ''
+  let topicCalls = 0
+  mock.store(on)
+  bigSession(on)
+  on('model.complete', (_$, e) => {
+    if (e.system.startsWith('You decide whether')) { topicCalls += 1; return reply('CONTINUES') }
+    return reply('UNCHANGED')
+  })
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  await $.prompt.submit({ text: 'look at the orders page first please', origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: 'now add a test for that change please', origin: { kind: 'composer' }, wait: false })
+  expect(seen).toBe('now add a test for that change please')
+  expect(topicCalls).toBe(1)
+})
+
+test('below the threshold of conversation no topic check is made, however big the fixed part', async ($, on) => {
+  let topicCalls = 0
+  mock.store(on)
+  bigSession(on, 12_000, 60_000)
+  on('model.complete', (_$, e) => {
+    if (e.system.startsWith('You decide whether')) topicCalls += 1
+    return reply('UNCHANGED')
+  })
+  on('prompt.submit', (_$, e) => ({ text: e.text }))
+  await $.prompt.submit({ text: 'look at the orders page first please', origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect(topicCalls).toBe(0)
+})
