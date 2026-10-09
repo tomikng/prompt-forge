@@ -153,7 +153,7 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
 ## Benchmarks
 
-**In short:** Prompt Forge 0.6 **cut spend by 44%** over a six-prompt session ($1.24 vs $2.20), with **every step still right** (18/18). Two features do the saving: a [fresh start](#starting-fresh-050) for new tasks in long sessions (−25% on its own) and [Sonnet for small, clear tasks](#a-cheaper-model-for-small-tasks-060) on a fresh context (−43% to −49% on those tasks). The prompt rewriting itself is break-even. Its own Haiku calls cost **about $0.002 per prompt**.
+**In short:** Prompt Forge 0.6 **cut spend by 44%** over a six-prompt session ($1.24 vs $2.20), with **every step still right** (18/18). Two features do the saving ([caveats](#before-you-count-on-the-44)): a [fresh start](#starting-fresh-050) for new tasks in long sessions (−25% on its own) and [Sonnet for small, clear tasks](#a-cheaper-model-for-small-tasks-060) on a fresh context (−43% to −49% on those tasks). The prompt rewriting itself is break-even. Its own Haiku calls cost **about $0.002 per prompt**.
 
 That's the result of three rounds of benchmarking, each one changing the rewrite rules (full story [below](#how-we-got-here)):
 
@@ -251,6 +251,14 @@ Haiku asks **only for what nobody but you can know** (a value you agreed on, a n
 | 0.3 (ask when unsure) | 23/33 | 13/33 | 3/24 | 10/45 · 20/45 |
 | 0.4.0 (ask less, rewrite freely) | 6/33 | 3/33 | 0/24 | 20/45 · 24/45, at 3–4.5× length |
 | **0.4.1 (ask less, add only information)** | **1/33** | **2/33** | **0/24** | **3/45 · 20/45, at 1–1.9× length** |
+
+### Before you count on the −44%
+
+- **Small test, small project.** Three sessions of six prompts on a 12-file project. On a large codebase Sonnet may need more turns for the same task, and a vague prompt may cost more searching, so the saving can shrink.
+- **The saving comes from you pressing `f`.** The benchmark accepted every fresh-start offer. If you usually answer `h`, expect something closer to 0.4.1: break-even.
+- **The new-task check isn't fully consistent.** It offered a fresh start before the cart task (V2) in 2 of 3 sessions with 0.6 and in none with 0.5. Harmless here, since that task was self-contained, but on your own work answer `h` whenever the new task needs earlier context.
+- **Rewriting alone saves nothing.** The money comes from fresh starts and Sonnet turns, not from better wording: the rewrite rules (0.4.1) measured break-even on their own.
+- **Same-day comparisons.** Every dollar figure above is against a no-forge baseline run the same day (2026-10-09). Earlier rounds in `bench/*-0.2.json` ran on different days, with an older forge, so compare them with care.
 
 ### How we got here
 
