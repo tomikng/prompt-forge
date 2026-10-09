@@ -10,3 +10,4 @@ bench/final-run.log
 bench/final-session.log
 bench/policy-routing.log
 bench/strategies.log
+bench/*.log
