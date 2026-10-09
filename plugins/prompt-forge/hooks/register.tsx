@@ -102,6 +102,15 @@ export function wantsForge(text: string): boolean {
   return t.split(/\s+/).length >= MIN_WORDS && !isClearEnough(t)
 }
 
+/**
+ * The drop notice of a held prompt. It carries the questions itself: the band above the
+ * prompt may never show (a survey holds it, or another plugin's band answers first).
+ */
+export function holdNote(questions: readonly string[]): string {
+  const qs = questions.length === 1 ? questions[0] : questions.map((q, i) => `${i + 1}) ${q}`).join('  ')
+  return `✨ Prompt Forge needs an answer before sending: ${qs}  Reply in the prompt box, or send "raw:" alone to send your prompt as typed.`
+}
+
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ')
 
@@ -164,8 +173,10 @@ export const register: Register = on => {
     if (typed.startsWith('/')) return next(e)
     const held = await read($, pendingA)
     if (RAW.test(typed)) {
+      const rest = typed.replace(RAW, '')
       if (held) await update($, pendingA, () => null)
-      return next({ ...e, text: typed.replace(RAW, '') })
+      // A bare "raw:" while a prompt is held sends that prompt as typed.
+      return next({ ...e, text: held && !rest ? held.original : rest })
     }
 
     // A held prompt: this message answers its questions, at any length.
@@ -195,7 +206,7 @@ export const register: Register = on => {
       if (out.kind === 'ask') {
         const pending: Pending = { original: e.text, questions: out.questions }
         await update($, pendingA, () => pending)
-        return { drop: '✨ Prompt Forge is holding your prompt: answer its question above the prompt, or press "Send as typed".' }
+        return { drop: holdNote(out.questions) }
       }
       if (out.kind !== 'rewrite' || norm(out.enhanced) === norm(e.text)) {
         $.ui.toast(`✨ Prompt Forge: ${SKIP_NOTE[out.kind === 'rewrite' ? 'unchanged' : out.kind]}`)

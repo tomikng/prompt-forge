@@ -196,7 +196,7 @@ Prompt Forge rewrites the prompt with Claude Code's `prompt.submit` hook. If ano
 | Prompts never get a card | Check `/forge` (it may be off), and make sure the prompt has 5+ words and doesn't start with `/` or `raw:`. Run `claude plugin validate` on the plugin folder. |
 | "Prompt Forge skipped (api-error)" | The Haiku call failed: a network problem, a rate limit, or Haiku not being available on your plan or provider. Your prompt was sent as typed. |
 | "Prompt Forge skipped (empty-reply)" | Haiku returned nothing. Retry, or send with `raw:`. |
-| "Prompt Forge is holding your prompt" | It asked a question. Answer it in the prompt box, or use **Send as typed** / **Cancel** in the box above the prompt. |
+| "Prompt Forge needs an answer before sending: …" | It asked the questions shown in that line. Answer them in the prompt box, send `raw:` alone to send your prompt as typed, or use **Send as typed** / **Cancel** in the box above the prompt. |
 | "no usable rewrite, sent as typed" | Haiku's reply wasn't a rewrite (for example it wrote prose back). The forge never sends such a reply; your prompt went out as typed. |
 | `/forge` is not recognized | The plugin isn't loaded. Check `/plugin` → **Installed**, and that Claude Code is 2.1.289 or newer. |
 | A rewrite changed your meaning | Resend with `raw:`, then [report it](https://github.com/tomikng/prompt-forge/issues/new?template=bad-rewrite.yml) with both versions. |

@@ -116,7 +116,8 @@ test('an unclear prompt is held, its questions asked, and the answer sends a for
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
 
   const first = await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
-  expect('drop' in first && first.drop).toBeTruthy()
+  // The notice names the questions too, in case the band above the prompt never shows.
+  expect('drop' in first && first.drop).toContain('1) Which plugin should be renamed?  2) What should the new name be?')
   expect(seen).toBe('')
 
   for (const surface of ['terminal', 'desktop'] as const) {
@@ -143,6 +144,17 @@ test('"Send as typed" on the question band sends the original prompt', async ($,
   await ui.press({ key: 'send-as-typed' })
   expect(seen).toBe('rename it so it is independent from the other one')
   await ui.unmount()
+})
+
+test('a bare "raw:" sends the held prompt as typed', async ($, on) => {
+  let seen = ''
+  mock.store(on)
+  on('model.complete', () => reply('ASK:\n- Which one?'))
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  const first = await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
+  expect('drop' in first && first.drop).toContain('Which one?')
+  await $.prompt.submit({ text: 'raw:', origin: { kind: 'composer' }, wait: false })
+  expect(seen).toBe('rename it so it is independent from the other one')
 })
 
 test('if the answer pass fails, the original and the answer go out together', async ($, on) => {
