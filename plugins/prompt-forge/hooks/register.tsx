@@ -19,6 +19,10 @@ const freshA = atom({ plugin: 'prompt-forge', key: 'fresh' } as const, null)
  * (27k on a bare install, far more with plugins), which /clear can't remove.
  */
 export const FRESH_MIN_TOKENS = 30_000
+
+/** The plugin's settings (`userConfig` in plugin.json, rows in /config), set by register. */
+type Launcher = 'auto' | 'superset' | 'tmux' | 'window' | 'clear'
+let settings = { newSession: 'auto' as Launcher, terminalCommand: '', freshMinTokens: FRESH_MIN_TOKENS }
 const FRESH = /^(?:f|fresh|y|yes|clear)$/i
 const HERE = /^(?:h|here|n|no)$/i
 const WORKSPACE = /^(?:w|workspace)$/i
@@ -200,7 +204,15 @@ const applescript = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', '\
  * (Windows Terminal). Says where, or null when none could be opened.
  */
 async function openTerminal($: EngineInterface, dir: string, text: string): Promise<string | null> {
-  if ((await ran($, ['sh', '-c', 'test -n "$TMUX"'])) && (await ran($, ['tmux', 'new-window', ...(dir ? ['-c', dir] : []), '--', 'claude', text]))) return 'a new tmux window'
+  const mode = settings.newSession
+  if (mode !== 'window' && (await ran($, ['sh', '-c', 'test -n "$TMUX"'])) && (await ran($, ['tmux', 'new-window', ...(dir ? ['-c', dir] : []), '--', 'claude', text]))) return 'a new tmux window'
+  if (mode === 'tmux') return null
+  const custom = settings.terminalCommand.trim()
+  if (custom) {
+    // the user's own terminal command, started in the background so this call returns at once
+    const argv = custom.split(/\s+/).map(w => w.replaceAll('{dir}', dir || '.'))
+    return (await ran($, ['sh', '-c', 'nohup "$@" >/dev/null 2>&1 &', 'sh', ...argv, 'claude', text])) ? 'a new terminal window' : null
+  }
   if ((await ran($, ['sh', '-c', 'command -v xdg-terminal-exec'])) && (await ran($, ['setsid', '-f', 'xdg-terminal-exec', ...(dir ? [`--dir=${dir}`] : []), 'claude', text]))) return 'a new terminal window'
   if (await ran($, ['sh', '-c', 'test "$(uname)" = Darwin'])) {
     const script = applescript(`cd ${sh(dir || '.')} && claude ${sh(text)}`)
@@ -251,7 +263,7 @@ async function openSession($: EngineInterface, held: Fresh, where: 'terminal' | 
  */
 async function startFresh($: EngineInterface, held: Fresh, where: 'terminal' | 'workspace' = 'terminal') {
   await update($, freshA, () => null)
-  if ((await $.store.get('freshMode')) !== 'clear') {
+  if (settings.newSession !== 'clear') {
     const opened = await openSession($, held, where).catch(() => null)
     if (opened) {
       $.ui.toast(`✨ Prompt Forge: your new task is running in ${opened}; this session stays as it was.`)
@@ -275,12 +287,19 @@ async function sendHere($: EngineInterface, text: string) {
   await $.prompt.submit({ text, asUser: true })
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  const mode = String(options.newSession ?? 'auto')
+  settings = {
+    newSession: (['auto', 'superset', 'tmux', 'window', 'clear'].includes(mode) ? mode : 'auto') as Launcher,
+    terminalCommand: String(options.terminalCommand ?? ''),
+    freshMinTokens: Number(options.freshMinTokens) > 0 ? Number(options.freshMinTokens) : FRESH_MIN_TOKENS,
+  }
+
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'forge',
-      description: 'Prompt Forge: /forge on|off, /forge fresh on|off|new|clear, /forge model on|off, or /forge to see its state',
-      argumentHint: '[on|off|fresh on|off|new|clear|model on|off]',
+      description: 'Prompt Forge: /forge on|off, /forge fresh on|off, /forge model on|off, or /forge to see its state; more in /config',
+      argumentHint: '[on|off|fresh on|off|model on|off]',
     })
     return next(e)
   })
@@ -290,13 +309,12 @@ export const register: Register = on => {
     if (arg === 'on' || arg === 'off') await $.store.set('enabled', arg === 'on')
     if (arg === 'off') await update($, freshA, () => null)
     if (arg === 'fresh on' || arg === 'fresh off') await $.store.set('fresh', arg === 'fresh on')
-    if (arg === 'fresh clear' || arg === 'fresh new') await $.store.set('freshMode', arg === 'fresh clear' ? 'clear' : 'new')
     if (arg === 'model on' || arg === 'model off') await $.store.set('route', arg === 'model on')
     const flag = async (key: string) => ((await $.store.get(key)) !== false ? 'ON' : 'OFF')
     return {
       text: (await isOn($))
         ? `✨ Prompt Forge is ON. Fresh start for new tasks in long sessions: ${await flag('fresh')} (/forge fresh on|off), ` +
-          `${(await $.store.get('freshMode')) === 'clear' ? 'with /clear here' : 'in a new session'} (/forge fresh new|clear). ` +
+          `opening ${({ auto: 'a tmux window or a new terminal window', superset: 'Superset terminals and workspaces', tmux: 'a tmux window', window: 'a new terminal window', clear: '/clear here' } as const)[settings.newSession]} (/config → prompt-forge). ` +
           `Sonnet for small, clear tasks on a fresh context: ${await flag('route')} (/forge model on|off). ` +
           'Start a prompt with "raw:" to skip both.'
         : '✨ Prompt Forge is OFF. Prompts go out exactly as typed, on your model (/forge on).',
@@ -342,10 +360,10 @@ export const register: Register = on => {
     // An image or file would be lost by holding the prompt, so those always go out as typed.
     if (!e.attachments?.length && typed.split(/\s+/).length >= MIN_WORDS && (await $.store.get('fresh')) !== false) {
       const tokens = await conversationTokens($)
-      if (tokens >= FRESH_MIN_TOKENS) {
+      if (tokens >= settings.freshMinTokens) {
         const topic = await topicOf($, typed)
         if (topic !== 'continues') {
-          const ws = await supersetWorkspace($)
+          const ws = settings.newSession === 'superset' ? await supersetWorkspace($) : null
           const repo = (await out($, ['git', 'rev-parse', '--show-toplevel'])) || null
           await update($, freshA, () => ({ text: e.text, tokens, topic, ws, repo }))
           return { drop: freshNote(tokens, topic, ws ? 'superset' : repo ? 'git' : null) }

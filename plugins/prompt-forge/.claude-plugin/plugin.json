@@ -1,6 +1,6 @@
 {
   "name": "prompt-forge",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Spends your Claude Code tokens where they count: moves a new task into a fresh session (a new terminal window, or its own git worktree) instead of dragging a long conversation along, and runs small, clear tasks on Sonnet.",
   "author": {
     "name": "tomikng",
@@ -17,5 +17,34 @@
     "worktree",
     "productivity"
   ],
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "newSession": {
+      "type": "string",
+      "title": "Where a new task's session opens",
+      "description": "auto: a tmux window, else a new terminal window, else /clear. superset: Superset terminals and workspaces when this session runs in a Superset workspace, else auto. tmux, window or clear: only that one (window uses terminalCommand when set), else /clear.",
+      "options": [
+        "auto",
+        "superset",
+        "tmux",
+        "window",
+        "clear"
+      ],
+      "default": "auto"
+    },
+    "terminalCommand": {
+      "type": "string",
+      "title": "Command that opens a terminal window",
+      "description": "Optional. Used for new terminal windows instead of the system default; claude and your prompt are appended, and {dir} becomes the session's folder. Examples: ghostty --working-directory={dir} -e, kitty --directory {dir}, wezterm start --cwd {dir} --",
+      "default": ""
+    },
+    "freshMinTokens": {
+      "type": "number",
+      "title": "Conversation size before a fresh session is offered (tokens)",
+      "description": "Counted above the fixed system prompt and tools. Lower asks sooner; higher asks only in very long sessions.",
+      "default": 30000,
+      "min": 5000,
+      "max": 500000
+    }
+  }
 }
