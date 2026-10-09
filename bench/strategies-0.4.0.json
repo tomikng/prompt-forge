@@ -36,29 +36,30 @@
   "desc": "C2: file, change and check all named",
   "prompt": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
   "routes": [
+   "rewrite",
    "unchanged"
   ],
   "calls": 1,
-  "input": 1312,
-  "output": 9,
-  "cost": 0.001357,
+  "input": 1302,
+  "output": 124,
+  "cost": 0.001922,
   "runs": [
    {
     "route": "unchanged",
-    "input": 1312,
-    "output": 9,
+    "input": 1302,
+    "output": 126,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1312,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1302,
+    "output": 131,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1312,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1302,
+    "output": 115,
     "calls": 1
    }
   ]
@@ -68,29 +69,29 @@
   "desc": "V2: no file, no expected result",
   "prompt": "the cart total is wrong when ppl buy more than one of something fix it",
   "routes": [
-   "unchanged"
+   "rewrite"
   ],
   "calls": 1,
-  "input": 1281,
-  "output": 224.66666666666666,
-  "cost": 0.0024043333333333334,
+  "input": 1271,
+  "output": 220.33333333333334,
+  "cost": 0.002372666666666667,
   "runs": [
    {
-    "route": "unchanged",
-    "input": 1281,
-    "output": 244,
+    "route": "rewrite",
+    "input": 1271,
+    "output": 88,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1281,
-    "output": 205,
+    "route": "rewrite",
+    "input": 1271,
+    "output": 475,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1281,
-    "output": 225,
+    "route": "rewrite",
+    "input": 1271,
+    "output": 98,
     "calls": 1
    }
   ]
@@ -100,29 +101,29 @@
   "desc": "A1: \"it\" with nothing to resolve it",
   "prompt": "rename it to something clearer, everywhere it's used",
   "routes": [
-   "unchanged"
+   "rewrite"
   ],
   "calls": 1,
-  "input": 1275,
-  "output": 89.66666666666667,
-  "cost": 0.0017233333333333332,
+  "input": 1265,
+  "output": 390.3333333333333,
+  "cost": 0.0032166666666666663,
   "runs": [
    {
-    "route": "unchanged",
-    "input": 1275,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1265,
+    "output": 393,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1275,
-    "output": 251,
+    "route": "rewrite",
+    "input": 1265,
+    "output": 417,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1275,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1265,
+    "output": 361,
     "calls": 1
    }
   ]
@@ -132,29 +133,29 @@
   "desc": "short follow-up, 6 messages (~3k chars) of conversation",
   "prompt": "ok do it, the fast way",
   "routes": [
-   "unchanged"
+   "rewrite"
   ],
   "calls": 1,
-  "input": 1866,
-  "output": 9,
-  "cost": 0.0019109999999999997,
+  "input": 1856,
+  "output": 142.33333333333334,
+  "cost": 0.002567666666666667,
   "runs": [
    {
-    "route": "unchanged",
-    "input": 1866,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1856,
+    "output": 139,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1866,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1856,
+    "output": 158,
     "calls": 1
    },
    {
-    "route": "unchanged",
-    "input": 1866,
-    "output": 9,
+    "route": "rewrite",
+    "input": 1856,
+    "output": 130,
     "calls": 1
    }
   ]

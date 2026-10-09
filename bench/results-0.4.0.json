@@ -1,0 +1,1161 @@
+{
+ "overhead": 531,
+ "results": [
+  {
+   "task": "V1",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 1,
+   "route": "none",
+   "sent": "can u make the orders page faster its really slow, dont touch the api",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 14,
+    "cache_read": 194307,
+    "cache_write": 20795,
+    "output": 2206,
+    "cost": 0.24939739999999996,
+    "turns": 8,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 32,
+   "total_cost": 0.24939739999999996
+  },
+  {
+   "task": "V1",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 1,
+   "route": "rewrite",
+   "sent": "Make the orders page faster, it's really slow. Don't change the API.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 12,
+    "cache_read": 161979,
+    "cache_write": 19980,
+    "output": 1794,
+    "cost": 0.22816379999999997,
+    "turns": 7,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1269,
+    "output": 67,
+    "cost": 0.001604
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 39,
+   "total_cost": 0.22976779999999997
+  },
+  {
+   "task": "V2",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 1,
+   "route": "none",
+   "sent": "the cart total is wrong when ppl buy more than one of something fix it",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 100109,
+    "cache_write": 18673,
+    "output": 963,
+    "cost": 0.18869780000000005,
+    "turns": 7,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 24,
+   "total_cost": 0.18869780000000005
+  },
+  {
+   "task": "V2",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 1,
+   "route": "rewrite",
+   "sent": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 10,
+    "cache_read": 129605,
+    "cache_write": 18669,
+    "output": 1181,
+    "cost": 0.198933,
+    "turns": 9,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1271,
+    "output": 99,
+    "cost": 0.001766
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 22,
+   "total_cost": 0.200699
+  },
+  {
+   "task": "V3",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 1,
+   "route": "none",
+   "sent": "signup lets ppl in with junk emails, fix that",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 97576,
+    "cache_write": 19227,
+    "output": 1940,
+    "cost": 0.2121632,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 27,
+   "total_cost": 0.2121632
+  },
+  {
+   "task": "V3",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 1,
+   "route": "rewrite",
+   "sent": "Fix the signup flow so it stops accepting junk email addresses. Pick a sensible validation approach, such as a proper format check and rejecting known disposable-email domains, and state what you chose. Done when signup rejects malformed or junk emails with a clear error, and real addresses still get through.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99666,
+    "cache_write": 20809,
+    "output": 3774,
+    "cost": 0.2619172,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1266,
+    "output": 486,
+    "cost": 0.0036960000000000005
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 47,
+   "total_cost": 0.2656132
+  },
+  {
+   "task": "A1",
+   "kind": "ambiguous",
+   "arm": "baseline",
+   "rep": 1,
+   "route": "none",
+   "sent": "rename it to something clearer, everywhere it's used",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99531,
+    "cache_write": 19262,
+    "output": 838,
+    "cost": 0.1907942,
+    "turns": 4,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [
+    "not renamed to findUserById"
+   ],
+   "notes": [],
+   "seconds": 17,
+   "total_cost": 0.1907942
+  },
+  {
+   "task": "A1",
+   "kind": "ambiguous",
+   "arm": "forge",
+   "rep": 1,
+   "route": "rewrite",
+   "sent": "Rename \"it\" to a clearer name, and update every place it is used. Keep \"it\" as the user wrote it, since the agent has the conversation context to identify it. Choose the new name yourself and state it in your reply. Done when no references to the old name remain and nothing that depended on it is broken.",
+   "questions": null,
+   "claude_calls": 2,
+   "clarifications": 1,
+   "claude": {
+    "input": 30,
+    "cache_read": 425611,
+    "cache_write": 42041,
+    "output": 3125,
+    "cost": 0.4840701999999999,
+    "turns": 15,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1265,
+    "output": 391,
+    "cost": 0.0032199999999999998
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 43,
+   "total_cost": 0.4872901999999999
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "baseline",
+   "rep": 1,
+   "route": "none",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69780,
+    "cache_write": 17712,
+    "output": 753,
+    "cost": 0.170736,
+    "turns": 3,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 17,
+   "total_cost": 0.170736
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "forge",
+   "rep": 1,
+   "route": "rewrite",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69992,
+    "cache_write": 17839,
+    "output": 708,
+    "cost": 0.1708944,
+    "turns": 4,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1284,
+    "output": 83,
+    "cost": 0.001699
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 19,
+   "total_cost": 0.1725934
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "baseline",
+   "rep": 1,
+   "route": "none",
+   "sent": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69861,
+    "cache_write": 17724,
+    "output": 684,
+    "cost": 0.16946819999999999,
+    "turns": 4,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 17,
+   "total_cost": 0.16946819999999999
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "forge",
+   "rep": 1,
+   "route": "rewrite",
+   "sent": "In src/cart.js, change cartTotal so it multiplies each item's price by its quantity before summing. Add a test with quantity 3 to test/cart.test.js, then run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69941,
+    "cache_write": 18027,
+    "output": 748,
+    "cost": 0.1731882,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1302,
+    "output": 123,
+    "cost": 0.001917
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 19,
+   "total_cost": 0.1751052
+  },
+  {
+   "task": "V1",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 2,
+   "route": "none",
+   "sent": "can u make the orders page faster its really slow, dont touch the api",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 10,
+    "cache_read": 130528,
+    "cache_write": 19406,
+    "output": 1374,
+    "cost": 0.20887360000000002,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 23,
+   "total_cost": 0.20887360000000002
+  },
+  {
+   "task": "V1",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 2,
+   "route": "rewrite",
+   "sent": "Make the orders page faster, it is really slow. Do not change the API.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 22,
+    "cache_read": 325807,
+    "cache_write": 22937,
+    "output": 3193,
+    "cost": 0.3126054,
+    "turns": 14,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1269,
+    "output": 78,
+    "cost": 0.0016589999999999999
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 40,
+   "total_cost": 0.3142644
+  },
+  {
+   "task": "V2",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 2,
+   "route": "none",
+   "sent": "the cart total is wrong when ppl buy more than one of something fix it",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 10,
+    "cache_read": 130843,
+    "cache_write": 19109,
+    "output": 1060,
+    "cost": 0.20028059999999998,
+    "turns": 8,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 18,
+   "total_cost": 0.20028059999999998
+  },
+  {
+   "task": "V2",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 2,
+   "route": "rewrite",
+   "sent": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 12,
+    "cache_read": 160802,
+    "cache_write": 19008,
+    "output": 1163,
+    "cost": 0.2075324,
+    "turns": 8,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1271,
+    "output": 104,
+    "cost": 0.001791
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 29,
+   "total_cost": 0.2093234
+  },
+  {
+   "task": "V3",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 2,
+   "route": "none",
+   "sent": "signup lets ppl in with junk emails, fix that",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99278,
+    "cache_write": 19037,
+    "output": 1967,
+    "cost": 0.21152359999999998,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 26,
+   "total_cost": 0.21152359999999998
+  },
+  {
+   "task": "V3",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 2,
+   "route": "rewrite",
+   "sent": "Fix the signup flow so it rejects junk email addresses. Find the signup validation code and tighten the email check so malformed or fake addresses are refused before an account is created.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99127,
+    "cache_write": 19999,
+    "output": 3257,
+    "cost": 0.24498940000000002,
+    "turns": 8,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1266,
+    "output": 134,
+    "cost": 0.001936
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 40,
+   "total_cost": 0.24692540000000002
+  },
+  {
+   "task": "A1",
+   "kind": "ambiguous",
+   "arm": "baseline",
+   "rep": 2,
+   "route": "none",
+   "sent": "rename it to something clearer, everywhere it's used",
+   "questions": null,
+   "claude_calls": 2,
+   "clarifications": 1,
+   "claude": {
+    "input": 26,
+    "cache_read": 362155,
+    "cache_write": 41770,
+    "output": 3252,
+    "cost": 0.4717349999999999,
+    "turns": 14,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 34,
+   "total_cost": 0.4717349999999999
+  },
+  {
+   "task": "A1",
+   "kind": "ambiguous",
+   "arm": "forge",
+   "rep": 2,
+   "route": "rewrite",
+   "sent": "Goal: give \"it\" a clearer name. Rename it to something clearer and update every place it's used. Choose the new name yourself and say what you picked. Done when the old name no longer appears anywhere it referred to this thing.",
+   "questions": null,
+   "claude_calls": 2,
+   "clarifications": 1,
+   "claude": {
+    "input": 26,
+    "cache_read": 362781,
+    "cache_write": 41862,
+    "output": 3374,
+    "cost": 0.4750362,
+    "turns": 14,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1265,
+    "output": 508,
+    "cost": 0.0038050000000000002
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 39,
+   "total_cost": 0.4788412
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "baseline",
+   "rep": 2,
+   "route": "none",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69786,
+    "cache_write": 17664,
+    "output": 581,
+    "cost": 0.1669132,
+    "turns": 3,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 20,
+   "total_cost": 0.1669132
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "forge",
+   "rep": 2,
+   "route": "unchanged",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69778,
+    "cache_write": 17690,
+    "output": 600,
+    "cost": 0.1674996,
+    "turns": 3,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1284,
+    "output": 9,
+    "cost": 0.0013289999999999999
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 17,
+   "total_cost": 0.1688286
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "baseline",
+   "rep": 2,
+   "route": "none",
+   "sent": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99658,
+    "cache_write": 18053,
+    "output": 805,
+    "cost": 0.18048759999999997,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 18,
+   "total_cost": 0.18048759999999997
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "forge",
+   "rep": 2,
+   "route": "rewrite",
+   "sent": "In src/cart.js, change cartTotal so it multiplies each item's price by its quantity before summing. Add a test with quantity 3 to test/cart.test.js, then run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69941,
+    "cache_write": 18026,
+    "output": 709,
+    "cost": 0.1724002,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1302,
+    "output": 129,
+    "cost": 0.001947
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 19,
+   "total_cost": 0.1743472
+  },
+  {
+   "task": "V1",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 3,
+   "route": "none",
+   "sent": "can u make the orders page faster its really slow, dont touch the api",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 12,
+    "cache_read": 161359,
+    "cache_write": 19661,
+    "output": 1781,
+    "cost": 0.2252278,
+    "turns": 7,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 23,
+   "total_cost": 0.2252278
+  },
+  {
+   "task": "V1",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 3,
+   "route": "rewrite",
+   "sent": "Make the orders page faster, it is really slow. Do not change the API.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 14,
+    "cache_read": 193420,
+    "cache_write": 20122,
+    "output": 1910,
+    "cost": 0.23791600000000002,
+    "turns": 7,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1269,
+    "output": 71,
+    "cost": 0.001624
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 29,
+   "total_cost": 0.23954
+  },
+  {
+   "task": "V2",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 3,
+   "route": "none",
+   "sent": "the cart total is wrong when ppl buy more than one of something fix it",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 100255,
+    "cache_write": 18528,
+    "output": 814,
+    "cost": 0.184587,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 13,
+   "total_cost": 0.184587
+  },
+  {
+   "task": "V2",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 3,
+   "route": "rewrite",
+   "sent": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 12,
+    "cache_read": 159130,
+    "cache_write": 18897,
+    "output": 1257,
+    "cost": 0.20819000000000001,
+    "turns": 10,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1271,
+    "output": 100,
+    "cost": 0.001771
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 24,
+   "total_cost": 0.209961
+  },
+  {
+   "task": "V3",
+   "kind": "vague",
+   "arm": "baseline",
+   "rep": 3,
+   "route": "none",
+   "sent": "signup lets ppl in with junk emails, fix that",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 10,
+    "cache_read": 129688,
+    "cache_write": 19363,
+    "output": 2342,
+    "cost": 0.22772159999999997,
+    "turns": 7,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 29,
+   "total_cost": 0.22772159999999997
+  },
+  {
+   "task": "V3",
+   "kind": "vague",
+   "arm": "forge",
+   "rep": 3,
+   "route": "rewrite",
+   "sent": "Fix the signup flow so it rejects junk email addresses. Currently signup lets people in with junk emails.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 12,
+    "cache_read": 158530,
+    "cache_write": 19294,
+    "output": 2035,
+    "cost": 0.22680599999999998,
+    "turns": 10,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1266,
+    "output": 96,
+    "cost": 0.0017460000000000002
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 30,
+   "total_cost": 0.22855199999999998
+  },
+  {
+   "task": "A1",
+   "kind": "ambiguous",
+   "arm": "baseline",
+   "rep": 3,
+   "route": "none",
+   "sent": "rename it to something clearer, everywhere it's used",
+   "questions": null,
+   "claude_calls": 2,
+   "clarifications": 1,
+   "claude": {
+    "input": 26,
+    "cache_read": 362065,
+    "cache_write": 41733,
+    "output": 2894,
+    "cost": 0.46426100000000003,
+    "turns": 14,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 30,
+   "total_cost": 0.46426100000000003
+  },
+  {
+   "task": "A1",
+   "kind": "ambiguous",
+   "arm": "forge",
+   "rep": 3,
+   "route": "ask+answer",
+   "sent": "Rename the function `getUser` in src/users.js to `findUserById`, and update every usage of it across the codebase to the new name.",
+   "questions": [
+    "Which thing should be renamed, and what new name do you want?"
+   ],
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 12,
+    "cache_read": 160230,
+    "cache_write": 19058,
+    "output": 1425,
+    "cost": 0.21305800000000003,
+    "turns": 10,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 2,
+    "input": 2641,
+    "output": 127,
+    "cost": 0.003276
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 24,
+   "total_cost": 0.21633400000000003
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "baseline",
+   "rep": 3,
+   "route": "none",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69780,
+    "cache_write": 17864,
+    "output": 604,
+    "cost": 0.168972,
+    "turns": 3,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 14,
+   "total_cost": 0.168972
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "forge",
+   "rep": 3,
+   "route": "unchanged",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69782,
+    "cache_write": 17447,
+    "output": 570,
+    "cost": 0.1649564,
+    "turns": 3,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1284,
+    "output": 66,
+    "cost": 0.001614
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 16,
+   "total_cost": 0.1665704
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "baseline",
+   "rep": 3,
+   "route": "none",
+   "sent": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69939,
+    "cache_write": 18040,
+    "output": 826,
+    "cost": 0.1748518,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 16,
+   "total_cost": 0.1748518
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "forge",
+   "rep": 3,
+   "route": "rewrite",
+   "sent": "In src/cart.js, change cartTotal so it multiplies each item's price by its quantity. Add a test with quantity 3 to test/cart.test.js. Then run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69933,
+    "cache_write": 18017,
+    "output": 789,
+    "cost": 0.1739266,
+    "turns": 6,
+    "models": [
+     "claude-opus-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 1,
+    "input": 1302,
+    "output": 123,
+    "cost": 0.001917
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 18,
+   "total_cost": 0.1758436
+  }
+ ]
+}

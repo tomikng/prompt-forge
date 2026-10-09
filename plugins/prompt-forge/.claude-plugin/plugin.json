@@ -1,6 +1,6 @@
 {
   "name": "prompt-forge",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Rewrites each prompt you send into a sharper one before Claude sees it, and shows you exactly what it changed.",
   "author": { "name": "tomikng", "url": "https://github.com/tomikng" },
   "homepage": "https://github.com/tomikng/prompt-forge",

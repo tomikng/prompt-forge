@@ -54,6 +54,8 @@ CONVO = "\n\n".join([
     "assistant: Agreed, it reads as if it returned the current user. I'll wait for what you want next.",
 ])
 
+PROMPT_TEXT = {pid: text for pid, _, text in PROMPTS}
+
 ID = re.compile(r"[\w.-]+/[\w./-]+|\b[\w-]+\.(?:js|ts|json|md)\b|\b[a-z]+[A-Z]\w*\b")
 
 
@@ -87,6 +89,7 @@ def summary(rows):
                             needless_ask=sum(r["route"] == "ask" for r in no), of_no=len(no),
                             missed_ask=sum(r["route"] != "ask" for r in yes), of_yes=len(yes),
                             invented=sum(bool(r["invented"]) for r in rw), rewrites=len(rw),
+                            growth=statistics.mean(len(r["rewrite"]) / len(PROMPT_TEXT[r["prompt"]]) for r in rw) if rw else 0,
                             cost=statistics.mean(r["cost"] for r in rs)))
     return out
 
@@ -107,6 +110,7 @@ def main():
     for s in json.loads(path.read_text())["summary"]:
         print(f"{s['policy']:8} {s['context']:12} needless asks {s['needless_ask']}/{s['of_no']}  "
               f"missed asks {s['missed_ask']}/{s['of_yes']}  invented names {s['invented']}/{s['rewrites']}  "
+              f"rewrites {s['rewrites']}/{s['of_no'] + s['of_yes']} at {s.get('growth', 0):.1f}x length  "
               f"${s['cost']:.4f}/prompt")
 
 

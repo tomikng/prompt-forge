@@ -198,14 +198,13 @@ def anatomy() -> str:
     clk = Clock(14)
     W, H = 1100, 470
     b = [text(36, 46, "Anatomy of a rewrite", 20, FG, 700),
-         text(36, 70, "Every detail you typed is kept word for word; only a missing finish line is added.", 13, DIM)]
+         text(36, 70, "Only information is added: what “it” is, from the conversation. Your words stay; no new requirements.", 13, DIM)]
 
     b.append(text(36, 116, "YOU TYPED", 11.5, BLUE, 700, extra='letter-spacing="1.5"'))
     # the typed prompt as chips, so each phrase can light up in its target's colour
-    chips = [("can u make the dashboard load faster", PINK, (1.0, 12.6)),
-             ("its really slow on the orders page,", PINK, (1.0, 12.6)),
+    chips = [("ok make it faster, its really slow,", PINK, (1.0, 12.6)),
              ("dont touch the api", PEACH, (3.6, 12.6))]
-    x, spans = 36, []
+    x = 36
     for label, col, (t0, t1) in chips:
         w = len(label) * 8.2 + 24
         b.append(f'<rect x="{x}" y="130" width="{w}" height="34" rx="8" fill="{CARD}" stroke="{LINE}"/>')
@@ -213,28 +212,32 @@ def anatomy() -> str:
                  f'stroke-width="2" opacity="0">{clk.window("opacity", t0, t1)}</rect>')
         b.append(text(x + 12, 152, label, 13.5, FG, 400, font=MONO,
                       extra=f'textLength="{w - 24}" lengthAdjust="spacingAndGlyphs"'))
-        spans.append((x, w))
         x += w + 10
+    b.append(fading(clk, 1.0, 12.6, text(1064, 152, "conversation: “ordersPageRows in src/orders.js is slow”", 12, MAUVE, 700, "end")))
 
     b.append(fading(clk, 1.0, 12.6, f'<path d="M550,172 L550,214" stroke="{PINK}" stroke-width="2" marker-end="url(#arrow)"/>'
                     + text(564, 199, "✨ Haiku forge", 13, PINK, 700)))
     b.append(text(36, 240, "SENT TO CLAUDE", 11.5, GREEN, 700, extra='letter-spacing="1.5"'))
-    rows = [  # (label, text, colour, appears, source chip index or None); the chip lights in the row's colour
-        ("Goal", "Make the dashboard's orders page load faster; it is currently slow.", PINK, 1.6, 0),
-        ("Constraints", "Do not change the API.", PEACH, 4.2, 2),
-        ("Done when", "The orders page renders noticeably faster, measured before and after.", GREEN, 6.8, None),
+    rows = [  # (label, text, colour, appears, badge)
+        ("Goal", "Make ordersPageRows in src/orders.js faster; it's really slow.", PINK, 1.6, ("it → named", MAUVE)),
+        ("Limit", "Don't touch the API.", PEACH, 4.2, None),
+        ("Done when", "not added: you didn't ask for one, so Claude decides", LINE, 6.8, ("nothing added", GRAY)),
     ]
-    for i, (label, body, col, t0, src) in enumerate(rows):
+    for i, (label, body, col, t0, badge) in enumerate(rows):
         y = 262 + i * 52
-        inner = (f'<rect x="36" y="{y}" width="1028" height="40" rx="8" fill="{CARD}" stroke="{col}" stroke-width="1.5"/>'
+        dim = col == LINE
+        inner = (f'<rect x="36" y="{y}" width="1028" height="40" rx="8" fill="{CARD}" stroke="{col}" stroke-width="1.5"'
+                 + (' stroke-dasharray="6 5"' if dim else '') + '/>'
                  + f'<rect x="36" y="{y}" width="6" height="40" rx="3" fill="{col}"/>'
-                 + text(56, y + 25, label, 13, col, 700)
-                 + text(170, y + 25, body, 13.5, FG, 400, font=MONO))
-        if src is None:
-            inner += (f'<rect x="958" y="{y + 9}" width="94" height="22" rx="11" fill="{GREEN}"/>'
-                      + text(1005, y + 24, "+ added", 12, "#11111b", 700, "middle"))
+                 + text(56, y + 25, label, 13, GRAY if dim else col, 700)
+                 + text(170, y + 25, body, 13.5, DIM if dim else FG, 400, font=MONO))
+        if badge:
+            bl, bc = badge
+            bw = len(bl) * 7.4 + 24
+            inner += (f'<rect x="{1052 - bw:.0f}" y="{y + 9}" width="{bw:.0f}" height="22" rx="11" fill="{bc}"/>'
+                      + text(1052 - bw / 2, y + 24, bl, 12, "#11111b", 700, "middle"))
         b.append(fading(clk, t0, 12.6, inner, fade=0.4))
-    notes = ["+ stated the goal first", "+ kept your API limit", "+ added a done check", "+ fixed typos"]
+    notes = ["+ named “it”: ordersPageRows", "+ kept your API limit"]
     nx = 36
     for i, n in enumerate(notes):
         w = len(n) * 7.6 + 26

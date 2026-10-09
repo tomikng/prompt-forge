@@ -8,9 +8,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Make the orders page faster, it's really slow. Don't touch the API.",
+   "rewrite": "Make the orders page faster. It is really slow. Do not change the API.",
    "invented": [],
-   "cost": 0.0014819999999999998
+   "cost": 0.001457
   },
   {
    "policy": "ask",
@@ -20,9 +20,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Make the orders page faster, it's really slow. Don't change the API.",
+   "rewrite": "Make the orders page faster, it is very slow. Do not change the API.",
    "invented": [],
-   "cost": 0.0014119999999999998
+   "cost": 0.0014869999999999998
   },
   {
    "policy": "ask",
@@ -32,9 +32,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Make the orders page load faster. It is very slow right now. Do not change the API.",
+   "rewrite": "Make the orders page faster, it's really slow. Don't change the API.",
    "invented": [],
-   "cost": 0.0014969999999999998
+   "cost": 0.0014719999999999998
   },
   {
    "policy": "ask",
@@ -42,23 +42,23 @@
    "need": "no",
    "context": "conversation",
    "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Make the orders page faster, since it is really slow. Don't touch the API. The orders page rows come from ordersPageRows in src/orders.js.",
+   "invented": [],
+   "cost": 0.005162000000000001
+  },
+  {
+   "policy": "ask",
+   "prompt": "V1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
    "route": "rewrite",
    "questions": null,
    "rewrite": "Make the orders page faster, it is really slow. Don't change the API.",
    "invented": [],
-   "cost": 0.0016970000000000002
-  },
-  {
-   "policy": "ask",
-   "prompt": "V1",
-   "need": "no",
-   "context": "conversation",
-   "rep": 2,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make the orders page faster, it's really slow. Don't change the API.",
-   "invented": [],
-   "cost": 0.001712
+   "cost": 0.0016920000000000001
   },
   {
    "policy": "ask",
@@ -68,9 +68,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Make the orders page faster. It is really slow. Don't touch the API.",
+   "rewrite": "Make the orders page faster; it is really slow. Don't touch the API.",
    "invented": [],
-   "cost": 0.0016870000000000001
+   "cost": 0.001732
   },
   {
    "policy": "ask",
@@ -78,35 +78,35 @@
    "need": "no",
    "context": "none",
    "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Fix the bug where the cart total is wrong when a customer buys more than one of the same item. Find the cause and fix it. Done when the cart total is correct for quantities of 2 or more.",
+   "invented": [],
+   "cost": 0.004004000000000001
+  },
+  {
+   "policy": "ask",
+   "prompt": "V2",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "The cart total is wrong when people buy more than one of the same item. Find the cause and fix it, so the total is correct when an item's quantity is greater than one.",
+   "invented": [],
+   "cost": 0.003124
+  },
+  {
+   "policy": "ask",
+   "prompt": "V2",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
    "route": "rewrite",
    "questions": null,
    "rewrite": "The cart total is wrong when a customer buys more than one of the same item. Find the cause and fix it.",
    "invented": [],
-   "cost": 0.001599
-  },
-  {
-   "policy": "ask",
-   "prompt": "V2",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Fix the cart total so it is correct when people buy more than one of the same item. Done when a cart with a quantity above one gives a total equal to the unit price times the quantity, summed across all items.",
-   "invented": [],
-   "cost": 0.004069
-  },
-  {
-   "policy": "ask",
-   "prompt": "V2",
-   "need": "no",
-   "context": "none",
-   "rep": 3,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Fix the bug where the cart total is wrong when a customer buys more than one of the same item. Find the cart total calculation, correct how quantities are handled, and confirm the total is right when an item's quantity is greater than one.",
-   "invented": [],
-   "cost": 0.0034490000000000002
+   "cost": 0.001514
   },
   {
    "policy": "ask",
@@ -118,7 +118,7 @@
    "questions": null,
    "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
    "invented": [],
-   "cost": 0.001774
+   "cost": 0.001769
   },
   {
    "policy": "ask",
@@ -128,9 +128,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
+   "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the bug in the cart total calculation and fix it.",
    "invented": [],
-   "cost": 0.0018089999999999998
+   "cost": 0.001839
   },
   {
    "policy": "ask",
@@ -142,7 +142,7 @@
    "questions": null,
    "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
    "invented": [],
-   "cost": 0.001804
+   "cost": 0.0017239999999999998
   },
   {
    "policy": "ask",
@@ -150,23 +150,23 @@
    "need": "no",
    "context": "none",
    "rep": 1,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Fix the signup flow so it stops accepting junk email addresses.",
-   "invented": [],
-   "cost": 0.001419
-  },
-  {
-   "policy": "ask",
-   "prompt": "V3",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
    "route": "rewrite",
    "questions": null,
    "rewrite": "Signup lets people in with junk emails. Fix that so signup rejects invalid or junk email addresses.",
    "invented": [],
-   "cost": 0.001534
+   "cost": 0.001544
+  },
+  {
+   "policy": "ask",
+   "prompt": "V3",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Fix the signup flow so it rejects junk email addresses.",
+   "invented": [],
+   "cost": 0.0014889999999999999
   },
   {
    "policy": "ask",
@@ -178,7 +178,7 @@
    "questions": null,
    "rewrite": "Signup lets people in with junk emails. Fix that so signup rejects invalid or junk email addresses.",
    "invented": [],
-   "cost": 0.001529
+   "cost": 0.001559
   },
   {
    "policy": "ask",
@@ -188,12 +188,12 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Should I reject malformed addresses, disposable domains, or unverified ones?",
-    "Should signup require clicking a confirmation link before access?"
+    "By \"junk,\" do you mean malformed, disposable-domain, or unverified addresses?",
+    "Should disposable-domain emails be rejected outright, or just flagged?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.003039
+   "cost": 0.004829
   },
   {
    "policy": "ask",
@@ -203,9 +203,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix signup so it stops letting people in with junk email addresses. Reject malformed email addresses at signup with a clear error message, and keep valid sign-ups working.",
+   "rewrite": "Signup lets people in with junk emails. Fix the signup validation so malformed or junk email addresses are rejected.",
    "invented": [],
-   "cost": 0.004759
+   "cost": 0.001889
   },
   {
    "policy": "ask",
@@ -215,9 +215,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix signup so it rejects junk email addresses. Validate the email format on signup before the account is created.",
+   "rewrite": "Fix signup so it rejects junk email addresses. Validate the email format on the signup flow before creating the account, and return a clear error to the user when the address is invalid.",
    "invented": [],
-   "cost": 0.001754
+   "cost": 0.001859
   },
   {
    "policy": "ask",
@@ -225,29 +225,29 @@
    "need": "no",
    "context": "none",
    "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Which symbol, file, or name should I rename?",
-    "What new name do you want for it?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001833
-  },
-  {
-   "policy": "ask",
-   "prompt": "A1",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
    "route": "ask",
    "questions": [
     "What is the \"it\" you want renamed?",
-    "What new name would you like to use?"
+    "What new name would you like, or should I pick one?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001243
+   "cost": 0.001268
+  },
+  {
+   "policy": "ask",
+   "prompt": "A1",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which file, function, or variable is \"it\"?",
+    "Do you have a new name in mind, or should I pick one?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002333
   },
   {
    "policy": "ask",
@@ -257,12 +257,12 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which thing should be renamed: a function, variable, file, or something else?",
-    "What new name do you want, or should I pick one?"
+    "Which name or symbol do you want renamed?",
+    "Should I pick the new name, or do you have one in mind?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001318
+   "cost": 0.002203
   },
   {
    "policy": "ask",
@@ -270,11 +270,14 @@
    "need": "no",
    "context": "conversation",
    "rep": 1,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Rename `getUser` in src/users.js to a clearer name that says it looks up a user by id. Update every place it is used, including imports and tests.",
+   "route": "ask",
+   "questions": [
+    "What should getUser be renamed to?",
+    "Should the new name be getUserById, or something else?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.0037280000000000004
+   "cost": 0.003013
   },
   {
    "policy": "ask",
@@ -284,9 +287,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Rename `getUser` in src/users.js to a clearer name that shows it looks up a user by id. Update every place it's used so no references to the old name remain.",
+   "rewrite": "Rename `getUser` in src/users.js to a clearer name that reflects that it looks up a user by id. Update every place it's used, including imports, calls, and tests.",
    "invented": [],
-   "cost": 0.0049180000000000005
+   "cost": 0.003573
   },
   {
    "policy": "ask",
@@ -294,14 +297,13 @@
    "need": "no",
    "context": "conversation",
    "rep": 3,
-   "route": "ask",
-   "questions": [
-    "Which name should getUser be renamed to?",
-    "Should I rename it everywhere, including tests and comments?"
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Rename `getUser` in src/users.js to a clearer name that says it looks up a user by id (for example `getUserById`), and update every place it's used.",
+   "invented": [
+    "getUserById"
    ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001523
+   "cost": 0.004103
   },
   {
    "policy": "ask",
@@ -311,23 +313,8 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Which bug do you mean? Name the file or the error message.",
+    "Which bug do you mean? Name the file or error.",
     "Should the test go in an existing test file, or a new one?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0013119999999999998
-  },
-  {
-   "policy": "ask",
-   "prompt": "R1",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which bug do you mean? Name the file or the error.",
-    "Is there a specific test framework or test file you want used?"
    ],
    "rewrite": null,
    "invented": [],
@@ -338,15 +325,29 @@
    "prompt": "R1",
    "need": "no",
    "context": "none",
-   "rep": 3,
+   "rep": 2,
    "route": "ask",
    "questions": [
-    "Which bug do you mean? Name the file or the error message.",
-    "Should the test go in an existing test file, or a new one?"
+    "Which bug do you mean? Describe it in one sentence."
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0013119999999999998
+   "cost": 0.0015769999999999998
+  },
+  {
+   "policy": "ask",
+   "prompt": "R1",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Which bug do you mean? Name the file or error message.",
+    "Should the test go in an existing test file or a new one?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013019999999999998
   },
   {
    "policy": "ask",
@@ -356,9 +357,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the duplicate rows bug on the orders page: after a refresh, users see duplicate rows. The cause is ordersPageRows in src/orders.js, which appends to a module-level cache on every call instead of rebuilding it. Fix that, and add a regression test for it in test/orders.test.js.",
+   "rewrite": "Fix the duplicate rows on the orders page that appear after a refresh. The cause is that ordersPageRows in src/orders.js appends to a module-level cache on every call instead of rebuilding it. Fix that, and add a regression test for it in test/orders.test.js.",
    "invented": [],
-   "cost": 0.0020670000000000003
+   "cost": 0.0036820000000000004
   },
   {
    "policy": "ask",
@@ -368,9 +369,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the duplicate rows on the orders page after a refresh. The cause is in `ordersPageRows` in src/orders.js, which appends to a module-level cache on every call instead of rebuilding it. Add a regression test for this in test/orders.test.js that fails before the fix and passes after it.",
+   "rewrite": "Fix the duplicate rows bug on the orders page, where users get duplicate rows after a refresh. The cause is in `ordersPageRows` in `src/orders.js`, which appends to a module-level cache on every call instead of rebuilding it. Fix that, and add a regression test for it in `test/orders.test.js`.",
    "invented": [],
-   "cost": 0.003402
+   "cost": 0.004607
   },
   {
    "policy": "ask",
@@ -380,9 +381,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the duplicate rows bug on the orders page: after a refresh, users see duplicate rows. The cause is ordersPageRows in src/orders.js, which appends to a module-level cache on every call instead of rebuilding it. Fix that, and add a regression test for it in test/orders.test.js.",
+   "rewrite": "Fix the duplicate-rows bug on the orders page, where users see duplicate rows after a refresh. The cause is in `ordersPageRows` in `src/orders.js`, which appends to a module-level cache on every call instead of rebuilding it. Fix that, and add a regression test for it in `test/orders.test.js`.",
    "invented": [],
-   "cost": 0.002047
+   "cost": 0.0038870000000000003
   },
   {
    "policy": "ask",
@@ -390,29 +391,29 @@
    "need": "no",
    "context": "none",
    "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What does \"the same thing\" refer to: a previous change or a different task?",
+    "Should I apply the same changes to the profile page, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013319999999999999
+  },
+  {
+   "policy": "ask",
+   "prompt": "R2",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
    "route": "ask",
    "questions": [
     "What does \"the same thing\" refer to: which change or task?",
-    "Which profile page: the user profile, or another one?"
+    "Should I apply it to the profile page exactly as before, or a variant?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0012919999999999997
-  },
-  {
-   "policy": "ask",
-   "prompt": "R2",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "What did you do for the previous page you want repeated?",
-    "Should the profile page change exactly the same way, or differently?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001297
+   "cost": 0.0013269999999999998
   },
   {
    "policy": "ask",
@@ -422,12 +423,12 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "What did you do before that you want repeated?",
-    "Should I apply the same change to the profile page's components or styles?"
+    "What \"the same thing\" refers to: which earlier change or task?",
+    "Which profile page: a file path, a route, or a component name?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001892
+   "cost": 0.0013169999999999998
   },
   {
    "policy": "ask",
@@ -435,14 +436,11 @@
    "need": "no",
    "context": "conversation",
    "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Do you want the same cache fix in the profile page's rendering code?",
-    "Should I also add a regression test for the profile page?"
-   ],
-   "rewrite": null,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Do the same fix for the profile page as for the orders page: if its rows are built by appending to a module-level cache on every call, rebuild the cache instead, so a refresh doesn't produce duplicate rows. Add a regression test for the profile page next to the existing orders test. Done when the profile page shows no duplicate rows after a refresh and the new test passes.",
    "invented": [],
-   "cost": 0.001542
+   "cost": 0.004912000000000001
   },
   {
    "policy": "ask",
@@ -452,9 +450,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Do the same fix for the profile page that we made for the orders page. If the profile page has a module-level cache that appends on every call, rebuild it on each call so refreshes don't produce duplicate rows. Add a regression test next to the existing profile tests, matching the orders test.\n\nDone when the profile page no longer duplicates rows across repeated calls and the new test passes.",
+   "rewrite": "Fix the same duplicate-rows bug on the profile page. After a refresh, the rows get duplicated because the page appends to a module-level cache on every call instead of rebuilding it, as in the orders fix (`ordersPageRows` in src/orders.js). Add a regression test for the profile page, following the pattern in test/orders.test.js.",
    "invented": [],
-   "cost": 0.0058070000000000005
+   "cost": 0.004707
   },
   {
    "policy": "ask",
@@ -464,9 +462,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "do the same fix for the profile page: rows there likely duplicate after a refresh too. Find the module-level cache that gets appended to on every call, and change it to rebuild on each call, as planned for ordersPageRows in src/orders.js. Add a regression test in the same style as the orders one in test/orders.test.js. Done when the new test passes and repeated profile page calls don't duplicate rows.",
+   "rewrite": "Apply the same fix to the profile page that we made for the orders page. On the orders page, duplicate rows came from `ordersPageRows` in src/orders.js appending to a module-level cache on every call instead of rebuilding it. Check whether the profile page has the same cache bug. If it does, fix it and add a regression test next to the existing one in test/orders.test.js.",
    "invented": [],
-   "cost": 0.006357
+   "cost": 0.0051270000000000005
   },
   {
    "policy": "ask",
@@ -474,28 +472,28 @@
    "need": "no",
    "context": "none",
    "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Which test is flaky? Give the name or file path.",
-    "What failure message or symptom did you see last time?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0023350000000000003
-  },
-  {
-   "policy": "ask",
-   "prompt": "R3",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
    "route": "ask",
    "questions": [
     "Which test is flaky? Give its name or file path."
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0012050000000000001
+   "cost": 0.0021650000000000003
+  },
+  {
+   "policy": "ask",
+   "prompt": "R3",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which test is flaky? Give its name or file.",
+    "Do you have the failure message or the pass/fail pattern?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.00251
   },
   {
    "policy": "ask",
@@ -505,12 +503,11 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which test is flaky? Give the file or test name.",
-    "What failure do you see, such as an error message or timeout?"
+    "Which test is flaky? Give its name or file path."
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.00221
+   "cost": 0.002555
   },
   {
    "policy": "ask",
@@ -520,9 +517,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Find out why test/cart.test.js is flaky. It failed twice in CI today. It depends on Date.now() for a discount window, so timing is a likely cause. Look into why it fails intermittently.",
+   "rewrite": "The test in test/cart.test.js is flaky again. It failed twice in CI today. Find out why it fails intermittently. The conversation points to its dependency on Date.now() for the discount window as a likely cause.",
    "invented": [],
-   "cost": 0.0035700000000000003
+   "cost": 0.003255
   },
   {
    "policy": "ask",
@@ -532,9 +529,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The test in test/cart.test.js is flaky again. It failed twice in CI today. Find out why. It depends on Date.now() for a discount window, so start there.",
+   "rewrite": "test/cart.test.js is flaky again. Can you look at why? It failed twice in CI today, and it is timing-sensitive because it depends on Date.now() for a discount window.",
    "invented": [],
-   "cost": 0.00334
+   "cost": 0.00328
   },
   {
    "policy": "ask",
@@ -544,9 +541,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The test test/cart.test.js is flaky again. It failed twice in CI today. The earlier analysis says it depends on Date.now() for a discount window, so it is timing-sensitive. Find out why it is flaky and explain the cause.",
+   "rewrite": "The test in test/cart.test.js is flaky again. Find out why it fails intermittently. It failed twice in CI today, and it depends on Date.now() for a discount window.",
    "invented": [],
-   "cost": 0.0033699999999999997
+   "cost": 0.00281
   },
   {
    "policy": "ask",
@@ -556,190 +553,8 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Delete the unused files, or only list them for your review?",
-    "Which folder is \"legacy\": is it the one named legacy?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0033569999999999997
-  },
-  {
-   "policy": "ask",
-   "prompt": "R4",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which folder is the legacy one? Give its path.",
-    "Should I delete the unused files, or only list them for review?",
-    "How should I decide a file is unused, such as no imports or references?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0029170000000000003
-  },
-  {
-   "policy": "ask",
-   "prompt": "R4",
-   "need": "no",
-   "context": "none",
-   "rep": 3,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Clean up the legacy folder by removing the files in it that are unused. I think a lot of it is unused, but I'm not sure, so check each file for references before removing anything. Then tell me what you removed and what you kept.\n\nDone when: the unused files are removed, and each kept file is listed with the reason it's still needed.",
-   "invented": [],
-   "cost": 0.005932000000000001
-  },
-  {
-   "policy": "ask",
-   "prompt": "R4",
-   "need": "no",
-   "context": "conversation",
-   "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Should I delete the unused files, or only list them?",
-    "Which path is the legacy folder, if several exist?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.004117
-  },
-  {
-   "policy": "ask",
-   "prompt": "R4",
-   "need": "no",
-   "context": "conversation",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which folder is the legacy one? Give the path.",
-    "Should I delete unused files, or only list them first?",
-    "How sure must \"unused\" be before removing anything?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0027470000000000003
-  },
-  {
-   "policy": "ask",
-   "prompt": "R4",
-   "need": "no",
-   "context": "conversation",
-   "rep": 3,
-   "route": "ask",
-   "questions": [
-    "Should I delete the unused files, or only list them?",
-    "Should unused code be removed even if tests reference it?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0032570000000000003
-  },
-  {
-   "policy": "ask",
-   "prompt": "R5",
-   "need": "no",
-   "context": "none",
-   "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Which \"other one\" should the new behaviour match?",
-    "Which flag name do you want for the old behaviour?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001299
-  },
-  {
-   "policy": "ask",
-   "prompt": "R5",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which part should work like \"the other one\"? Name the component or file.",
-    "Which behaviour is the \"old behaviour\" you want behind the flag?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001354
-  },
-  {
-   "policy": "ask",
-   "prompt": "R5",
-   "need": "no",
-   "context": "none",
-   "rep": 3,
-   "route": "ask",
-   "questions": [
-    "Which part should work like \"the other one\"? Name the feature or file.",
-    "Which \"old behaviour\" should stay behind the flag? Describe it briefly.",
-    "What should the flag be called, if you have a preference?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001459
-  },
-  {
-   "policy": "ask",
-   "prompt": "R5",
-   "need": "no",
-   "context": "conversation",
-   "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Which thing should change to match \"the other one\"?",
-    "Which \"other one\" is the reference: ordersPageRows, getUser, or cart?",
-    "What should the flag be named, and what default?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0025440000000000003
-  },
-  {
-   "policy": "ask",
-   "prompt": "R5",
-   "need": "no",
-   "context": "conversation",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which function should \"the other one\" match, and where is it?",
-    "Which behaviour should the flag keep: the old cache-append or something else?",
-    "What should the flag be named?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0016189999999999998
-  },
-  {
-   "policy": "ask",
-   "prompt": "R5",
-   "need": "no",
-   "context": "conversation",
-   "rep": 3,
-   "route": "ask",
-   "questions": [
-    "Which function should the new behaviour match: \"the other one\" meaning what?",
-    "Which flag name or mechanism do you want for the old behaviour?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001589
-  },
-  {
-   "policy": "ask",
-   "prompt": "Q1",
-   "need": "no",
-   "context": "none",
-   "rep": 1,
-   "route": "ask",
-   "questions": [
-    "Which MR do you mean: the current branch's, or a specific one?",
-    "Solves nothing: is the MR's goal not met, or it's redundant?"
+    "Which folder is \"legacy\": a path like ./legacy or src/legacy?",
+    "Should I delete unused files outright, or only list candidates first?"
    ],
    "rewrite": null,
    "invented": [],
@@ -747,14 +562,192 @@
   },
   {
    "policy": "ask",
+   "prompt": "R4",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Should I delete the unused files, or only list them first?",
+    "Is anything in legacy still needed, like for compatibility?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.004277
+  },
+  {
+   "policy": "ask",
+   "prompt": "R4",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "clean up the legacy folder. a lot of it is unused, i think. find the files in it that nothing else references, and remove those. keep anything that is still in use. when done, list what you removed and what you kept, and why.",
+   "invented": [],
+   "cost": 0.004557
+  },
+  {
+   "policy": "ask",
+   "prompt": "R4",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "Delete the unused files, or only list them for review?",
+    "Should I check with you before removing anything?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0037220000000000005
+  },
+  {
+   "policy": "ask",
+   "prompt": "R4",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Clean up the legacy folder by removing the code that is no longer used. I think a lot of it is unused, so first check whether each file and export is referenced elsewhere in the repo, and delete only what is confirmed unused. Done when everything left in the legacy folder is still referenced.",
+   "invented": [],
+   "cost": 0.005947000000000001
+  },
+  {
+   "policy": "ask",
+   "prompt": "R4",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Delete the unused legacy files, or only list them for review?",
+    "Should I keep anything still referenced by tests or CI?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0035320000000000004
+  },
+  {
+   "policy": "ask",
+   "prompt": "R5",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "Which part should work like \"the other one\"? Name the two things.",
+    "What should the flag be called, and what does \"the old behaviour\" mean?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001344
+  },
+  {
+   "policy": "ask",
+   "prompt": "R5",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which part should work \"like the other one\"? Name the two things.",
+    "Which \"old behaviour\" should stay behind the flag?",
+    "What should the flag be called?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001374
+  },
+  {
+   "policy": "ask",
+   "prompt": "R5",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Which part should work like the other one: which file or feature?",
+    "What is the other one, and what is \"the old behaviour\"?",
+    "What should the flag be called, and what sets it?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013939999999999998
+  },
+  {
+   "policy": "ask",
+   "prompt": "R5",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "Which function should the new behaviour match: \"the other one\", meaning getUser or ordersPageRows?",
+    "What should the flag be named, and where should it be set?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001609
+  },
+  {
+   "policy": "ask",
+   "prompt": "R5",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which thing should it work like: the orders fix or getUser?",
+    "Which file and function is the change for?",
+    "What should the flag be named?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0027489999999999997
+  },
+  {
+   "policy": "ask",
+   "prompt": "R5",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Which thing should change: ordersPageRows, getUser, or the cart test?",
+    "Which \"other one\" should it copy the behaviour of?",
+    "What should the flag be called?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0027489999999999997
+  },
+  {
+   "policy": "ask",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "Which MR or branch do you mean?",
+    "What was this MR supposed to solve?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0028120000000000003
+  },
+  {
+   "policy": "ask",
    "prompt": "Q1",
    "need": "no",
    "context": "none",
    "rep": 2,
    "route": "ask",
    "questions": [
-    "Which MR do you mean, and what is its branch or number?",
-    "Do you want me to verify that every requirement in it is actually implemented?"
+    "Which MR do you mean: the current branch's or a specific link?",
+    "By \"everything was done,\" do you mean the code or the linked issue?"
    ],
    "rewrite": null,
    "invented": [],
@@ -768,12 +761,12 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which MR do you mean? Give its number or branch name.",
-    "Which task or issue was it supposed to solve?"
+    "Which MR do you mean: the one you have open, or a specific link?",
+    "Do you mean the MR changes nothing, or that its goal is already done?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.003197
+   "cost": 0.001357
   },
   {
    "policy": "ask",
@@ -783,12 +776,12 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Which MR do you mean: the current branch or a specific one?",
-    "By \"everything was done,\" do you mean the orders fix already exists?"
+    "Which MR do you mean: the one for the orders duplicate-rows fix?",
+    "Do you mean nothing is left to do, or that the MR doesn't fix the bug?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0028770000000000002
+   "cost": 0.001632
   },
   {
    "policy": "ask",
@@ -798,12 +791,12 @@
    "rep": 2,
    "route": "ask",
    "questions": [
-    "Which MR do you mean, and what does \"everything was done\" refer to?",
-    "Do you want me to check the MR's diff against the open issues?"
+    "Which MR or branch do you mean?",
+    "Which issue is already done: duplicate rows, cart test, or getUser?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001572
+   "cost": 0.0028520000000000004
   },
   {
    "policy": "ask",
@@ -813,12 +806,12 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which MR do you mean? Give me its number or branch.",
-    "Which fix do you think is already done: orders, cart, or getUser?"
+    "Which MR do you mean, and what is it supposed to solve?",
+    "Do you mean the orders duplicate-rows fix or the cart test failures?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0030670000000000003
+   "cost": 0.001592
   },
   {
    "policy": "ask",
@@ -828,42 +821,41 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Which file or change do you mean by \"that\"?",
-    "Should I explain the diff, or the reason I opened it?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.002125
-  },
-  {
-   "policy": "ask",
-   "prompt": "Q2",
-   "need": "no",
-   "context": "none",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which file did I open? Please name it or paste the line.",
-    "Do you mean the change I made, or the one I'm about to make?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.00203
-  },
-  {
-   "policy": "ask",
-   "prompt": "Q2",
-   "need": "no",
-   "context": "none",
-   "rep": 3,
-   "route": "ask",
-   "questions": [
-    "Which file or action do you mean by \"that\"?",
+    "Which file or thing do you mean by \"that\"?",
     "Do you want an explanation of the change, or a revert?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.002605
+   "cost": 0.002595
+  },
+  {
+   "policy": "ask",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which file or change do you mean by \"that\"?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0022050000000000004
+  },
+  {
+   "policy": "ask",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Which file or command do you mean by \"that\"?",
+    "Should I explain its effect, or undo it?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0032700000000000003
   },
   {
    "policy": "ask",
@@ -873,12 +865,12 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Which file is \"that\": src/orders.js or src/users.js?",
-    "Do you mean the proposed orders fix or the getUser rename?"
+    "Which file do you mean: src/orders.js, test/cart.test.js, or src/users.js?",
+    "Do you want an explanation of a change, or a revert?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.00318
+   "cost": 0.003295
   },
   {
    "policy": "ask",
@@ -888,12 +880,12 @@
    "rep": 2,
    "route": "ask",
    "questions": [
-    "Which file do you mean: orders.js, cart.test.js, or users.js?",
-    "Do you want me to open it now and explain the change?"
+    "Which file do you mean by \"that\": orders.js, cart.test.js, or users.js?",
+    "Do you want an explanation of the change, or a revert of it?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.003595
+   "cost": 0.00316
   },
   {
    "policy": "ask",
@@ -903,11 +895,12 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which file do you mean by \"that\": src/orders.js, test/cart.test.js, or src/users.js?"
+    "Which file do you mean: src/orders.js, test/cart.test.js, or src/users.js?",
+    "Do you want an explanation only, or the actual change made?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.003945000000000001
+   "cost": 0.003555
   },
   {
    "policy": "ask",
@@ -917,12 +910,12 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What rate limit value did you agree with the client?",
-    "Which API endpoint or service should the limit apply to?"
+    "What rate limit did you agree with the client?",
+    "What is the number of requests, and per what time window?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0012950000000000001
+   "cost": 0.001275
   },
   {
    "policy": "ask",
@@ -933,11 +926,11 @@
    "route": "ask",
    "questions": [
     "What rate limit value did you agree with the client?",
-    "Which API endpoints or service should the limit apply to?"
+    "Which API or endpoint should the rate limit apply to?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0012950000000000001
+   "cost": 0.0013
   },
   {
    "policy": "ask",
@@ -948,11 +941,11 @@
    "route": "ask",
    "questions": [
     "What rate limit value did you agree with the client?",
-    "Which API endpoint or service should the limit apply to?"
+    "Per what window, such as per minute or per hour?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0012950000000000001
+   "cost": 0.00247
   },
   {
    "policy": "ask",
@@ -962,12 +955,12 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What is the agreed API rate limit value?",
-    "Which config or file holds the rate limit setting?"
+    "What rate limit value did you agree with the client?",
+    "Which endpoint or API should the rate limit apply to?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.00151
+   "cost": 0.0015300000000000001
   },
   {
    "policy": "ask",
@@ -977,12 +970,12 @@
    "rep": 2,
    "route": "ask",
    "questions": [
-    "Which rate limit value did you agree with the client?",
-    "Which endpoint or API should the limit apply to?"
+    "What rate limit value did you agree with the client?",
+    "Which endpoints or API should the limit apply to?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001525
+   "cost": 0.00152
   },
   {
    "policy": "ask",
@@ -993,11 +986,11 @@
    "route": "ask",
    "questions": [
     "What rate limit value did you agree with the client?",
-    "Which API endpoints or routes should this rate limit apply to?"
+    "Which config file or constant should hold the rate limit?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.00154
+   "cost": 0.00152
   },
   {
    "policy": "ask",
@@ -1008,7 +1001,7 @@
    "route": "ask",
    "questions": [
     "What is the new session timeout value from the security review?",
-    "Which file or config holds the session timeout setting?"
+    "Which file or setting holds the session timeout today?"
    ],
    "rewrite": null,
    "invented": [],
@@ -1061,6 +1054,1151 @@
   },
   {
    "policy": "ask",
+   "prompt": "U2",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What is the new session timeout value from the security review?",
+    "Which file or config holds the session timeout setting?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001511
+  },
+  {
+   "policy": "ask",
+   "prompt": "U2",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What is the new session timeout value from the security review?",
+    "Which file or config holds the session timeout setting?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001511
+  },
+  {
+   "policy": "ask",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "none",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What is the new free tier limit marketing gave you?",
+    "Which free tier limit should change: requests, seats, storage, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001334
+  },
+  {
+   "policy": "ask",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What is the new free tier limit number marketing gave you?",
+    "Which limit is it: requests, seats, projects, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013239999999999999
+  },
+  {
+   "policy": "ask",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What is the new free tier limit marketing gave you?",
+    "Which limit is it: requests, seats, projects, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013189999999999999
+  },
+  {
+   "policy": "ask",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What number did marketing give for the free tier limit?",
+    "Which constant or config value holds the free tier limit?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001524
+  },
+  {
+   "policy": "ask",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What is the new free tier limit marketing gave you?",
+    "Which free tier limit: request count, storage, seats, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015539999999999998
+  },
+  {
+   "policy": "ask",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What is the new free tier limit marketing gave you?",
+    "Which free tier limit should change: orders, seats, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015489999999999998
+  },
+  {
+   "policy": "ask",
+   "prompt": "U4",
+   "need": "yes",
+   "context": "none",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "Which brand guide file or document contains the hex color?",
+    "What is the exact hex value, if you already know it?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001297
+  },
+  {
+   "policy": "ask",
+   "prompt": "U4",
+   "need": "yes",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0028120000000000003
+  },
+  {
+   "policy": "ask",
+   "prompt": "U4",
+   "need": "yes",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Which brand guide file or document holds the hex color?",
+    "Should the hex color be copied from a specific file or pasted in?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013219999999999998
+  },
+  {
+   "policy": "ask",
+   "prompt": "U4",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.003032
+  },
+  {
+   "policy": "ask",
+   "prompt": "U4",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which brand guide, and which hex value should primary buttons use?",
+    "Do you mean the primary buttons across the whole app or only the orders page?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001587
+  },
+  {
+   "policy": "ask",
+   "prompt": "U4",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.003017
+  },
+  {
+   "policy": "lean",
+   "prompt": "V1",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "can u make the orders page faster its really slow, dont touch the api",
+   "invented": [],
+   "cost": 0.001544
+  },
+  {
+   "policy": "lean",
+   "prompt": "V1",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "can u make the orders page faster its really slow, dont touch the api",
+   "invented": [],
+   "cost": 0.001549
+  },
+  {
+   "policy": "lean",
+   "prompt": "V1",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "can u make the orders page faster its really slow, dont touch the api",
+   "invented": [],
+   "cost": 0.001479
+  },
+  {
+   "policy": "lean",
+   "prompt": "V1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "can u make the orders page faster its really slow, dont touch the api",
+   "invented": [],
+   "cost": 0.001784
+  },
+  {
+   "policy": "lean",
+   "prompt": "V1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "can u make the orders page faster its really slow, dont touch the api",
+   "invented": [],
+   "cost": 0.001774
+  },
+  {
+   "policy": "lean",
+   "prompt": "V1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "can u make the orders page faster its really slow, dont touch the api",
+   "invented": [],
+   "cost": 0.001774
+  },
+  {
+   "policy": "lean",
+   "prompt": "V2",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001961
+  },
+  {
+   "policy": "lean",
+   "prompt": "V2",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002396
+  },
+  {
+   "policy": "lean",
+   "prompt": "V2",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002646
+  },
+  {
+   "policy": "lean",
+   "prompt": "V2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "the cart total is wrong when ppl buy more than one of something fix it",
+   "invented": [],
+   "cost": 0.0017209999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "V2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "the cart total is wrong when ppl buy more than one of something fix it",
+   "invented": [],
+   "cost": 0.0017209999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "V2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "the cart total is wrong when people buy more than one of something, fix it",
+   "invented": [],
+   "cost": 0.001766
+  },
+  {
+   "policy": "lean",
+   "prompt": "V3",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0026160000000000003
+  },
+  {
+   "policy": "lean",
+   "prompt": "V3",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002501
+  },
+  {
+   "policy": "lean",
+   "prompt": "V3",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002856
+  },
+  {
+   "policy": "lean",
+   "prompt": "V3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "signup lets ppl in with junk emails, fix that",
+   "invented": [],
+   "cost": 0.001691
+  },
+  {
+   "policy": "lean",
+   "prompt": "V3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "signup lets ppl in with junk emails, fix that",
+   "invented": [],
+   "cost": 0.001691
+  },
+  {
+   "policy": "lean",
+   "prompt": "V3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002611
+  },
+  {
+   "policy": "lean",
+   "prompt": "A1",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013199999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "A1",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013199999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "A1",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013199999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "A1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "rename getUser in src/users.js to something clearer, everywhere it's used",
+   "invented": [],
+   "cost": 0.0018349999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "A1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "rename getUser in src/users.js to something clearer, everywhere it's used",
+   "invented": [],
+   "cost": 0.00311
+  },
+  {
+   "policy": "lean",
+   "prompt": "A1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "rename getUser in src/users.js to something clearer, everywhere it's used",
+   "invented": [],
+   "cost": 0.0031
+  },
+  {
+   "policy": "lean",
+   "prompt": "R1",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0021390000000000003
+  },
+  {
+   "policy": "lean",
+   "prompt": "R1",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which bug are you referring to, and which file or function?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001394
+  },
+  {
+   "policy": "lean",
+   "prompt": "R1",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002594
+  },
+  {
+   "policy": "lean",
+   "prompt": "R1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "fix the bug we talked about and add a test for it",
+   "invented": [],
+   "cost": 0.002794
+  },
+  {
+   "policy": "lean",
+   "prompt": "R1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "fix the bug we talked about (users keep getting duplicate rows on the orders page after a refresh) and add a test for it. The cause we found is in ordersPageRows in src/orders.js, which appends to a module-level cache on every call instead of rebuilding it. The test can go in test/orders.test.js.",
+   "invented": [],
+   "cost": 0.004214
+  },
+  {
+   "policy": "lean",
+   "prompt": "R1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "fix the bug we talked about and add a test for it",
+   "invented": [],
+   "cost": 0.001679
+  },
+  {
+   "policy": "lean",
+   "prompt": "R2",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002389
+  },
+  {
+   "policy": "lean",
+   "prompt": "R2",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0024289999999999997
+  },
+  {
+   "policy": "lean",
+   "prompt": "R2",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002844
+  },
+  {
+   "policy": "lean",
+   "prompt": "R2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "do the same thing for the profile page",
+   "invented": [],
+   "cost": 0.0016489999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "R2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Do the same fix for the profile page as the orders page: stop duplicate rows by rebuilding the module-level cache instead of appending to it on every call, and add a regression test like the one for orders.",
+   "invented": [],
+   "cost": 0.005934
+  },
+  {
+   "policy": "lean",
+   "prompt": "R2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Do the same thing for the profile page: apply the orders page fix for duplicate rows (ordersPageRows in src/orders.js, which appends to a module-level cache on every call instead of rebuilding it), and add a regression test like the one planned in test/orders.test.js.",
+   "invented": [],
+   "cost": 0.004979000000000001
+  },
+  {
+   "policy": "lean",
+   "prompt": "R3",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002177
+  },
+  {
+   "policy": "lean",
+   "prompt": "R3",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013169999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "R3",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013169999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "R3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "test/cart.test.js is flaky again, can you look at why",
+   "invented": [],
+   "cost": 0.003117
+  },
+  {
+   "policy": "lean",
+   "prompt": "R3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "test/cart.test.js is flaky again, can you look at why",
+   "invented": [],
+   "cost": 0.003202
+  },
+  {
+   "policy": "lean",
+   "prompt": "R3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "test/cart.test.js is flaky again, can you look at why",
+   "invented": [],
+   "cost": 0.002772
+  },
+  {
+   "policy": "lean",
+   "prompt": "R4",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002899
+  },
+  {
+   "policy": "lean",
+   "prompt": "R4",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013239999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "R4",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002634
+  },
+  {
+   "policy": "lean",
+   "prompt": "R4",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002519
+  },
+  {
+   "policy": "lean",
+   "prompt": "R4",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002574
+  },
+  {
+   "policy": "lean",
+   "prompt": "R4",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002869
+  },
+  {
+   "policy": "lean",
+   "prompt": "R5",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002556
+  },
+  {
+   "policy": "lean",
+   "prompt": "R5",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.002856
+  },
+  {
+   "policy": "lean",
+   "prompt": "R5",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001326
+  },
+  {
+   "policy": "lean",
+   "prompt": "R5",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0034010000000000004
+  },
+  {
+   "policy": "lean",
+   "prompt": "R5",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "Which \"other one\" should it match: ordersPageRows, getUser, or something else?",
+    "Should the old behaviour sit behind an existing flag or a new one?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.004191
+  },
+  {
+   "policy": "lean",
+   "prompt": "R5",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "Which function or module should the old one match: ordersPageRows, getUser, or another?",
+    "Which flag name should keep the old behaviour?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.003201
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013189999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013189999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013189999999999999
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015489999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015489999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015489999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "none",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013169999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "none",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013169999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "none",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013169999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015469999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015469999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "Q2",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
+   "route": "unchanged",
+   "questions": null,
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0015469999999999998
+  },
+  {
+   "policy": "lean",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "none",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What rate limit value did you agree with the client?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001387
+  },
+  {
+   "policy": "lean",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What rate limit value did you agree with the client?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001387
+  },
+  {
+   "policy": "lean",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What rate limit value did you agree with the client?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001387
+  },
+  {
+   "policy": "lean",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What is the agreed API rate limit value?",
+    "Which client agreement or document has the number?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001682
+  },
+  {
+   "policy": "lean",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What is the agreed API rate limit value?",
+    "Which file or config holds the rate limit setting?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001697
+  },
+  {
+   "policy": "lean",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What rate limit value did you agree with the client?",
+    "Which config file or constant holds the API rate limit?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001707
+  },
+  {
+   "policy": "lean",
+   "prompt": "U2",
+   "need": "yes",
+   "context": "none",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What is the new session timeout value from the security review?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013830000000000001
+  },
+  {
+   "policy": "lean",
+   "prompt": "U2",
+   "need": "yes",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What is the new session timeout value from the security review?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013830000000000001
+  },
+  {
+   "policy": "lean",
+   "prompt": "U2",
+   "need": "yes",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What is the new session timeout value from the security review?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.0013830000000000001
+  },
+  {
+   "policy": "lean",
+   "prompt": "U2",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 1,
+   "route": "ask",
+   "questions": [
+    "What is the new session timeout value from the security review?",
+    "Which file or config holds the session timeout setting?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001698
+  },
+  {
+   "policy": "lean",
    "prompt": "U2",
    "need": "yes",
    "context": "conversation",
@@ -1072,10 +2210,10 @@
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001506
+   "cost": 0.001693
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U2",
    "need": "yes",
    "context": "conversation",
@@ -1083,181 +2221,181 @@
    "route": "ask",
    "questions": [
     "What is the new session timeout value from the security review?",
-    "Which file or config holds the session timeout setting?"
+    "Which file or config sets the session timeout today?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001511
+   "cost": 0.001693
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U3",
    "need": "yes",
    "context": "none",
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What is the new free tier limit number marketing gave you?",
-    "Which limit is it: requests, seats, storage, or something else?"
+    "What is the new free tier limit marketing gave you?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0013239999999999999
+   "cost": 0.001396
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U3",
    "need": "yes",
    "context": "none",
    "rep": 2,
    "route": "ask",
    "questions": [
-    "What is the new free tier limit number marketing gave you?",
-    "Which limit is it: requests, seats, storage, or something else?"
+    "What is the new free tier limit marketing gave you?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0013239999999999999
+   "cost": 0.001396
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U3",
    "need": "yes",
    "context": "none",
    "rep": 3,
    "route": "ask",
    "questions": [
-    "What number did marketing give you for the free tier limit?",
-    "Which free tier limit should change: requests, seats, storage, or something else?"
+    "What is the new free tier limit marketing gave you?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001334
+   "cost": 0.001396
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U3",
    "need": "yes",
    "context": "conversation",
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What is the free tier limit number marketing gave you?",
-    "Which free tier limit should change: orders, cart, or users?"
+    "What is the new free tier limit number marketing gave you?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0015439999999999998
+   "cost": 0.001631
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U3",
    "need": "yes",
    "context": "conversation",
    "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What is the new free tier limit number marketing gave you?",
+    "Which limit is it: orders, seats, storage, or something else?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001741
+  },
+  {
+   "policy": "lean",
+   "prompt": "U3",
+   "need": "yes",
+   "context": "conversation",
+   "rep": 3,
    "route": "ask",
    "questions": [
     "What is the new free tier limit marketing gave you?",
-    "Which limit is it: orders per month, seats, or something else?"
+    "Should it apply to every free-tier account, or only new signups?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0015439999999999998
+   "cost": 0.001731
   },
   {
-   "policy": "ask",
-   "prompt": "U3",
-   "need": "yes",
-   "context": "conversation",
-   "rep": 3,
-   "route": "ask",
-   "questions": [
-    "What is the new free tier limit number marketing gave you?",
-    "Which free tier limit: orders, seats, storage, or something else?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.0015589999999999998
-  },
-  {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U4",
    "need": "yes",
    "context": "none",
    "rep": 1,
-   "route": "unchanged",
-   "questions": null,
+   "route": "ask",
+   "questions": [
+    "Which brand guide, and what is the primary button hex color?"
+   ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.002452
+   "cost": 0.001409
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U4",
    "need": "yes",
    "context": "none",
    "rep": 2,
    "route": "ask",
    "questions": [
-    "Which brand guide file or document should I use?",
-    "What is the exact hex value, if you know it?"
+    "What is the exact hex value from your brand guide?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001277
+   "cost": 0.001394
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U4",
    "need": "yes",
    "context": "none",
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which file or doc holds the brand guide with the hex color?",
-    "Do you want the hex value pasted in, or should I look it up?"
+    "What is the exact hex value from the brand guide?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0013369999999999999
+   "cost": 0.001394
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U4",
    "need": "yes",
    "context": "conversation",
    "rep": 1,
-   "route": "unchanged",
-   "questions": null,
+   "route": "ask",
+   "questions": [
+    "What is the exact hex value from the brand guide?"
+   ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.002677
+   "cost": 0.001624
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U4",
    "need": "yes",
    "context": "conversation",
    "rep": 2,
    "route": "ask",
    "questions": [
-    "Where is the brand guide, or what is the primary hex value?"
+    "What hex value does the brand guide list for primary buttons?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.0048920000000000005
+   "cost": 0.002424
   },
   {
-   "policy": "ask",
+   "policy": "lean",
    "prompt": "U4",
    "need": "yes",
    "context": "conversation",
    "rep": 3,
-   "route": "unchanged",
-   "questions": null,
+   "route": "ask",
+   "questions": [
+    "What is the exact hex color code from the brand guide?"
+   ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.002882
+   "cost": 0.001629
   },
   {
    "policy": "minimal",
@@ -1269,7 +2407,7 @@
    "questions": null,
    "rewrite": "Make the orders page faster, it is really slow. Do not change the API.",
    "invented": [],
-   "cost": 0.0016589999999999999
+   "cost": 0.0016489999999999999
   },
   {
    "policy": "minimal",
@@ -1281,7 +2419,7 @@
    "questions": null,
    "rewrite": "Make the orders page faster, it is really slow. Do not change the API.",
    "invented": [],
-   "cost": 0.0015789999999999999
+   "cost": 0.001599
   },
   {
    "policy": "minimal",
@@ -1289,59 +2427,59 @@
    "need": "no",
    "context": "none",
    "rep": 3,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Make the orders page faster, it is really slow. Do not change the API.",
+   "invented": [],
+   "cost": 0.001634
+  },
+  {
+   "policy": "minimal",
+   "prompt": "V1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 1,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Make the orders page faster, it is really slow. Do not touch the API.",
+   "invented": [],
+   "cost": 0.001864
+  },
+  {
+   "policy": "minimal",
+   "prompt": "V1",
+   "need": "no",
+   "context": "conversation",
+   "rep": 2,
    "route": "rewrite",
    "questions": null,
    "rewrite": "Make the orders page faster, it's really slow. Don't touch the API.",
    "invented": [],
-   "cost": 0.001644
+   "cost": 0.0018839999999999998
   },
   {
    "policy": "minimal",
    "prompt": "V1",
    "need": "no",
    "context": "conversation",
-   "rep": 1,
+   "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Make the orders page faster, it is really slow. Don't touch the API.",
-   "invented": [],
-   "cost": 0.001859
-  },
-  {
-   "policy": "minimal",
-   "prompt": "V1",
-   "need": "no",
-   "context": "conversation",
-   "rep": 2,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make the orders page faster, it is really slow. Do not touch the API.",
+   "rewrite": "Make the orders page faster, it's really slow. Don't touch the API.",
    "invented": [],
    "cost": 0.0018739999999999998
   },
   {
    "policy": "minimal",
-   "prompt": "V1",
-   "need": "no",
-   "context": "conversation",
-   "rep": 3,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make the orders page faster, it's really slow. Don't touch the API.",
-   "invented": [],
-   "cost": 0.001844
-  },
-  {
-   "policy": "minimal",
    "prompt": "V2",
    "need": "no",
    "context": "none",
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The cart total is wrong when a customer buys more than one of the same item. Find the cause and fix it.",
+   "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
    "invented": [],
-   "cost": 0.001796
+   "cost": 0.001781
   },
   {
    "policy": "minimal",
@@ -1351,9 +2489,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
+   "rewrite": "The cart total is wrong when a customer buys more than one of the same item. Find the cause and fix it.",
    "invented": [],
-   "cost": 0.0017460000000000002
+   "cost": 0.001691
   },
   {
    "policy": "minimal",
@@ -1363,9 +2501,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The cart total is wrong when a customer buys more than one of the same item. Find the cause and fix it.",
+   "rewrite": "Fix the bug where the cart total is wrong when people buy more than one of the same item. The total should equal the sum of unit price times quantity for every line item. Done when a cart with quantity greater than 1 shows the correct total.",
    "invented": [],
-   "cost": 0.001701
+   "cost": 0.003366
   },
   {
    "policy": "minimal",
@@ -1375,9 +2513,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
+   "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the bug in the cart total calculation and fix it.",
    "invented": [],
-   "cost": 0.001961
+   "cost": 0.002036
   },
   {
    "policy": "minimal",
@@ -1401,7 +2539,7 @@
    "questions": null,
    "rewrite": "The cart total is wrong when customers buy more than one of the same item. Find the cause and fix it.",
    "invented": [],
-   "cost": 0.001906
+   "cost": 0.001936
   },
   {
    "policy": "minimal",
@@ -1411,9 +2549,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the signup flow so it rejects junk email addresses. Right now it lets people sign up with invalid or disposable-looking emails.",
+   "rewrite": "Fix the signup flow so it rejects junk email addresses. Find the signup validation code and add checks that block malformed or obviously fake emails before an account is created.",
    "invented": [],
-   "cost": 0.001741
+   "cost": 0.001796
   },
   {
    "policy": "minimal",
@@ -1423,9 +2561,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Signup lets people in with junk emails. Fix that: reject invalid or junk email addresses during signup.",
+   "rewrite": "Signup lets people in with junk emails. Fix that: make the signup flow reject invalid or junk email addresses.",
    "invented": [],
-   "cost": 0.0017360000000000001
+   "cost": 0.001731
   },
   {
    "policy": "minimal",
@@ -1435,9 +2573,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the signup flow so it rejects junk email addresses. Find the signup validation code and tighten the email check so malformed or throwaway addresses can't create an account.",
+   "rewrite": "Fix the signup flow so it rejects junk email addresses. Right now signup lets people in with invalid or junk emails. Pick a sensible validation approach (such as format checks and blocking known disposable-email domains), apply it at signup, and tell me which approach you chose. Done when signup rejects a malformed or disposable address with a clear error and still accepts a normal one.",
    "invented": [],
-   "cost": 0.001851
+   "cost": 0.003876
   },
   {
    "policy": "minimal",
@@ -1447,9 +2585,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Signup lets people in with junk emails. Fix that: add validation so signup rejects malformed email addresses.",
+   "rewrite": "Signup lets people in with junk emails. Fix that: validate the email at signup so malformed or junk addresses are rejected.",
    "invented": [],
-   "cost": 0.0019909999999999997
+   "cost": 0.001966
   },
   {
    "policy": "minimal",
@@ -1457,23 +2595,23 @@
    "need": "no",
    "context": "conversation",
    "rep": 2,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Fix the signup flow so it rejects junk email addresses. Find the signup code, add email validation that rejects malformed addresses and obvious junk such as disposable-domain sign-ups, and show which rules you chose and why.",
+   "invented": [],
+   "cost": 0.003901
+  },
+  {
+   "policy": "minimal",
+   "prompt": "V3",
+   "need": "no",
+   "context": "conversation",
+   "rep": 3,
    "route": "rewrite",
    "questions": null,
    "rewrite": "Signup lets people in with junk emails. Fix that: validate email addresses at signup so malformed ones are rejected.",
    "invented": [],
-   "cost": 0.002036
-  },
-  {
-   "policy": "minimal",
-   "prompt": "V3",
-   "need": "no",
-   "context": "conversation",
-   "rep": 3,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make signup reject junk email addresses. Validate the email in the signup flow so malformed addresses are refused with a clear error. Done when signup rejects malformed emails and still accepts valid ones.",
-   "invented": [],
-   "cost": 0.004651000000000001
+   "cost": 0.001986
   },
   {
    "policy": "minimal",
@@ -1483,9 +2621,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Rename \"it\" to a clearer name and update every place it's used. Choose the new name yourself, then tell me what you picked and list the files you changed.",
+   "rewrite": "Rename \"it\" to a clearer name, and update every place it's used. Keep the behavior the same. Done when no references to the old name remain and the code still builds and the tests still pass.",
    "invented": [],
-   "cost": 0.003065
+   "cost": 0.0028250000000000003
   },
   {
    "policy": "minimal",
@@ -1495,9 +2633,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Rename \"it\" to a clearer name, and update every place it's used. Pick the new name yourself, and tell me which name you chose and where the references were.",
+   "rewrite": "Rename \"it\" to a clearer name, and update every place it is used.",
    "invented": [],
-   "cost": 0.0034149999999999996
+   "cost": 0.00292
   },
   {
    "policy": "minimal",
@@ -1507,9 +2645,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Rename \"it\" to a clearer name and update every place it's used. Pick the new name yourself, based on what the thing does, and tell me which name you chose. When you're done, search for the old name to confirm no references remain.",
+   "rewrite": "Rename \"it\" to a clearer name everywhere it's used. Pick a name that says what it is, and update every reference so the old name no longer appears in the codebase. Tell me the old and new names when you're done.",
    "invented": [],
-   "cost": 0.00345
+   "cost": 0.0034000000000000002
   },
   {
    "policy": "minimal",
@@ -1519,11 +2657,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Rename `getUser` in src/users.js to a clearer name that shows it looks up a user by id (for example `getUserById`). Update every place it's used so no references to the old name remain.",
-   "invented": [
-    "getUserById"
-   ],
-   "cost": 0.00362
+   "rewrite": "Rename `getUser` in src/users.js to something clearer, since it looks users up by id rather than returning the current user. Pick the new name yourself and tell me what you chose. Update every usage across the codebase, including imports, tests and any mocks, so nothing still references `getUser`.",
+   "invented": [],
+   "cost": 0.0035200000000000006
   },
   {
    "policy": "minimal",
@@ -1531,14 +2667,11 @@
    "need": "no",
    "context": "conversation",
    "rep": 2,
-   "route": "ask",
-   "questions": [
-    "Which name should `getUser` become?",
-    "Should the new name also apply to the test files?"
-   ],
-   "rewrite": null,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Rename `getUser` in src/users.js to a clearer name that says it looks users up by id, and update every place it's used. Choose the new name yourself and tell me what you picked. Done when no references to `getUser` remain and the code still runs.",
    "invented": [],
-   "cost": 0.001665
+   "cost": 0.0035050000000000003
   },
   {
    "policy": "minimal",
@@ -1546,14 +2679,11 @@
    "need": "no",
    "context": "conversation",
    "rep": 3,
-   "route": "ask",
-   "questions": [
-    "Which function should be renamed: getUser in src/users.js?",
-    "What new name do you want for it?"
-   ],
-   "rewrite": null,
+   "route": "rewrite",
+   "questions": null,
+   "rewrite": "Rename `getUser` in `src/users.js` to a clearer name that says it looks users up by id. Update every usage of it across the codebase.",
    "invented": [],
-   "cost": 0.001685
+   "cost": 0.003075
   },
   {
    "policy": "minimal",
@@ -1563,11 +2693,11 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "Which bug is it? Name the file, function, or error."
+    "Which bug do you mean? Name the file, function, or error."
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001389
+   "cost": 0.0013989999999999999
   },
   {
    "policy": "minimal",
@@ -1577,9 +2707,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the bug we talked about, and add a test for it. Done when the fix is in and the new test passes.",
+   "rewrite": "Fix the bug we talked about, then add a test that covers it. Keep the test focused on that bug so it fails before the fix and passes after.",
    "invented": [],
-   "cost": 0.003729
+   "cost": 0.002874
   },
   {
    "policy": "minimal",
@@ -1589,12 +2719,11 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which bug do you mean? Describe it or paste the error.",
-    "Which file or function does it live in?"
+    "Which bug do you mean, and in which file or module?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001459
+   "cost": 0.001384
   },
   {
    "policy": "minimal",
@@ -1604,9 +2733,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "fix the duplicate rows bug on the orders page (the ordersPageRows in src/orders.js appending to the module-level cache on every call) and add a regression test for it in test/orders.test.js",
+   "rewrite": "Fix the duplicate rows bug on the orders page: users get duplicate rows after a refresh. The cause is in `ordersPageRows` in `src/orders.js`, which appends to a module-level cache on every call instead of rebuilding it. Fix that, and add a regression test for it in `test/orders.test.js`.",
    "invented": [],
-   "cost": 0.002104
+   "cost": 0.004099
   },
   {
    "policy": "minimal",
@@ -1616,9 +2745,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "fix the duplicate rows bug on the orders page after a refresh (the ordersPageRows in src/orders.js appending to the module-level cache on every call) and add a regression test for it in test/orders.test.js",
+   "rewrite": "fix the duplicate rows bug on the orders page (ordersPageRows in src/orders.js appends to a module-level cache on every call instead of rebuilding it) and add a regression test for it in test/orders.test.js",
    "invented": [],
-   "cost": 0.002134
+   "cost": 0.002094
   },
   {
    "policy": "minimal",
@@ -1628,9 +2757,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "fix the duplicate rows bug on the orders page (the ordersPageRows in src/orders.js appends to a module-level cache on every call instead of rebuilding it) and add a regression test in test/orders.test.js",
+   "rewrite": "Fix the duplicate rows bug on the orders page (rows duplicate after a refresh) in src/orders.js, where ordersPageRows appends to a module-level cache on every call instead of rebuilding it. Add a regression test for it in test/orders.test.js.",
    "invented": [],
-   "cost": 0.002124
+   "cost": 0.002184
   },
   {
    "policy": "minimal",
@@ -1640,9 +2769,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Do the same thing for the profile page, applying the change you just made elsewhere to the profile page too.",
+   "rewrite": "Do the same thing for the profile page. Apply the same change you just made to the profile page, keeping the same approach.",
    "invented": [],
-   "cost": 0.003534
+   "cost": 0.0029690000000000003
   },
   {
    "policy": "minimal",
@@ -1650,11 +2779,13 @@
    "need": "no",
    "context": "none",
    "rep": 2,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Do the same thing for the profile page. Apply the same change you made in the previous task to the profile page, using the same approach. Done when the profile page behaves the same way the earlier change does.",
+   "route": "ask",
+   "questions": [
+    "\"The same thing\" as what? Which change should be repeated on the profile page?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.003489
+   "cost": 0.001414
   },
   {
    "policy": "minimal",
@@ -1662,11 +2793,11 @@
    "need": "no",
    "context": "none",
    "rep": 3,
-   "route": "rewrite",
+   "route": "unchanged",
    "questions": null,
-   "rewrite": "Do the same thing for the profile page.",
+   "rewrite": null,
    "invented": [],
-   "cost": 0.004609
+   "cost": 0.003339
   },
   {
    "policy": "minimal",
@@ -1676,9 +2807,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Fix the duplicate rows on the profile page after a refresh, the same way the orders page was fixed. The orders page bug was a module-level cache that gets appended to on every call instead of rebuilt. Check whether the profile page has the same problem, fix it, and add a regression test next to the existing orders test (test/orders.test.js). Done when a refresh on the profile page no longer duplicates rows and the new test passes.",
+   "rewrite": "Apply the same fix as the orders page duplicate-rows bug to the profile page. Find where the profile page builds its rows. If it appends to a module-level cache on every call instead of rebuilding it, change it to rebuild the cache each time, and add a regression test in the same style as the one planned for test/orders.test.js. Done when the profile page no longer shows duplicate rows after a refresh and the new test passes.",
    "invented": [],
-   "cost": 0.004109
+   "cost": 0.004549
   },
   {
    "policy": "minimal",
@@ -1688,9 +2819,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Apply the same fix to the profile page that we made for the orders page. Find out whether the profile page rows also append to a module-level cache on every call instead of rebuilding it, and if so, make it rebuild the rows. Then add a regression test for duplicate rows on the profile page, modeled on the one in test/orders.test.js.",
+   "rewrite": "Apply the same fix to the profile page that we made for the orders page. The orders page duplicated rows after a refresh because ordersPageRows in src/orders.js appended to a module-level cache on every call instead of rebuilding it. Find the profile page's equivalent code, make it rebuild its cache on each call, and add a regression test in the same style as test/orders.test.js.\n\nDone when the profile page no longer duplicates rows after a refresh and the new regression test passes.",
    "invented": [],
-   "cost": 0.004509
+   "cost": 0.006124
   },
   {
    "policy": "minimal",
@@ -1700,9 +2831,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Apply the same fix to the profile page that we just described for the orders page. The goal is to stop duplicate rows appearing after a refresh. If the profile page has the same problem, where a module-level cache is appended to on every call instead of being rebuilt, change it to rebuild the cache on each call and add a regression test like the one for orders (test/orders.test.js). The orders fix was in src/orders.js, function ordersPageRows.",
+   "rewrite": "Apply the same fix to the profile page that we just made for the orders page. The orders page duplicated rows after a refresh because a module-level cache was appended to on every call instead of being rebuilt. Check whether the profile page has the same problem, fix it by rebuilding the cache on each call, and add a regression test next to the existing profile tests. Done when repeated loads of the profile page show no duplicate rows.",
    "invented": [],
-   "cost": 0.004444
+   "cost": 0.004484
   },
   {
    "policy": "minimal",
@@ -1712,9 +2843,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Find out why that test is flaky again and report the cause. Look at why it fails intermittently, not just at a single failing run.",
+   "rewrite": "Goal: find out why \"that test\" is flaky again. It has failed intermittently before, so look for the cause of the intermittent failure, not just a fix for one run. Done when you can explain what makes it fail and which runs fail.",
    "invented": [],
-   "cost": 0.0032519999999999997
+   "cost": 0.0036820000000000004
   },
   {
    "policy": "minimal",
@@ -1724,9 +2855,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Look into why that test is flaky again and find the root cause. Done when you can explain what makes it fail intermittently. If \"that test\" is ambiguous from our conversation, say which test you picked.",
+   "rewrite": "Goal: find out why \"that test\" is flaky. It has failed again, so look into the cause.\nInvestigate the test and the code it exercises, and explain what makes it fail intermittently. Keep \"that test\" as the user wrote it, since the agent has the conversation context to identify it.",
    "invented": [],
-   "cost": 0.004017
+   "cost": 0.0033569999999999997
   },
   {
    "policy": "minimal",
@@ -1736,9 +2867,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Investigate why that test is flaky again. Find the root cause of the intermittent failure, and explain what makes it pass or fail. Don't just re-run it or add a retry unless the cause is already clear. Done when you can explain the cause and point to the code responsible.",
+   "rewrite": "Goal: find the root cause of the flaky test (\"that test\") and explain why it intermittently fails. \"Again\" means it has been flaky before, so check whether this is the same cause as the earlier failures. Done when you can explain the cause and say whether it is a test problem or a code problem.",
    "invented": [],
-   "cost": 0.004217
+   "cost": 0.0032570000000000003
   },
   {
    "policy": "minimal",
@@ -1748,9 +2879,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "test/cart.test.js is flaky again, can you look at why? It failed twice in CI today. It depends on Date.now() for a discount window, so timing may be the cause.",
+   "rewrite": "test/cart.test.js is flaky again and failed twice in CI today. It depends on Date.now() for a discount window. Can you look at why it's flaky?",
    "invented": [],
-   "cost": 0.003567
+   "cost": 0.003587
   },
   {
    "policy": "minimal",
@@ -1760,9 +2891,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Look into why test/cart.test.js is flaky again. It failed twice in CI today. Earlier we noted that it depends on Date.now() for a discount window, so check whether timing is the cause.",
+   "rewrite": "The test test/cart.test.js is flaky again. Look at why it fails intermittently. It depends on Date.now() for a discount window, so start there.",
    "invented": [],
-   "cost": 0.002947
+   "cost": 0.0020369999999999997
   },
   {
    "policy": "minimal",
@@ -1772,9 +2903,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "The test in test/cart.test.js is flaky again: it failed twice in CI today. It depends on Date.now() for a discount window. Look into why it fails intermittently.",
+   "rewrite": "Test test/cart.test.js is flaky again. It failed twice in CI today. It depends on Date.now() for a discount window, so it is timing-sensitive. Find out why it is flaky.",
    "invented": [],
-   "cost": 0.003377
+   "cost": 0.0034219999999999997
   },
   {
    "policy": "minimal",
@@ -1784,9 +2915,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Clean up the legacy folder. I think a lot of it is unused. Find the legacy folder in the working directory, work out which files and code in it are actually unused, and check that nothing else references them before removing anything. Then delete the unused parts and list what you removed and what you kept.",
+   "rewrite": "Clean up the legacy folder. I think a lot of it is unused, so check whether each file is actually referenced before removing anything. When you're done, list what you removed and what you kept.",
    "invented": [],
-   "cost": 0.004064
+   "cost": 0.003619
   },
   {
    "policy": "minimal",
@@ -1796,9 +2927,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Clean up the legacy folder. The user thinks much of it is unused. Find the legacy folder, work out which files are unused, and list them before deleting anything. Only remove files after the user confirms the list.",
+   "rewrite": "Clean up the legacy folder. I think a lot of it is unused. Before removing anything, check whether each file or directory in it is actually referenced elsewhere in the project. Delete what is unused, keep what is still referenced, and list what you removed and what you kept.",
    "invented": [],
-   "cost": 0.004184
+   "cost": 0.004034
   },
   {
    "policy": "minimal",
@@ -1808,9 +2939,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Clean up the legacy folder. I think a lot of it is unused. Find the legacy folder in this project, and for each file in it, check whether anything else in the project references it before deleting. Delete files that are unused. If you're unsure about a file, keep it and say so. When you're done, list what you deleted and what you kept.",
+   "rewrite": "Clean up the legacy folder. I think a lot of it is unused. Before removing anything, check which files in it are actually unused, and list what you removed.",
    "invented": [],
-   "cost": 0.004399
+   "cost": 0.0035390000000000005
   },
   {
    "policy": "minimal",
@@ -1820,9 +2951,9 @@
    "rep": 1,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Clean up the legacy folder. I think a lot of it is unused, so find which files and code are actually unused and remove them. Check each candidate for references before deleting, and leave anything still in use.",
+   "rewrite": "Clean up the legacy folder. I think a lot of it is unused. Find the files in it that nothing else in the repo references, and remove them. Keep anything that is still imported, required by the build, or used by tests. When you're done, list what you removed and confirm the tests and build still pass.",
    "invented": [],
-   "cost": 0.004214000000000001
+   "cost": 0.004469000000000001
   },
   {
    "policy": "minimal",
@@ -1832,9 +2963,9 @@
    "rep": 2,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "clean up the legacy folder. a lot of it is unused i think, so first check which files are actually referenced (imports, requires, configs, scripts, tests) and only remove the ones that aren't. then tell me what you removed and what you kept, and why.",
+   "rewrite": "Clean up the legacy folder by removing the files that are unused. I think a lot of it is unused, but I'm not sure. Before deleting any file, check that nothing imports or references it. Then list what you removed and what you kept, with a reason for each kept file. Done when the unused files are gone and the test suite still passes.",
    "invented": [],
-   "cost": 0.0043890000000000005
+   "cost": 0.003919000000000001
   },
   {
    "policy": "minimal",
@@ -1844,9 +2975,9 @@
    "rep": 3,
    "route": "rewrite",
    "questions": null,
-   "rewrite": "Clean up the legacy folder. I think a lot of it is unused. Before removing anything, check which files are actually unused, and list what you removed.",
+   "rewrite": "Clean up the legacy folder. I think much of it is unused. Find the files there that nothing references, and remove only those. Before deleting any file, check for imports, requires, and references in config or build files. Keep anything still in use. When you're done, list what you removed and what you kept, with the reason for each.",
    "invented": [],
-   "cost": 0.0036290000000000003
+   "cost": 0.005059
   },
   {
    "policy": "minimal",
@@ -1854,11 +2985,14 @@
    "need": "no",
    "context": "none",
    "rep": 1,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Change this to work like the other one, and keep the old behaviour available behind a flag. The new behaviour should be the default. The old behaviour should run only when the flag is set.",
+   "route": "ask",
+   "questions": [
+    "Which component should work like \"the other one\"?",
+    "Which flag name should keep the old behaviour?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.0034460000000000003
+   "cost": 0.001456
   },
   {
    "policy": "minimal",
@@ -1866,11 +3000,15 @@
    "need": "no",
    "context": "none",
    "rep": 2,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Change the current implementation so it works like \"the other one\", and keep the old behaviour available behind a flag. Done when the default path matches \"the other one\" and the old behaviour runs when the flag is set.",
+   "route": "ask",
+   "questions": [
+    "Which part should work like the other one: which file, feature, or module?",
+    "Which \"other one\" should it copy: another function, module, or version?",
+    "What should the flag be named, and how is it set?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.003376
+   "cost": 0.001591
   },
   {
    "policy": "minimal",
@@ -1880,13 +3018,13 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "Which part should work like \"the other one\"?",
-    "Which file, function, or feature is the other one?",
-    "What should the flag be called?"
+    "Which part should work like \"the other one\"? Name the feature or file.",
+    "Which \"old behaviour\" should stay behind the flag? Describe it briefly.",
+    "What should the flag be called, and is there an existing flag convention?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001501
+   "cost": 0.001656
   },
   {
    "policy": "minimal",
@@ -1894,11 +3032,14 @@
    "need": "no",
    "context": "conversation",
    "rep": 1,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make it work like the other one, but keep the old behaviour behind a flag.",
+   "route": "ask",
+   "questions": [
+    "Which one should \"it\" be changed to match: ordersPageRows or getUser?",
+    "Which function or file is \"it\" in this request?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.0041860000000000005
+   "cost": 0.004056000000000001
   },
   {
    "policy": "minimal",
@@ -1906,11 +3047,15 @@
    "need": "no",
    "context": "conversation",
    "rep": 2,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make it work like the other one, but keep the old behaviour behind a flag. Use the other one as the reference, and keep the previous behaviour reachable through a flag.",
+   "route": "ask",
+   "questions": [
+    "Which \"other one\" should this match: the function, file, or module?",
+    "Which file contains the behaviour you want behind the flag?",
+    "What should the flag be named, or should I pick one?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.0042710000000000005
+   "cost": 0.003516
   },
   {
    "policy": "minimal",
@@ -1918,11 +3063,14 @@
    "need": "no",
    "context": "conversation",
    "rep": 3,
-   "route": "rewrite",
-   "questions": null,
-   "rewrite": "Make \"it\" work like \"the other one\", but keep the old behaviour behind a flag. Keep the current code path reachable when the flag is set, so the old behaviour can still be used.",
+   "route": "ask",
+   "questions": [
+    "Which function should the new behaviour copy from?",
+    "Which function is \"it\", the one getting the flag?"
+   ],
+   "rewrite": null,
    "invented": [],
-   "cost": 0.003971000000000001
+   "cost": 0.004606
   },
   {
    "policy": "minimal",
@@ -2077,6 +3225,36 @@
    "route": "ask",
    "questions": [
     "What rate limit value did you agree with the client?",
+    "Which API endpoint or service should this apply to?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001462
+  },
+  {
+   "policy": "minimal",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "none",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What rate limit number did you agree with the client?",
+    "Which API endpoint or config file should it apply to?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001467
+  },
+  {
+   "policy": "minimal",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "none",
+   "rep": 3,
+   "route": "ask",
+   "questions": [
+    "What rate limit number did you agree with the client?",
     "Which endpoint or API should the limit apply to?"
    ],
    "rewrite": null,
@@ -2087,56 +3265,11 @@
    "policy": "minimal",
    "prompt": "U1",
    "need": "yes",
-   "context": "none",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "What rate limit value did you agree with the client?",
-    "Which endpoint or service should the limit apply to?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001467
-  },
-  {
-   "policy": "minimal",
-   "prompt": "U1",
-   "need": "yes",
-   "context": "none",
-   "rep": 3,
-   "route": "ask",
-   "questions": [
-    "What rate limit value did you agree with the client?",
-    "Which endpoint or API should the limit apply to?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001467
-  },
-  {
-   "policy": "minimal",
-   "prompt": "U1",
-   "need": "yes",
    "context": "conversation",
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What rate limit value did you agree with the client?",
-    "Which file or config sets the API rate limit?"
-   ],
-   "rewrite": null,
-   "invented": [],
-   "cost": 0.001687
-  },
-  {
-   "policy": "minimal",
-   "prompt": "U1",
-   "need": "yes",
-   "context": "conversation",
-   "rep": 2,
-   "route": "ask",
-   "questions": [
-    "What rate limit value did you agree with the client?",
+    "What rate limit number did you agree with the client?",
     "Which config file or constant holds the API rate limit?"
    ],
    "rewrite": null,
@@ -2148,15 +3281,29 @@
    "prompt": "U1",
    "need": "yes",
    "context": "conversation",
+   "rep": 2,
+   "route": "ask",
+   "questions": [
+    "What rate limit value did you agree with the client?"
+   ],
+   "rewrite": null,
+   "invented": [],
+   "cost": 0.001607
+  },
+  {
+   "policy": "minimal",
+   "prompt": "U1",
+   "need": "yes",
+   "context": "conversation",
    "rep": 3,
    "route": "ask",
    "questions": [
     "What rate limit value did you agree with the client?",
-    "Which config or file holds the API rate limit setting?"
+    "Which endpoint or config file should the limit apply to?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001697
+   "cost": 0.001702
   },
   {
    "policy": "minimal",
@@ -2166,12 +3313,11 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What is the new session timeout value from the security review?",
-    "Which config file or setting holds the session timeout?"
+    "What is the new session timeout value from the security review?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001458
+   "cost": 0.001373
   },
   {
    "policy": "minimal",
@@ -2182,7 +3328,7 @@
    "route": "ask",
    "questions": [
     "What is the new session timeout value from the security review?",
-    "Which config file or setting holds the session timeout?"
+    "Which config file or constant holds the session timeout?"
    ],
    "rewrite": null,
    "invented": [],
@@ -2196,12 +3342,11 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "What is the new session timeout value from the security review?",
-    "Which config file or setting holds the session timeout?"
+    "What is the new session timeout value from the security review?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001458
+   "cost": 0.001373
   },
   {
    "policy": "minimal",
@@ -2211,11 +3356,12 @@
    "rep": 1,
    "route": "ask",
    "questions": [
-    "What is the new session timeout value from the security review?"
+    "What is the new session timeout value from the security review?",
+    "Which file or config sets the session timeout today?"
    ],
    "rewrite": null,
    "invented": [],
-   "cost": 0.001603
+   "cost": 0.001683
   },
   {
    "policy": "minimal",
@@ -2365,7 +3511,7 @@
    "rep": 3,
    "route": "ask",
    "questions": [
-    "What is the exact hex value from your brand guide?"
+    "What is the exact hex value from the brand guide?"
    ],
    "rewrite": null,
    "invented": [],
@@ -2393,7 +3539,7 @@
    "rep": 2,
    "route": "ask",
    "questions": [
-    "What is the exact hex value from the brand guide?"
+    "What is the exact hex value in the brand guide?"
    ],
    "rewrite": null,
    "invented": [],
@@ -2424,40 +3570,68 @@
    "of_yes": 12,
    "invented": 0,
    "rewrites": 10,
-   "cost": 0.001828688888888889
+   "growth": 1.906938360393738,
+   "cost": 0.0018893555555555557
   },
   {
    "policy": "ask",
    "context": "conversation",
-   "needless_ask": 15,
+   "needless_ask": 13,
    "of_no": 33,
    "missed_ask": 2,
    "of_yes": 12,
+   "invented": 1,
+   "rewrites": 20,
+   "growth": 4.211487623741628,
+   "cost": 0.0028269111111111113
+  },
+  {
+   "policy": "lean",
+   "context": "none",
+   "needless_ask": 1,
+   "of_no": 33,
+   "missed_ask": 0,
+   "of_yes": 12,
    "invented": 0,
-   "rewrites": 18,
-   "cost": 0.002667022222222222
+   "rewrites": 3,
+   "growth": 1.0,
+   "cost": 0.0017845777777777778
+  },
+  {
+   "policy": "lean",
+   "context": "conversation",
+   "needless_ask": 2,
+   "of_no": 33,
+   "missed_ask": 0,
+   "of_yes": 12,
+   "invented": 0,
+   "rewrites": 20,
+   "growth": 1.8668461676168444,
+   "cost": 0.0023091333333333333
   },
   {
    "policy": "minimal",
    "context": "none",
+   "needless_ask": 6,
+   "of_no": 33,
+   "missed_ask": 0,
+   "of_yes": 12,
+   "invented": 0,
+   "rewrites": 20,
+   "growth": 3.414561222893194,
+   "cost": 0.002057688888888889
+  },
+  {
+   "policy": "minimal",
+   "context": "conversation",
    "needless_ask": 3,
    "of_no": 33,
    "missed_ask": 0,
    "of_yes": 12,
    "invented": 0,
    "rewrites": 24,
-   "cost": 0.0022440222222222224
-  },
-  {
-   "policy": "minimal",
-   "context": "conversation",
-   "needless_ask": 2,
-   "of_no": 33,
-   "missed_ask": 0,
-   "of_yes": 12,
-   "invented": 1,
-   "rewrites": 25,
-   "cost": 0.002440688888888889
+   "growth": 4.5319812203373,
+   "cost": 0.0025893555555555558
   }
  ]
 }
