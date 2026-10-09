@@ -17,13 +17,15 @@ const session = (on: Parameters<typeof mock.store>[0], tokens = 90_000, floor = 
 }
 const isTopic = (e: { system?: string }) => (e.system ?? '').startsWith('You decide where')
 /** Fakes the host: which commands succeed, and what `superset ws list` returns. */
-const host = (on: Parameters<typeof mock.store>[0], ok: (argv: readonly string[]) => boolean, workspaces: unknown[] = []) => {
+const host = (on: Parameters<typeof mock.store>[0], ok: (argv: readonly string[]) => boolean, workspaces: unknown[] = [], stdout: Record<string, string> = {}) => {
   const calls: string[][] = []
   on('session.cwd', () => ({ value: '/home/me/.superset/worktrees/shop/orders-speed' }) as never)
   on('process.run', (_$, e) => {
     const argv = (e as unknown as { argv: string[] }).argv
     calls.push([...argv])
     if (argv[0] === 'superset' && argv[1] === 'ws' && argv[2] === 'list') return { value: { exitCode: 0, stdout: JSON.stringify(workspaces), stderr: '' } } as never
+    const said = Object.entries(stdout).find(([k]) => argv.join(' ').includes(k))
+    if (said) return { value: { exitCode: 0, stdout: said[1], stderr: '' } } as never
     return { value: { exitCode: ok(argv) ? 0 : 1, stdout: '', stderr: '' } } as never
   })
   return calls
@@ -195,7 +197,7 @@ test('"f" opens a new terminal window and leaves this session as it is', async (
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   sent.length = 0
   const held = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
-  expect('drop' in held && held.drop).toContain('"f" to start it in a new session')
+  expect('drop' in held && held.drop).toContain('"f" for a new terminal, or "h" to send it here')
   await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
   await sleep(50)
   expect(calls.some(a => a[0] === 'setsid' && a.includes('xdg-terminal-exec') && a.at(-1) === NEW_TASK)).toBe(true)
@@ -211,7 +213,7 @@ test('in Superset, a related task gets a new terminal in the same workspace', as
   on('prompt.submit', (_$, e) => ({ text: e.text }))
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   const held = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
-  expect('drop' in held && held.drop).toContain('new terminal in this workspace')
+  expect('drop' in held && held.drop).toContain('"f" for a new terminal')
   await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
   await sleep(50)
   expect(calls.find(a => a[1] === 'agents')).toEqual(['superset', 'agents', 'create', '--local', '--workspace', 'ws-1', '--agent', 'claude', '--prompt', NEW_TASK])
@@ -272,5 +274,39 @@ test('a new session leaves a note so its first turn can run on Sonnet', async ($
 
 test('slugOf makes a short branch name from the prompt', async () => {
   expect(slugOf('In src/users.js rename getUser to fetchUser everywhere; run npm test.')).toBe('src-users-js-rename-getuser')
-  expect(freshNote(85_000, 'unrelated', true)).toContain('"w" for a new Superset workspace')
+  expect(freshNote(85_000, 'unrelated', 'superset')).toContain('"w" for a new Superset workspace')
+  expect(freshNote(85_000, 'unrelated', 'git')).toContain('"w" for a new worktree on its own branch')
+  expect(freshNote(85_000, 'related', 'git')).not.toContain('"w"')
+})
+
+test('outside Superset, an unrelated task can get its own git worktree with "w", opened in a new terminal', async ($, on) => {
+  mock.store(on)
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'UNRELATED' : 'x'))
+  const calls = host(on, argv => argv[0] === 'git' || argv.join(' ').includes('command -v xdg-terminal-exec') || argv[0] === 'setsid', [],
+    { 'rev-parse --show-toplevel': '/home/me/shop', 'symbolic-ref': 'origin/main' })
+  on('prompt.submit', (_$, e) => ({ text: e.text }))
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  const held = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect('drop' in held && held.drop).toContain('"w" for a new worktree on its own branch')
+  await $.prompt.submit({ text: 'w', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  const slug = slugOf(NEW_TASK)
+  expect(calls).toContainEqual(['git', '-C', '/home/me/shop', 'worktree', 'add', '-b', slug, `/home/me/shop-${slug}`, 'origin/main'])
+  expect(calls).toContainEqual(['setsid', '-f', 'xdg-terminal-exec', `--dir=/home/me/shop-${slug}`, 'claude', NEW_TASK])
+})
+
+test('on macOS, "f" opens a new Terminal window with the prompt safely quoted', async ($, on) => {
+  mock.store(on)
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
+  const calls = host(on, argv => argv.join(' ').includes('uname') || argv[0] === 'osascript')
+  on('prompt.submit', (_$, e) => ({ text: e.text }))
+  const tricky = "In src/users.js rename getUser to fetchUser; it's \"urgent\", run npm test."
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: tricky, origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  const osa = calls.find(a => a[0] === 'osascript')
+  expect(osa?.[2]).toBe(`tell application "Terminal" to do script "cd '/home/me/.superset/worktrees/shop/orders-speed' && claude 'In src/users.js rename getUser to fetchUser; it'\\\\''s \\"urgent\\", run npm test.'"`)
 })

@@ -143,7 +143,7 @@ def spend() -> str:
     b.append(text(395, 230, "f", 13, PINK, 700, "middle"))
     b.append(text(412, 282, "h", 13, DIM, 700, "middle"))
     b.append(text(550, 478, "short reply, /command, raw:, an image or file, /forge off → sent exactly as typed, no checks", 12, GRAY, 400, "middle"))
-    b.append(text(525, 132, "Superset: new terminal, or w for a new workspace · else a new window · else /clear", 11.5, DIM, 400, "middle"))
+    b.append(text(525, 132, "f: a new terminal (tmux, a window, or Superset) · w: its own branch (a worktree) · else /clear", 11.5, DIM, 400, "middle"))
 
     b.append(node(clk, 30, 255, 140, 70, "⏎ You press Enter", "sent as typed", BLUE, [(0.2, 1.2), (6.4, 7.4), (14.4, 15.4)]))
     b.append(node(clk, 215, 255, 170, 70, "New task?", "Haiku, long sessions only", PINK, [(1.3, 2.4), (7.6, 9.4)]))

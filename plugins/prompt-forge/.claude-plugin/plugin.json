@@ -1,7 +1,7 @@
 {
   "name": "prompt-forge",
-  "version": "0.9.0",
-  "description": "Spends your Claude Code tokens where they count: moves a new task into a fresh session (a new terminal, or a new Superset workspace) instead of dragging a long conversation along, and runs small, clear tasks on Sonnet.",
+  "version": "0.10.0",
+  "description": "Spends your Claude Code tokens where they count: moves a new task into a fresh session (a new terminal window, or its own git worktree) instead of dragging a long conversation along, and runs small, clear tasks on Sonnet.",
   "author": {
     "name": "tomikng",
     "url": "https://github.com/tomikng"
@@ -14,7 +14,7 @@
     "tokens",
     "context",
     "model-routing",
-    "superset",
+    "worktree",
     "productivity"
   ],
   "types": "./types/index.d.ts"

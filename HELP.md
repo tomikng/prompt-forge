@@ -15,7 +15,7 @@ Everything Prompt Forge does, in detail. For the quick tour, see the [README](RE
 
 Every prompt you send makes Claude re-read the whole conversation so far: the system prompt, every message, every tool result. In the benchmark's six-prompt session, the cost per prompt climbed from $0.23 to $0.55 as the conversation grew, mostly from re-reading it. Prompt Forge cuts that in two ways:
 
-1. **A fresh session** when a prompt begins a new task: it runs in a new terminal or workspace, and the old conversation stops riding along. See [When it offers a fresh session](#when-it-offers-a-fresh-session).
+1. **A fresh session** when a prompt begins a new task: it runs in a new terminal window (or its own git worktree), and the old conversation stops riding along. See [When it offers a fresh session](#when-it-offers-a-fresh-session).
 2. **A cheaper model** for small, clear tasks on a small context. See [When it uses a cheaper model](#when-it-uses-a-cheaper-model).
 
 Together: −41% per session in the benchmark, every step still right. Your prompts themselves are never changed: everything goes out exactly as you typed it.
@@ -28,7 +28,7 @@ Together: −41% per session in the benchmark, every step still right. Your prom
 | Starts with `/` (a slash command) | Passed through untouched |
 | Starts with `raw:` | Sent with no checks, prefix removed |
 | `/forge off` is set | Sent as typed, on your model |
-| The session re-reads 30k+ tokens of conversation, the prompt has 5+ words and no attachment, and a Haiku check says it starts a new task | Held with a fresh-session offer: `f`, `w` (Superset, unrelated work) or `h` |
+| The session re-reads 30k+ tokens of conversation, the prompt has 5+ words and no attachment, and a Haiku check says it starts a new task | Held with a fresh-session offer: `f`, `w` (unrelated work, in a git repository) or `h` |
 | Names a target and a finish line, on at most 10k tokens of conversation | Sent as typed; this turn runs on Sonnet |
 | Otherwise | Sent as typed, on your model, instantly |
 
@@ -38,12 +38,12 @@ In a long session, every prompt makes Claude re-read the whole conversation so f
 
 ```text
 ● Prompt dropped by a hook: ✨ Prompt Forge: this looks like an unrelated task, and every step here re-reads
-  85k tokens of old conversation.  ↳ reply "w" for a new Superset workspace, "f" for a new terminal in this one,
+  85k tokens of old conversation.  ↳ reply "w" for a new worktree on its own branch, "f" for a new terminal,
   or "h" to send it here
 ```
 
-- **`f`** (or **New terminal**) starts your prompt in a new session. See below for where it opens.
-- **`w`** (or **New workspace**), only in a Superset workspace and for unrelated work: a new Superset workspace with its own branch, named after your prompt, with Claude started on it.
+- **`f`** (or **New terminal**) starts your prompt in a new session in a new terminal. See below for where it opens.
+- **`w`** (or **New worktree**), for unrelated work in a git repository: a new git worktree next to yours, on a new branch named after your prompt, with Claude started there in a new terminal.
 - **`h`** (or **Send here**) sends it in the current conversation, as if nothing happened.
 - **Anything else** you type replaces the held prompt and is handled normally.
 
@@ -51,10 +51,13 @@ In a long session, every prompt makes Claude re-read the whole conversation so f
 
 Prompt Forge tries these in order and uses the first that works:
 
-1. **Superset.** If this session's folder is inside a Superset workspace's worktree: `superset agents create --local --workspace <id> --agent claude --prompt "<your prompt>"`, a new Claude terminal in the same workspace. With `w`: `superset ws create --local --project <id> --name <slug> --branch <slug> --agent claude --prompt "<your prompt>"`.
-2. **tmux.** If this session runs inside tmux: a new window running `claude "<your prompt>"` in the same folder.
-3. **A desktop terminal.** If `xdg-terminal-exec` is installed (Linux desktops): your default terminal, in the same folder, running `claude "<your prompt>"`.
-4. **`/clear` here**, then your prompt, if none of those work. `/forge fresh clear` makes `/clear` the first choice; `/forge fresh new` switches back.
+1. **tmux.** If this session runs inside tmux: a new window running `claude "<your prompt>"` in the same folder.
+2. **A terminal window.** On Linux, your default terminal via `xdg-terminal-exec`; on macOS, a new Terminal window; on Windows, a new Windows Terminal tab. In the same folder, running `claude "<your prompt>"`.
+3. **`/clear` here**, then your prompt, if neither is available. `/forge fresh clear` makes `/clear` the first choice; `/forge fresh new` switches back.
+
+With **`w`**, Prompt Forge first runs `git worktree add -b <task-name> <repo>-<task-name> <default branch>` (the task name comes from your prompt's first words), then opens the new session there the same way. If no terminal can be opened, it removes the worktree again and falls back to `f`.
+
+**In Superset.** If this session's folder is inside a Superset workspace, Prompt Forge uses Superset instead, so the new session shows up in its sidebar: `f` runs `superset agents create --local --workspace <id> --agent claude --prompt "<your prompt>"` (a new Claude terminal in the same workspace), and `w` runs `superset ws create --local --project <id> --name <task-name> --branch <task-name> --agent claude --prompt "<your prompt>"` (a new workspace, which is a worktree managed by Superset).
 
 A toast says where your task went. The new session starts from an empty conversation, so a small, clear task there runs its first turn on Sonnet (see the next section).
 
@@ -66,8 +69,8 @@ Only when all of these are true:
 2. **The prompt has 5+ words and no image or file attached.** Holding a prompt with an attachment could lose it, so those always go out as typed.
 3. **A Haiku check says it's a new task.** It reads your prompt, the last few messages and the current git branch, and answers one of:
    - **follow-up:** anything that says "it", "that", "again", or names a file or result from the conversation. Sent here, no question.
-   - **related:** a self-contained task on the same feature, ticket or branch. Offered `f` (a new terminal in the same workspace).
-   - **unrelated:** a different piece of work. In Superset, offered `w` (a new workspace) as well.
+   - **related:** a self-contained task on the same feature, ticket or branch. Offered `f` (a new terminal in the same folder).
+   - **unrelated:** a different piece of work. In a git repository, offered `w` (its own worktree and branch) as well.
 
    When unsure it answers follow-up, and between related and unrelated, related.
 
@@ -90,7 +93,7 @@ A small, clear task doesn't need your session's biggest model. When the local ch
 | You want to… | Do this |
 | --- | --- |
 | Start a new task in a new session | Reply `f` to the offer (or press **New terminal**) |
-| Give unrelated work its own Superset workspace | Reply `w` (or press **New workspace**) |
+| Give unrelated work its own branch | Reply `w` (or press **New worktree**; **New workspace** in Superset) |
 | Use `/clear` instead of a new session | `/forge fresh clear` (`/forge fresh new` switches back) |
 | Keep the conversation | Reply `h` (or press **Send here**) |
 | Never offer a fresh session | `/forge fresh off` (`/forge fresh on` turns it back on) |
@@ -124,8 +127,9 @@ The fresh-session offer is drawn in the band above the prompt. If another plugin
 | "this looks like a new task" on a follow-up | The check misjudged it. Answer `h`; nothing is lost. If it keeps happening, `/forge fresh off` and [open an issue](https://github.com/tomikng/prompt-forge/issues) with the two prompts. |
 | Never offered a fresh session | Check `/forge`. The session needs 30k+ tokens of conversation above its fixed part, and the prompt 5+ words with no attachment. |
 | "couldn't start fresh (…)" | No new session could be opened and `/clear` or the re-send failed too. The toast shows your prompt: paste it back in. |
-| `f` ran `/clear` instead of opening a terminal | None of Superset, tmux or `xdg-terminal-exec` was available from this session (or `/forge fresh clear` is set). Check `/forge`. |
-| The new Superset workspace has an odd name | Its name and branch come from the first words of your prompt. Rename it in Superset. |
+| `f` ran `/clear` instead of opening a terminal | No terminal could be opened from this session: not in tmux, and no `xdg-terminal-exec` (Linux), Terminal (macOS) or Windows Terminal; or `/forge fresh clear` is set. Check `/forge`. |
+| The new worktree or workspace has an odd name | Its name and branch come from the first words of your prompt. Rename the branch with `git branch -m`, or the workspace in Superset. |
+| Where did the worktree go? | Next to your repository: `<repo>-<task-name>`. Remove it when done with `git worktree remove <path>`. |
 | A turn ran on Sonnet that shouldn't have | Only prompts naming a file and a finish line on a small context are routed. `/forge model off` keeps every turn on your model. |
 | `/forge` is not recognized | The plugin isn't loaded. Check `/plugin` → **Installed**, and that Claude Code is 2.1.289 or newer. |
 

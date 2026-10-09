@@ -55,13 +55,16 @@ export function recentContext(msgs: readonly { role: string; text: string }[], b
   return out.join('\n\n')
 }
 
-const kTokens = (n: number) => `${Math.round(n / 1000)}k`
+const kTokens = (n: number) => (n < 1000 ? `${n}` : `${Math.round(n / 1000)}k`)
+
+/** Where unrelated work can get its own branch: a Superset workspace, a git worktree, or nowhere. */
+export type Branchable = 'superset' | 'git' | null
 
 /** The drop notice of a prompt held as a new task: one line, since the engine draws it as one. */
-export function freshNote(tokens: number, topic: 'related' | 'unrelated' = 'related', inSuperset = false): string {
+export function freshNote(tokens: number, topic: 'related' | 'unrelated' = 'related', branchable: Branchable = null): string {
   const head = `✨ Prompt Forge: this looks like a${topic === 'unrelated' ? 'n unrelated' : ' new'} task, and every step here re-reads ${kTokens(tokens)} tokens of old conversation.  ↳ reply`
-  if (inSuperset && topic === 'unrelated') return `${head} "w" for a new Superset workspace, "f" for a new terminal in this one, or "h" to send it here`
-  return `${head} "f" to start it in a ${inSuperset ? 'new terminal in this workspace' : 'new session'}, or "h" to send it here`
+  const w = topic === 'unrelated' && branchable ? `"w" for ${branchable === 'superset' ? 'a new Superset workspace' : 'a new worktree on its own branch'}, ` : ''
+  return `${head} ${w}"f" for a new terminal, or "h" to send it here`
 }
 
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
@@ -178,24 +181,66 @@ async function ran($: EngineInterface, argv: string[]) {
   }
 }
 
+async function out($: EngineInterface, argv: string[]) {
+  try {
+    const r = await $.process.run(argv, { timeoutMs: 15_000 })
+    return r.exitCode === 0 ? r.stdout.trim() : ''
+  } catch {
+    return ''
+  }
+}
+
+/** Quotes for a POSIX shell, and for an AppleScript string. */
+const sh = (s: string) => `'${s.replaceAll("'", "'\\''")}'`
+const applescript = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', '\\"')
+
 /**
- * Opens a new session for the held prompt and says where, or null when none could be opened:
- * a new Superset workspace, a new terminal in this one, a tmux window, or a terminal window.
+ * Opens Claude with the prompt in a new terminal at `dir`, wherever this session runs: a tmux
+ * window, or a new terminal window on Linux (xdg-terminal-exec), macOS (Terminal) or Windows
+ * (Windows Terminal). Says where, or null when none could be opened.
+ */
+async function openTerminal($: EngineInterface, dir: string, text: string): Promise<string | null> {
+  if ((await ran($, ['sh', '-c', 'test -n "$TMUX"'])) && (await ran($, ['tmux', 'new-window', ...(dir ? ['-c', dir] : []), '--', 'claude', text]))) return 'a new tmux window'
+  if ((await ran($, ['sh', '-c', 'command -v xdg-terminal-exec'])) && (await ran($, ['setsid', '-f', 'xdg-terminal-exec', ...(dir ? [`--dir=${dir}`] : []), 'claude', text]))) return 'a new terminal window'
+  if (await ran($, ['sh', '-c', 'test "$(uname)" = Darwin'])) {
+    const script = applescript(`cd ${sh(dir || '.')} && claude ${sh(text)}`)
+    if (await ran($, ['osascript', '-e', `tell application "Terminal" to do script "${script}"`, '-e', 'tell application "Terminal" to activate'])) return 'a new Terminal window'
+  }
+  if ((await ran($, ['where', 'wt.exe'])) && (await ran($, ['wt.exe', '-d', dir || '.', 'claude', text]))) return 'a new Windows Terminal tab'
+  return null
+}
+
+/** A new git worktree next to the repository, on a new branch from the default one; its folder, or null. */
+async function newWorktree($: EngineInterface, repo: string, slug: string): Promise<string | null> {
+  const dir = `${repo}-${slug}`
+  const base = (await out($, ['git', '-C', repo, 'symbolic-ref', '--short', 'refs/remotes/origin/HEAD'])) || 'HEAD'
+  return (await ran($, ['git', '-C', repo, 'worktree', 'add', '-b', slug, dir, base])) ? dir : null
+}
+
+/**
+ * Opens a new session for the held prompt and says where, or null when none could be opened.
+ * "workspace" gives unrelated work its own branch: a new Superset workspace inside Superset, a
+ * new git worktree elsewhere. Otherwise a new terminal: in the Superset workspace, a tmux
+ * window, or a terminal window.
  */
 async function openSession($: EngineInterface, held: Fresh, where: 'terminal' | 'workspace'): Promise<string | null> {
-  const { text, ws } = held
+  const { text, ws, repo } = held
   await handOff($, text)
-  if (ws && where === 'workspace') {
-    const slug = slugOf(text)
+  const slug = slugOf(text)
+  if (where === 'workspace' && ws) {
     if (await ran($, ['superset', 'ws', 'create', '--local', '--project', ws.projectId, '--name', slug, '--branch', slug, '--agent', 'claude', '--prompt', text])) return `a new Superset workspace (${slug})`
+  } else if (where === 'workspace' && repo) {
+    const dir = await newWorktree($, repo, slug)
+    if (dir) {
+      const opened = await openTerminal($, dir, text)
+      if (opened) return `${opened}, on a new worktree (branch ${slug})`
+      await ran($, ['git', '-C', repo, 'worktree', 'remove', dir])
+      await ran($, ['git', '-C', repo, 'branch', '-D', slug])
+    }
   }
   if (ws && (await ran($, ['superset', 'agents', 'create', '--local', '--workspace', ws.id, '--agent', 'claude', '--prompt', text]))) return `a new terminal in ${ws.name}`
-  const cwd = await $.session.cwd().catch(() => '')
-  const tmuxAt = cwd ? ['-c', cwd] : []
-  if (await ran($, ['sh', '-c', 'test -n "$TMUX"']) && (await ran($, ['tmux', 'new-window', ...tmuxAt, '--', 'claude', text]))) return 'a new tmux window'
-  if (await ran($, ['sh', '-c', 'command -v xdg-terminal-exec'])) {
-    if (await ran($, ['setsid', '-f', 'xdg-terminal-exec', ...(cwd ? [`--dir=${cwd}`] : []), 'claude', text])) return 'a new terminal window'
-  }
+  const opened = await openTerminal($, await $.session.cwd().catch(() => ''), text)
+  if (opened) return opened
   await $.store.set('handoff', null)
   return null
 }
@@ -277,9 +322,9 @@ export const register: Register = on => {
     const held = await read($, freshA)
     if (held) {
       await update($, freshA, () => null)
-      if (WORKSPACE.test(typed) && held.ws) {
+      if (WORKSPACE.test(typed) && (held.ws || held.repo)) {
         void startFresh($, held, 'workspace')
-        return { drop: '✨ Prompt Forge: opening a new Superset workspace for your task.' }
+        return { drop: `✨ Prompt Forge: opening a new ${held.ws ? 'Superset workspace' : 'worktree'} for your task.` }
       }
       if (FRESH.test(typed)) {
         void startFresh($, held)
@@ -301,8 +346,9 @@ export const register: Register = on => {
         const topic = await topicOf($, typed)
         if (topic !== 'continues') {
           const ws = await supersetWorkspace($)
-          await update($, freshA, () => ({ text: e.text, tokens, topic, ws }))
-          return { drop: freshNote(tokens, topic, ws !== null) }
+          const repo = (await out($, ['git', 'rev-parse', '--show-toplevel'])) || null
+          await update($, freshA, () => ({ text: e.text, tokens, topic, ws, repo }))
+          return { drop: freshNote(tokens, topic, ws ? 'superset' : repo ? 'git' : null) }
         }
       }
     }
@@ -335,12 +381,12 @@ export const register: Register = on => {
     const fresh = await read($, freshA)
     if (!fresh || e.props.hasSurvey) return next(e)
     const { Box, Button, Text } = $.ui.resolve(e)
-    const unrelated = fresh.topic === 'unrelated' && fresh.ws
+    const branch = fresh.topic === 'unrelated' ? (fresh.ws ? 'New workspace (w)' : fresh.repo ? 'New worktree (w)' : null) : null
     return (
       <Box flexDirection="row" gap={1} borderStyle="round" borderColor="magenta" paddingX={1}>
-        <Text bold color="magenta">✨ {unrelated ? 'Unrelated task?' : 'New task?'} {kTokens(fresh.tokens)} tokens of old conversation ride along</Text>
-        {unrelated && <Button key="workspace" label="New workspace (w)" variant="primary" onPress={() => startFresh($, fresh, 'workspace')} />}
-        <Button key="fresh" label={fresh.ws ? 'New terminal (f)' : 'Start fresh (f)'} variant={unrelated ? 'secondary' : 'primary'} onPress={() => startFresh($, fresh)} />
+        <Text bold color="magenta">✨ {fresh.topic === 'unrelated' ? 'Unrelated task?' : 'New task?'} {kTokens(fresh.tokens)} tokens of old conversation ride along</Text>
+        {branch && <Button key="workspace" label={branch} variant="primary" onPress={() => startFresh($, fresh, 'workspace')} />}
+        <Button key="fresh" label="New terminal (f)" variant={branch ? 'secondary' : 'primary'} onPress={() => startFresh($, fresh)} />
         <Button key="here" label="Send here (h)" onPress={() => sendHere($, fresh.text)} />
       </Box>
     )
