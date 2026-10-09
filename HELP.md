@@ -100,23 +100,23 @@ The rules aim for a rewrite that makes your prompt more explicit without adding 
 
 ## When it asks you first
 
-Some prompts can't be sharpened without guessing, even with the conversation: *"rename it so it's independent from the other one"* right after a session start, for example. Instead of guessing, Prompt Forge holds the prompt and shows its questions above the prompt box:
+Some prompts can't be sharpened without guessing, even with the conversation: *"rename it so it's independent from the other one"* right after a session start, for example. Instead of guessing, Prompt Forge holds the prompt and lists its questions in the transcript, with a small box above the prompt:
 
 ```text
-╭──────────────────────────────────────────────────────────────╮
-│ ✨ Before I send this, I need a bit more context               │
-│ you typed: rename it so it's independent from the other one   │
-│ 1. Which plugin should be renamed?                             │
-│ 2. What should the new name be?                                │
-│ Type your answer below and press Enter. The agent continues…  │
-│ [Send as typed]  [Cancel]                                      │
-╰──────────────────────────────────────────────────────────────╯
+● Prompt dropped by a hook: ✨ Prompt Forge asks: 1. Which plugin should be
+  renamed?  2. What should the new name be?  ↳ reply below, or send "raw:" to
+  send your prompt as typed
+╭───────────────────────────────────────────────────────────────────────╮
+│ ✨ Prompt Forge is waiting for your answer [ Send as typed ] [ Cancel ] │
+╰───────────────────────────────────────────────────────────────────────╯
 ```
+
+"Prompt dropped by a hook" is Claude Code's own prefix: the prompt is held, not lost. On a tall terminal the box also repeats the questions and what you typed; on a short one it stays one row.
 
 - **Answer** by typing in the normal prompt box and pressing Enter. Any length counts, even two words. Your original prompt and your answer are forged together into one prompt and sent, and the agent gets to work.
 - **Send as typed** sends your original prompt unchanged.
 - **Cancel** drops the held prompt. Nothing is sent.
-- Starting your next message with `raw:` also drops the held prompt and sends that message untouched. Slash commands don't affect it.
+- Sending `raw:` alone sends the held prompt as typed (handy when the box above the prompt is hidden). Starting your next message with `raw:` and some text drops the held prompt and sends that text untouched. Slash commands don't affect it.
 - If the second pass still can't produce a rewrite, your original prompt and your answer go out together, as typed.
 
 You're asked at most once per prompt.
@@ -124,13 +124,14 @@ You're asked at most once per prompt.
 ## Reading the card
 
 ```text
-╭─────────────────────────────────────────────────────────────╮
-│ ✨ I enhanced your prompt like this                           │   title
-│ you typed: can u make the dashboard load faster its really …  │   dim: your original (first 400 chars)
-│ sent: Make the dashboard's orders page load faster; …        │   what Claude actually received
-│ + stated the goal first   + added a done check               │   green: what improved (up to 4 notes)
-╰─────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────────────────────────────╮
+│ ✨ Prompt enhanced  + stated the goal first  + kept your API constraint … │   title, green: what improved
+│ you typed: can u make the dashboard load faster its really slow on the … │   dim: your original, one line
+│ sent: Make the dashboard's orders page load faster; it is currently … (ctrl+o) │   what Claude received, clipped
+╰────────────────────────────────────────────────────────────────────────╯
 ```
+
+The card stays a few rows tall so it doesn't scroll away on a small terminal; a "✨ Prompt enhanced" toast also shows as the prompt goes out.
 
 - **ctrl+o** expands the transcript and shows the plain sent text without the card. Press it again to return.
 - The card is drawn from the session's memory of the last 50 rewrites. After a restart or `--resume`, older prompts show as plain sent text.
@@ -196,7 +197,7 @@ Prompt Forge rewrites the prompt with Claude Code's `prompt.submit` hook. If ano
 | Prompts never get a card | Check `/forge` (it may be off), and make sure the prompt has 5+ words and doesn't start with `/` or `raw:`. Run `claude plugin validate` on the plugin folder. |
 | "Prompt Forge skipped (api-error)" | The Haiku call failed: a network problem, a rate limit, or Haiku not being available on your plan or provider. Your prompt was sent as typed. |
 | "Prompt Forge skipped (empty-reply)" | Haiku returned nothing. Retry, or send with `raw:`. |
-| "Prompt Forge needs an answer before sending: …" | It asked the questions shown in that line. Answer them in the prompt box, send `raw:` alone to send your prompt as typed, or use **Send as typed** / **Cancel** in the box above the prompt. |
+| "Prompt Forge asks: …" | It asked the questions shown in that line. Answer them in the prompt box, send `raw:` alone to send your prompt as typed, or use **Send as typed** / **Cancel** in the box above the prompt. |
 | "no usable rewrite, sent as typed" | Haiku's reply wasn't a rewrite (for example it wrote prose back). The forge never sends such a reply; your prompt went out as typed. |
 | `/forge` is not recognized | The plugin isn't loaded. Check `/plugin` → **Installed**, and that Claude Code is 2.1.289 or newer. |
 | A rewrite changed your meaning | Resend with `raw:`, then [report it](https://github.com/tomikng/prompt-forge/issues/new?template=bad-rewrite.yml) with both versions. |

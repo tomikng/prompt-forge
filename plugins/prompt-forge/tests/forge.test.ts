@@ -69,7 +69,7 @@ test('the transcript row shows the before/after card', async ($, on) => {
       plugin: 'prompt-forge', surface, component: 'UserMessage',
       props: { text: 'Make the dashboard load faster. Done when first paint is under 1s.', origin: { kind: 'composer' }, isExpanded: false },
     } as never)
-    expect(await ui.find({ type: 'Text', text: /I enhanced your prompt/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Prompt enhanced/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /you typed: can you make the dashboard/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /\+ stated the goal/ })).toBeDefined()
     await ui.unmount()
@@ -117,7 +117,7 @@ test('an unclear prompt is held, its questions asked, and the answer sends a for
 
   const first = await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
   // The notice names the questions too, in case the band above the prompt never shows.
-  expect('drop' in first && first.drop).toContain('1) Which plugin should be renamed?  2) What should the new name be?')
+  expect('drop' in first && first.drop).toContain('1. Which plugin should be renamed?  2. What should the new name be?')
   expect(seen).toBe('')
 
   for (const surface of ['terminal', 'desktop'] as const) {

@@ -32,7 +32,7 @@ Never answer the user or explain anything. Reply in exactly one of these three f
 UNCHANGED
 
 2. You cannot tell what the user wants even with the conversation, and a wrong guess would
-send the agent off track. Ask 1 to 3 short questions only the user can answer: what they
+send the agent off track. Ask 1 to 3 questions only the user can answer, each under 12 words: what they
 mean by an unclear reference, which of several options they want, a name or value only they
 know. Never ask where code lives, what the stack is, or for logs or metrics: the agent reads
 the code and finds those itself, so rewrite the prompt instead.
@@ -107,9 +107,14 @@ export function wantsForge(text: string): boolean {
  * prompt may never show (a survey holds it, or another plugin's band answers first).
  */
 export function holdNote(questions: readonly string[]): string {
-  const qs = questions.length === 1 ? questions[0] : questions.map((q, i) => `${i + 1}) ${q}`).join('  ')
-  return `✨ Prompt Forge needs an answer before sending: ${qs}  Reply in the prompt box, or send "raw:" alone to send your prompt as typed.`
+  // One line: the engine draws a drop's text as a single paragraph, newlines included.
+  const qs = questions.length === 1 ? questions[0] : questions.map((q, i) => `${i + 1}. ${q}`).join('  ')
+  return `✨ Prompt Forge asks: ${qs}  ↳ reply below, or send "raw:" to send your prompt as typed`
 }
+
+/** A toast that outlasts the card scrolling away on a short terminal. */
+const enhancedNote = (added: readonly string[]) =>
+  `✨ Prompt enhanced${added.length ? `: ${added.slice(0, 2).join(', ')}` : ''} (ctrl+o on it shows the full text)`
 
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ')
@@ -189,6 +194,7 @@ export const register: Register = on => {
         const out = await forge($, held.original, answers)
         if (out.kind !== 'rewrite') return next({ ...e, text: plain })
         await update($, forgedA, list => [...list, { original: `${held.original}\n↳ ${typed}`, enhanced: out.enhanced, added: out.added }].slice(-50))
+        $.ui.toast(enhancedNote(out.added))
         return next({ ...e, text: out.enhanced })
       } finally {
         $.ui.status(undefined)
@@ -214,6 +220,7 @@ export const register: Register = on => {
       }
       const item: Forged = { original: e.text, enhanced: out.enhanced, added: out.added }
       await update($, forgedA, list => [...list, item].slice(-50))
+      $.ui.toast(enhancedNote(out.added))
       return next({ ...e, text: out.enhanced })
     } finally {
       $.ui.status(undefined)
@@ -225,13 +232,12 @@ export const register: Register = on => {
     const held = await read($, pendingA)
     if (!held || e.props.hasSurvey) return next(e)
     const { Box, Button, Text } = $.ui.resolve(e)
+    // On a short terminal the band is one row: the transcript line above carries the questions.
+    const roomy = e.props.maxRows >= 14
     return (
       <Box flexDirection="column" borderStyle="round" borderColor="magenta" paddingX={1}>
-        <Text bold color="magenta">✨ Before I send this, I need a bit more context</Text>
-        <Text dimColor>you typed: {clip(held.original, 200)}</Text>
-        {held.questions.map((q, i) => <Text>{`${i + 1}. ${q}`}</Text>)}
-        <Text dimColor>Type your answer below and press Enter. The agent continues with both.</Text>
-        <Box flexDirection="row">
+        <Box flexDirection="row" gap={1}>
+          <Text bold color="magenta">✨ Prompt Forge is waiting for your answer</Text>
           <Button
             key="send-as-typed"
             label="Send as typed"
@@ -240,9 +246,10 @@ export const register: Register = on => {
               await $.prompt.submit({ text: held.original, asUser: true })
             }}
           />
-          <Text> </Text>
           <Button key="cancel" label="Cancel" onPress={() => update($, pendingA, () => null)} />
         </Box>
+        {roomy && <Text dimColor wrap="truncate-end">you typed: {clip(held.original, 200)}</Text>}
+        {roomy && held.questions.map((q, i) => <Text>{`${i + 1}. ${q}`}</Text>)}
       </Box>
     )
   })
@@ -256,10 +263,12 @@ export const register: Register = on => {
     const { Box, Text } = $.ui.resolve(e)
     return (
       <Box flexDirection="column" borderStyle="round" borderColor="magenta" paddingX={1}>
-        <Text bold color="magenta">✨ I enhanced your prompt like this</Text>
-        <Text dimColor>you typed: {clip(hit.original, 400)}</Text>
-        <Text>sent: {hit.enhanced}</Text>
-        {hit.added.length > 0 && <Text color="green">{hit.added.map(a => `+ ${a}`).join('   ')}</Text>}
+        <Text wrap="truncate-end">
+          <Text bold color="magenta">✨ Prompt enhanced</Text>
+          {hit.added.length > 0 && <Text color="green">{`  ${hit.added.map(a => `+ ${a}`).join('  ')}`}</Text>}
+        </Text>
+        <Text dimColor wrap="truncate-end">you typed: {hit.original.replace(/\s+/g, ' ')}</Text>
+        <Text>sent: {clip(hit.enhanced.replace(/\s+/g, ' '), 150)} <Text dimColor>(ctrl+o)</Text></Text>
       </Box>
     )
   })

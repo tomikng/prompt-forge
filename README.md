@@ -9,7 +9,7 @@
 **Sharper prompts for [Claude Code](https://claude.com/claude-code), without retyping them.**
 Type the way you think. Prompt Forge rewrites it into a clear, actionable prompt before Claude sees it, and shows you exactly what it changed.
 
-[![Version](https://img.shields.io/badge/version-0.3.1-f5a6e6)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-0.3.2-f5a6e6)](.claude-plugin/marketplace.json)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-d97757)](https://claude.com/claude-code)
 [![License: MIT](https://img.shields.io/github/license/tomikng/prompt-forge?color=22c55e)](LICENSE)
 [![Rewrites with](https://img.shields.io/badge/rewrites%20with-Haiku-38bdf8)](#cost-and-privacy)
@@ -40,11 +40,11 @@ Claude does its best work when a prompt states the goal, the limits and what "do
 
 **Every rewritten prompt** appears in the transcript as a card: what you typed, what was sent, and what improved.
 
-<img src="assets/card.png" alt="Transcript card: 'I enhanced your prompt like this', with the typed prompt, the sent prompt and green notes on what improved" width="100%">
+<img src="assets/card.png" alt="Compact transcript card: 'Prompt enhanced' with green notes on what improved, the typed prompt and the sent prompt" width="100%">
 
 **When it can't tell what you mean, it asks.** Your prompt is held, the questions appear above the prompt box, and your answer is folded in before anything is sent:
 
-<img src="assets/ask.png" alt="Question box above the prompt: 'Before I send this, I need a bit more context', two numbered questions, and Send as typed / Cancel buttons" width="100%">
+<img src="assets/ask.png" alt="Prompt Forge's questions in one transcript line, and a one-row box above the prompt with Send as typed / Cancel buttons" width="100%">
 
 **Already clear prompts are left alone**, `raw:` sends a prompt untouched, and `/forge` turns it on and off:
 
