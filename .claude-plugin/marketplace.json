@@ -1,6 +1,9 @@
 {
   "name": "prompt-forge",
-  "owner": { "name": "tomikng", "url": "https://github.com/tomikng" },
+  "owner": {
+    "name": "tomikng",
+    "url": "https://github.com/tomikng"
+  },
   "metadata": {
     "description": "Prompt Forge: spend Claude Code tokens where they count."
   },
@@ -8,11 +11,19 @@
     {
       "name": "prompt-forge",
       "source": "./plugins/prompt-forge",
-      "description": "Offers a fresh start when a new task would drag a long conversation along, and runs small, clear tasks on Sonnet: -41% per session in its benchmark. Prompt rewriting is opt-in (/forge rewrite on).",
-      "version": "0.7.0",
-      "author": { "name": "tomikng" },
+      "description": "Spend Claude Code tokens where they count: offers a fresh start when a new task would drag a long conversation along, and runs small, clear tasks on Sonnet. -41% per session in its benchmark; your prompts go out as typed.",
+      "version": "0.8.0",
+      "author": {
+        "name": "tomikng"
+      },
       "category": "productivity",
-      "keywords": ["prompting", "prompt-engineering", "rewrite", "productivity"]
+      "keywords": [
+        "cost",
+        "tokens",
+        "context",
+        "model-routing",
+        "productivity"
+      ]
     }
   ]
 }

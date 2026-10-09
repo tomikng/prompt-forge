@@ -21,7 +21,6 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-REGISTER = ROOT.parent / "plugins/prompt-forge/hooks/register.tsx"
 FIXTURE = ROOT / "fixture"
 HAIKU_IN, HAIKU_OUT = 1.0 / 1e6, 5.0 / 1e6  # $/token, matching the CLI's own Haiku cost figures
 
@@ -97,10 +96,16 @@ def check(task, cwd: Path, notes=None):
 
 # ── the forge: same system prompt and message shape as the plugin ───────────
 
+NO_ASK = """
+
+The user has already answered your questions (see <answers>). Do not ASK again: rewrite the
+prompt with the answers folded in, or answer UNCHANGED."""
+
+
 def forge_text(name):
-    s = REGISTER.read_text()
-    m = re.search(rf"const {name} = `([\s\S]*?)`\n", s)
-    return m.group(1).replace("\\n", "\n") if name == "NO_ASK" else m.group(1)
+    """The rewrite rules of the forge (removed from the plugin in 0.8; the last shipped ones are
+    bench/policies/lean.txt) and the follow-up note it sent with the user's answers."""
+    return NO_ASK if name == "NO_ASK" else (ROOT / "policies" / "lean.txt").read_text()
 
 
 def haiku(system, prompt):
@@ -218,7 +223,8 @@ def run_one(task, arm, rep):
     started = time.time()
     # "route-<policy>": the forge plus model routing, a clear prompt on a fresh context goes to Sonnet
     routed = arm.startswith("route") and is_clear(task["prompt"])
-    policy = "forge-" + arm.split("-", 1)[1] if arm.startswith("route") else arm
+    suffix = arm.split("-", 1)[1] if arm.startswith("route") else ""
+    policy = ("none" if suffix == "none" else "forge-" + suffix) if arm.startswith("route") else arm
     if routed:
         f = dict(sent=task["prompt"], route="sonnet (local check)", calls=[])
     else:

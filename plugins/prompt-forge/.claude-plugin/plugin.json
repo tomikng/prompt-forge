@@ -1,6 +1,6 @@
 {
   "name": "prompt-forge",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Spends your Claude Code tokens where they count: offers a fresh start when a new task would drag a long conversation along, and runs small, clear tasks on Sonnet.",
   "author": {
     "name": "tomikng",

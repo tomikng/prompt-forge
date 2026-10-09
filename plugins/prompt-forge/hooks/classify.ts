@@ -1,5 +1,5 @@
-// A prompt that already names what to touch and how to tell it's done gains nothing from a
-// rewrite, so it skips the model call. Pure pattern matching: free, local, instant.
+// A prompt that names what to touch and how to tell it's done is a small, clear task: on a
+// small context it runs on Sonnet. Pure pattern matching: free, local, instant.
 const ANCHOR = [
   /(?:^|[\s`'"(])[\w.-]+\/[\w./-]+/, // a path: src/users.js, app/models/
   /\b[\w-]+\.(?:[jt]sx?|mjs|cjs|py|rb|go|rs|java|kt|swift|c|cc|cpp|h|cs|php|vue|svelte|css|scss|html|json|ya?ml|toml|md|sql|sh)\b/i, // a file name

@@ -1,0 +1,32 @@
+name: 🧹 Wrong fresh-start offer
+description: Prompt Forge offered a fresh start on a follow-up, or never offered one on a clearly new task.
+title: "Fresh start: "
+labels: ["new-task-check"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What went wrong
+      options:
+        - It offered a fresh start, but my prompt needed the conversation
+        - It didn't offer one, though my prompt started an unrelated task
+    validations:
+      required: true
+  - type: textarea
+    id: before
+    attributes:
+      label: The last message or two before your prompt
+      description: Remove anything private first.
+    validations:
+      required: true
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Your prompt
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Prompt Forge version
+      placeholder: "0.8.0"

@@ -5,7 +5,7 @@ Plain SVG + SMIL, no dependencies: GitHub plays SMIL in <img>, and the files sta
 Every animation shares one looping clock per diagram: each element is active only inside its
 [t0, t1] window, so scenes play in order and the whole diagram loops seamlessly.
 
-    python3 scripts/diagrams.py        # writes assets/pipeline.svg, anatomy.svg, context.svg
+    python3 scripts/diagrams.py        # writes assets/spend.svg
 """
 from pathlib import Path
 from html import escape
@@ -121,194 +121,74 @@ def fading(clk: Clock, t0, t1, inner, fade=0.3):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1. Pipeline: three prompts take three routes through the forge.
+# Spend: how a prompt moves through Prompt Forge.
 # ─────────────────────────────────────────────────────────────────────────────
 
-def pipeline() -> str:
-    clk = Clock(21)
+def spend() -> str:
+    clk = Clock(20)
     W, H = 1100, 560
-    b = [text(36, 46, "How a prompt moves through Prompt Forge", 20, FG, 700),
+    b = [text(36, 46, "How Prompt Forge spends your tokens", 20, FG, 700),
          text(36, 70, "Three prompts, three routes. The loop replays them in order.", 13, DIM)]
-
-    P = {  # paths the packets follow
-        "in": "M100,290 L300,290", "gf": "M300,290 L525,290", "ctx": "M525,175 L525,255",
-        "fr": "M525,290 C645,290 645,178 775,178", "fa": "M525,290 L775,290",
-        "rc": "M775,178 C905,178 905,290 1000,290", "ar": "M775,318 C775,352 525,362 525,325",
-        "by": "M300,325 L300,488 L1000,488 L1000,325",
+    P = {
+        "in": "M100,290 L300,290", "nt-sc": "M300,290 L525,290", "nt-fr": "M300,290 C380,290 420,178 525,178",
+        "fr-sc": "M525,178 L525,290", "sc-son": "M525,290 C645,290 645,178 775,178", "sc-mod": "M525,290 L775,290",
+        "son-cl": "M775,178 C905,178 905,290 1000,290", "mod-cl": "M775,290 L1000,290",
+        "by": "M100,325 L100,488 L1000,488 L1000,325",
     }
-    b += [edge("M170,290 L213,290"), edge("M385,290 L438,290"), edge("M525,175 L525,253"),
+    b += [edge("M170,290 L213,290"), edge("M385,290 L438,290"), edge("M385,290 C410,290 420,178 438,178"),
+          edge("M525,206 L525,253"),
           edge("M610,290 C645,290 645,178 678,178"), edge("M610,290 L678,290"),
-          edge("M610,290 C645,290 645,402 678,402"),
-          edge("M870,178 C900,178 900,290 928,290"), edge("M870,402 C900,402 900,290 928,290"),
-          edge("M775,318 C775,352 525,362 525,327", dashed=True),
-          edge("M300,325 L300,488 L1000,488 L1000,327", dashed=True)]
-    b.append(text(650, 360, "your answer", 11.5, PEACH, 600, "middle"))
-    b.append(text(650, 478, "skipped: short reply, /command, raw:, /forge off, image attached, or already specific → sent exactly as typed", 12, GRAY, 400, "middle"))
+          edge("M870,178 C900,178 900,290 928,290"), edge("M870,290 L928,290"),
+          edge("M100,325 L100,488 L1000,488 L1000,327", dashed=True)]
+    b.append(text(395, 230, "f", 13, PINK, 700, "middle"))
+    b.append(text(412, 282, "h", 13, DIM, 700, "middle"))
+    b.append(text(550, 478, "short reply, /command, raw:, an image or file, /forge off → sent exactly as typed, no checks", 12, GRAY, 400, "middle"))
 
-    # node highlight spans per scenario (see timeline below)
-    b.append(node(clk, 30, 255, 140, 70, "⏎ You press Enter", "in the prompt box", BLUE, [(0.2, 1.3), (7.0, 8.0), (15.6, 16.6)]))
-    b.append(node(clk, 215, 255, 170, 70, "Worth forging?", "local check, no tokens", YELLOW, [(1.2, 2.1), (7.9, 8.8), (16.5, 17.5)]))
-    b.append(node(clk, 440, 255, 170, 70, "✨ Haiku forge", "one small model call", PINK, [(2.4, 3.9), (9.1, 10.3), (13.3, 14.2)]))
-    b.append(node(clk, 440, 115, 170, 60, "Recent conversation", "last ≤ 6 messages", GRAY, [(2.0, 3.0), (8.6, 9.6)]))
-    b.append(node(clk, 680, 150, 190, 56, "PROMPT → rewrite", "before/after card", GREEN, [(4.4, 5.3), (14.6, 15.2)]))
-    b.append(node(clk, 680, 262, 190, 56, "ASK → questions", "only you know it: held", PEACH, [(10.8, 13.0)]))
-    b.append(node(clk, 680, 374, 190, 56, "UNCHANGED", "already sharp → as typed", GRAY, []))
-    b.append(node(clk, 930, 255, 140, 70, "Claude works", "the agent continues", MAUVE, [(5.8, 7.0), (15.2, 16.2), (19.2, 20.6)]))
+    b.append(node(clk, 30, 255, 140, 70, "⏎ You press Enter", "sent as typed", BLUE, [(0.2, 1.2), (6.4, 7.4), (14.4, 15.4)]))
+    b.append(node(clk, 215, 255, 170, 70, "New task?", "Haiku, long sessions only", PINK, [(1.3, 2.4), (7.6, 9.4)]))
+    b.append(node(clk, 440, 150, 170, 56, "🧹 Fresh start", "/clear, then your prompt", PINK, [(9.6, 10.8)]))
+    b.append(node(clk, 440, 255, 170, 70, "Small & clear?", "local check, small context", YELLOW, [(2.6, 3.5), (10.9, 11.8)]))
+    b.append(node(clk, 680, 150, 190, 56, "⚡ Sonnet", "this turn, ~½ the price", GREEN, [(11.9, 12.8)]))
+    b.append(node(clk, 680, 262, 190, 56, "Your model", "as typed, instantly", GRAY, [(3.7, 4.6)]))
+    b.append(node(clk, 930, 255, 140, 70, "Claude works", "on what it needs", MAUVE, [(4.8, 6.0), (13.0, 14.2), (17.6, 19.6)]))
 
-    # ① rough prompt → rewrite
-    b.append(pill(clk, P["in"], 0.3, 1.3, "can u make the dashboard…", BLUE))
-    b.append(pill(clk, P["gf"], 1.6, 2.6, "can u make the dashboard…", BLUE))
-    b.append(pill(clk, P["ctx"], 2.0, 2.8, "context", GRAY, mono=False, width=80))
-    b.append(pill(clk, P["fr"], 3.7, 4.6, "✨ goal · limits · done when", GREEN, mono=False))
-    b.append(pill(clk, P["rc"], 5.1, 5.9, "✨ rewritten", GREEN, mono=False))
-    # ② unclear prompt → ask → answer → rewrite
-    b.append(pill(clk, P["in"], 7.0, 8.0, "rename it so it's…", BLUE))
-    b.append(pill(clk, P["gf"], 8.2, 9.2, "rename it so it's…", BLUE))
-    b.append(pill(clk, P["ctx"], 8.6, 9.4, "context", GRAY, mono=False, width=80))
-    b.append(pill(clk, P["fa"], 10.1, 10.9, "? needs a name", PEACH, mono=False))
-    b.append(fading(clk, 11.0, 12.8,
-                    f'<rect x="684" y="212" width="182" height="32" rx="8" fill="{PEACH}"/>'
-                    + text(775, 233, "What should the new name be?", 12, "#11111b", 700, "middle")))
-    b.append(pill(clk, P["ar"], 12.4, 13.4, "prompt-smith", PEACH))
-    b.append(pill(clk, P["fr"], 13.9, 14.7, "✨ rename to prompt-smith", GREEN, mono=False))
-    b.append(pill(clk, P["rc"], 14.6, 15.3, "✨ rewritten", GREEN, mono=False))
-    # ③ short reply → bypass
-    b.append(pill(clk, P["in"], 15.8, 16.7, "yes push them", BLUE))
-    b.append(pill(clk, P["by"], 17.2, 19.3, "yes push them", GRAY))
+    # ① a follow-up stays put
+    b.append(pill(clk, P["in"], 0.3, 1.2, "now add a test for it", BLUE))
+    b.append(fading(clk, 1.5, 2.4, f'<rect x="222" y="212" width="156" height="30" rx="8" fill="{GRAY}"/>'
+                    + text(300, 232, "follow-up: stay", 12, "#11111b", 700, "middle")))
+    b.append(pill(clk, P["nt-sc"], 2.3, 3.0, "now add a test for it", BLUE))
+    b.append(pill(clk, P["sc-mod"], 3.3, 4.1, "now add a test for it", BLUE))
+    b.append(pill(clk, P["mod-cl"], 4.3, 5.0, "as typed", BLUE, mono=False, width=90))
+    # ② a new, small task in a long session
+    b.append(pill(clk, P["in"], 6.5, 7.4, "In src/users.js rename…", BLUE))
+    b.append(fading(clk, 7.8, 9.4, f'<rect x="196" y="204" width="208" height="40" rx="8" fill="{PINK}"/>'
+                    + text(300, 221, "new task · 85k tokens of", 11.5, "#11111b", 700, "middle")
+                    + text(300, 236, "old conversation ride along", 11.5, "#11111b", 700, "middle")))
+    b.append(pill(clk, P["nt-fr"], 9.2, 10.0, "f", PINK, width=40))
+    b.append(pill(clk, P["fr-sc"], 10.3, 11.0, "fresh context", PINK, mono=False, width=110))
+    b.append(pill(clk, P["sc-son"], 11.3, 12.1, "names file + finish line", YELLOW, mono=False))
+    b.append(pill(clk, P["son-cl"], 12.3, 13.1, "⚡ Sonnet turn", GREEN, mono=False))
+    b.append(fading(clk, 13.0, 14.2, text(1000, 360, "$0.09 instead of $0.44", 13, GREEN, 700, "middle")))
+    # ③ short reply → straight through
+    b.append(pill(clk, P["in"], 14.5, 15.4, "yes push them", BLUE))
+    b.append(pill(clk, P["by"], 15.8, 17.8, "yes push them", GRAY))
 
-    caps = [(0.0, 7.0, "1", "A rough prompt is rewritten: goal first, your limits kept, a finish line added.", GREEN),
-            (7.0, 15.6, "2", "Only you know a missing fact (a value, a new name)? The forge asks, you answer, Claude continues.", PEACH),
-            (15.6, 21.0, "3", "Short replies, /commands and already-specific prompts skip the forge: no model call.", GRAY)]
+    caps = [(0.0, 6.4, "1", "A follow-up stays in the conversation, on your model, sent instantly as you typed it.", GRAY),
+            (6.4, 14.4, "2", "A new task in a long session: f clears the old conversation; small and clear, so Sonnet runs it.", PINK),
+            (14.4, 20.0, "3", "Short replies, /commands, raw: and attachments pass straight through: no checks, no cost.", BLUE)]
     for t0, t1, num, cap, col in caps:
         b.append(fading(clk, t0, t1, f'<circle cx="45" cy="529" r="10" fill="{col}"/>' + text(45, 533.5, num, 12, "#11111b", 700, "middle")
                         + text(64, 534, cap, 14, FG), fade=0.35))
-    for i, (t0, t1, num, _, col) in enumerate(caps):  # scene dots, top right
+    for i, (t0, t1, num, _, col) in enumerate(caps):
         cx = 990 + i * 30
         b.append(f'<circle cx="{cx}" cy="44" r="9" fill="none" stroke="{LINE}" stroke-width="1.5"/>')
         b.append(f'<circle cx="{cx}" cy="44" r="10" fill="{col}" fill-opacity="0.25" stroke="{col}" stroke-width="3" opacity="0">{clk.window("opacity", t0, t1, fade=0.3)}</circle>')
         b.append(text(cx, 48.5, str(i + 1), 11, FG, 700, "middle"))
-    return svg(W, H, "Animated diagram: how a prompt moves through Prompt Forge", "\n".join(b))
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 2. Anatomy: pieces of a rough prompt become the parts of the rewrite.
-# ─────────────────────────────────────────────────────────────────────────────
-
-def anatomy() -> str:
-    clk = Clock(14)
-    W, H = 1100, 470
-    b = [text(36, 46, "Anatomy of a rewrite", 20, FG, 700),
-         text(36, 70, "Only information is added: what “it” is, from the conversation. Your words stay; no new requirements.", 13, DIM)]
-
-    b.append(text(36, 116, "YOU TYPED", 11.5, BLUE, 700, extra='letter-spacing="1.5"'))
-    # the typed prompt as chips, so each phrase can light up in its target's colour
-    chips = [("ok make it faster, its really slow,", PINK, (1.0, 12.6)),
-             ("dont touch the api", PEACH, (3.6, 12.6))]
-    x = 36
-    for label, col, (t0, t1) in chips:
-        w = len(label) * 8.2 + 24
-        b.append(f'<rect x="{x}" y="130" width="{w}" height="34" rx="8" fill="{CARD}" stroke="{LINE}"/>')
-        b.append(f'<rect x="{x}" y="130" width="{w}" height="34" rx="8" fill="{col}" fill-opacity="0.18" stroke="{col}" '
-                 f'stroke-width="2" opacity="0">{clk.window("opacity", t0, t1)}</rect>')
-        b.append(text(x + 12, 152, label, 13.5, FG, 400, font=MONO,
-                      extra=f'textLength="{w - 24}" lengthAdjust="spacingAndGlyphs"'))
-        x += w + 10
-    b.append(fading(clk, 1.0, 12.6, text(1064, 152, "conversation: “ordersPageRows in src/orders.js is slow”", 12, MAUVE, 700, "end")))
-
-    b.append(fading(clk, 1.0, 12.6, f'<path d="M550,172 L550,214" stroke="{PINK}" stroke-width="2" marker-end="url(#arrow)"/>'
-                    + text(564, 199, "✨ Haiku forge", 13, PINK, 700)))
-    b.append(text(36, 240, "SENT TO CLAUDE", 11.5, GREEN, 700, extra='letter-spacing="1.5"'))
-    rows = [  # (label, text, colour, appears, badge)
-        ("Goal", "Make ordersPageRows in src/orders.js faster; it's really slow.", PINK, 1.6, ("it → named", MAUVE)),
-        ("Limit", "Don't touch the API.", PEACH, 4.2, None),
-        ("Done when", "not added: you didn't ask for one, so Claude decides", LINE, 6.8, ("nothing added", GRAY)),
-    ]
-    for i, (label, body, col, t0, badge) in enumerate(rows):
-        y = 262 + i * 52
-        dim = col == LINE
-        inner = (f'<rect x="36" y="{y}" width="1028" height="40" rx="8" fill="{CARD}" stroke="{col}" stroke-width="1.5"'
-                 + (' stroke-dasharray="6 5"' if dim else '') + '/>'
-                 + f'<rect x="36" y="{y}" width="6" height="40" rx="3" fill="{col}"/>'
-                 + text(56, y + 25, label, 13, GRAY if dim else col, 700)
-                 + text(170, y + 25, body, 13.5, DIM if dim else FG, 400, font=MONO))
-        if badge:
-            bl, bc = badge
-            bw = len(bl) * 7.4 + 24
-            inner += (f'<rect x="{1052 - bw:.0f}" y="{y + 9}" width="{bw:.0f}" height="22" rx="11" fill="{bc}"/>'
-                      + text(1052 - bw / 2, y + 24, bl, 12, "#11111b", 700, "middle"))
-        b.append(fading(clk, t0, 12.6, inner, fade=0.4))
-    notes = ["+ named “it”: ordersPageRows", "+ kept your API limit"]
-    nx = 36
-    for i, n in enumerate(notes):
-        w = len(n) * 7.6 + 26
-        t0 = 8.6 + i * 0.5
-        b.append(fading(clk, t0, 12.6,
-                        f'<rect x="{nx}" y="424" width="{w}" height="28" rx="14" fill="none" stroke="{GREEN}" stroke-width="1.5"/>'
-                        + text(nx + w / 2, 443, n, 12.5, GREEN, 600, "middle"), fade=0.3))
-        nx += w + 10
-    b.append(fading(clk, 8.4, 12.6, text(1064, 443, "shown on the card", 12, DIM, 400, "end"), fade=0.3))
-    return svg(W, H, "Animated diagram: anatomy of a Prompt Forge rewrite", "\n".join(b))
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 3. Context: the conversation names "it"; the forge asks only for what's missing.
-# ─────────────────────────────────────────────────────────────────────────────
-
-def context() -> str:
-    clk = Clock(16)
-    W, H = 1100, 500
-    b = [text(36, 46, "Context first, questions last", 20, FG, 700),
-         text(36, 70, "Recent messages resolve what “it” means; the rest is left to the agent. Only a fact only you know becomes a question.", 13, DIM)]
-
-    # left: recent conversation
-    b.append(text(36, 112, "RECENT CONVERSATION", 11.5, GRAY, 700, extra='letter-spacing="1.5"'))
-    b.append(f'<rect x="36" y="124" width="430" height="60" rx="10" fill="{CARD}" stroke="{LINE}"/>')
-    b.append(text(52, 148, "claude", 11.5, MAUVE, 700))
-    line, cw = "Published the prompt-forge plugin on GitHub.", 13 * 0.6
-    b.append(text(52, 170, line, 13, FG, font=MONO, extra=f'textLength="{len(line) * cw:.1f}" lengthAdjust="spacingAndGlyphs"'))
-    hx, hw = 52 + line.index("prompt-forge") * cw - 3, len("prompt-forge") * cw + 6
-    b.append(f'<rect x="36" y="196" width="430" height="44" rx="10" fill="{CARD}" stroke="{LINE}"/>')
-    b.append(text(52, 223, "you  ·  great, it works", 13, DIM, font=MONO))
-    # highlight "prompt-forge" in the conversation
-    b.append(f'<rect x="{hx:.1f}" y="155" width="{hw:.1f}" height="22" rx="5" fill="none" stroke="{PINK}" stroke-width="2" opacity="0">'
-             f'{clk.window("opacity", 1.4, 13.8)}</rect>')
-
-    # right: the new prompt
-    b.append(text(540, 112, "YOUR NEW PROMPT", 11.5, BLUE, 700, extra='letter-spacing="1.5"'))
-    b.append(f'<rect x="540" y="124" width="524" height="60" rx="10" fill="{CARD}" stroke="{BLUE}" stroke-width="1.5"/>')
-    prompt, pw = "rename it so it's independent", 15 * 0.6
-    b.append(text(558, 160, prompt, 15, FG, font=MONO, extra=f'textLength="{len(prompt) * pw:.1f}" lengthAdjust="spacingAndGlyphs"'))
-    ix = 558 + prompt.index("it") * pw - 3
-    b.append(f'<rect x="{ix:.1f}" y="143" width="{2 * pw + 6:.1f}" height="24" rx="5" fill="none" stroke="{PINK}" stroke-width="2" opacity="0">'
-             f'{clk.window("opacity", 0.6, 13.8)}</rect>')
-    icx = ix + pw + 3
-    b.append(fading(clk, 0.6, 13.8, text(icx, 202, "it = ?", 12, PINK, 700, "middle"), fade=0.3))
-    mid = hx + hw / 2
-    link = f"M{mid:.1f},154 C{mid:.1f},100 {icx:.1f},96 {icx:.1f},141"
-    b.append(f'<path d="{link}" fill="none" stroke="{PINK}" stroke-width="2" stroke-dasharray="700" stroke-dashoffset="700">'
-             f'{clk.draw(700, 1.6, 2.6, 13.8)}</path>')
-    b.append(fading(clk, 2.8, 13.8, text(1064, 202, "resolved from context: it = the prompt-forge plugin", 12, PINK, 700, "end")))
-
-    # forge verdict: ask for the one missing piece
-    b.append(fading(clk, 4.0, 13.8,
-                    f'<rect x="36" y="262" width="1028" height="58" rx="10" fill="{CARD}" stroke="{PEACH}" stroke-width="1.5"/>'
-                    + text(56, 287, "✨ Prompt Forge asks:", 13.5, PEACH, 700)
-                    + text(56, 308, "What should the new name be?", 13.5, FG, font=MONO)
-                    + text(1048, 298, "a name only you have in mind: the agent can't find it", 12, DIM, 400, "end")))
-    b.append(fading(clk, 6.2, 13.8,
-                    f'<rect x="36" y="334" width="1028" height="40" rx="10" fill="{CARD}" stroke="{BLUE}" stroke-width="1.5"/>'
-                    + text(56, 359, "you  ›", 13, BLUE, 700) + text(110, 359, "prompt-smith", 13.5, FG, font=MONO)))
-    b.append(fading(clk, 8.4, 13.8,
-                    f'<rect x="36" y="392" width="1028" height="64" rx="10" fill="{CARD}" stroke="{GREEN}" stroke-width="1.5"/>'
-                    + text(56, 416, "SENT TO CLAUDE", 11.5, GREEN, 700, extra='letter-spacing="1.5"')
-                    + text(56, 440, "Rename the prompt-forge plugin to prompt-smith everywhere, so it no longer depends on the other plugin.", 13, FG, font=MONO,
-                           extra='textLength="990" lengthAdjust="spacingAndGlyphs"')))
-    b.append(fading(clk, 10.0, 13.8, text(1064, 482, "→ Claude starts working", 13, MAUVE, 700, "end")))
-    return svg(W, H, "Animated diagram: context resolves 'it', the forge asks for the rest", "\n".join(b))
+    return svg(W, H, "Animated diagram: how Prompt Forge spends your tokens", "\n".join(b))
 
 
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
-    for name, make in (("pipeline", pipeline), ("anatomy", anatomy), ("context", context)):
+    for name, make in (("spend", spend),):
         (OUT / f"{name}.svg").write_text(make())
         print(f"assets/{name}.svg", len((OUT / f'{name}.svg').read_text()) // 1024, "KB")
