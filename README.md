@@ -9,7 +9,7 @@
 **Sharper prompts for [Claude Code](https://claude.com/claude-code), without retyping them.**
 Type the way you think. Prompt Forge rewrites it into a clear, actionable prompt before Claude sees it, and shows you exactly what it changed.
 
-[![Version](https://img.shields.io/badge/version-0.3.2-f5a6e6)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-0.4.0-f5a6e6)](.claude-plugin/marketplace.json)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-d97757)](https://claude.com/claude-code)
 [![License: MIT](https://img.shields.io/github/license/tomikng/prompt-forge?color=22c55e)](LICENSE)
 [![Rewrites with](https://img.shields.io/badge/rewrites%20with-Haiku-38bdf8)](#cost-and-privacy)
@@ -30,7 +30,8 @@ Claude does its best work when a prompt states the goal, the limits and what "do
 - ✅ **A finish line.** A "done when" check is added when your prompt implies one.
 - 🚫 **No inventions.** It never adds files, APIs or requirements you didn't mention.
 - 🧭 **Knows what "it" means.** The last few messages of the conversation are used to name what you're referring to.
-- ❓ **Asks instead of guessing.** If it still can't tell what you mean, it holds the prompt and asks you. Answer, and the agent continues with both.
+- 🤫 **Asks only when it must.** It asks you only for what nobody else can know (a value you agreed on, a name you have in mind). Everything the agent can work out itself, it leaves to the agent.
+- 🖼️ **Keeps your images.** A prompt with a pasted image or file goes out exactly as typed, attachment and all.
 - 👀 **Nothing hidden.** Every rewrite shows up as a before/after card in the transcript.
 - ✋ **Easy to bypass.** Start a prompt with `raw:` or run `/forge off`.
 
@@ -42,7 +43,7 @@ Claude does its best work when a prompt states the goal, the limits and what "do
 
 <img src="assets/card.png" alt="Compact transcript card: 'Prompt enhanced' with green notes on what improved, the typed prompt and the sent prompt" width="100%">
 
-**When it can't tell what you mean, it asks.** Your prompt is held, the questions appear above the prompt box, and your answer is folded in before anything is sent:
+**When only you know the answer, it asks.** Your prompt is held, the questions appear in the transcript, and your answer is folded in before anything is sent:
 
 <img src="assets/ask.png" alt="Prompt Forge's questions in one transcript line, and a one-row box above the prompt with Send as typed / Cancel buttons" width="100%">
 
@@ -126,9 +127,9 @@ rewritten prompt is sent to Claude ──▶ before/after card, and the agent ge
 | --- | --- |
 | Rewritten | Prompts you typed with **5 or more words** |
 | Skipped by the local check, no model call | Prompts that already name a target (a file, path, `code` or identifier) **and** a finish line (*run npm test*, *should*, *make sure*…), with no unresolved "it"/"that" |
-| Sent as typed | Slash commands, short replies ("yes go ahead"), prompts starting with `raw:`, and anything while `/forge off` |
-| Left alone, with a notice | Haiku judges the prompt already clear and specific |
-| Held, with questions | Haiku can't tell what you want even with the conversation. Your next message answers it; **Send as typed** or **Cancel** skip it |
+| Sent as typed | Slash commands, short replies ("yes go ahead"), prompts with an image or file attached, prompts starting with `raw:`, and anything while `/forge off` |
+| Left alone, with a notice | Haiku judges the prompt already clear, or not a task at all (a question to the agent like *"so this MR does nothing?"*) |
+| Held, with questions | The work depends on something only you know (a value you agreed on, a name you have in mind). Your next message answers it; `raw:` alone, **Send as typed** or **Cancel** skip it |
 | Sent as typed, with a notice | The Haiku call fails or takes longer than 15 s |
 
 Only prompts **you type** are forged. Messages from other plugins, background tasks or other agents pass straight through.
@@ -139,9 +140,9 @@ Every detail you typed stays word for word. The forge reorders it so the goal co
 
 <img src="assets/anatomy.svg" alt="Animated diagram: the typed prompt's phrases light up and become Goal, Constraints and an added Done-when line, followed by the notes shown on the card" width="100%">
 
-### Context first, questions second
+### Context first, questions last
 
-Before asking you anything, the forge reads the last few messages of the conversation to work out what "it" or "that" means. Only what nobody has said yet becomes a question:
+The forge reads the last few messages of the conversation to work out what "it" or "that" means. What it can't resolve, it leaves in your words for the agent, which has the whole conversation. Only what nobody but you can know becomes a question:
 
 <img src="assets/context.svg" alt="Animated diagram: 'prompt-forge' in the conversation resolves 'it' in the new prompt; the forge asks only for the missing new name, the answer is folded in, and Claude starts working" width="100%">
 
@@ -149,7 +150,7 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
 ## Benchmarks
 
-**In short:** the forge costs **under $0.003 per prompt**, about 1% of a typical Claude Code task. It paid for itself many times over on an ambiguous prompt, where it prevented a wrong result. On prompts that were already clear it's a small net cost, and on vague-but-guessable prompts it broke even. Over a whole six-prompt session it broke even ($2.12 vs $2.19), and the free local check routed every prompt correctly.
+**In short:** the forge costs **under $0.003 per prompt**, about 1% of a typical Claude Code task. It paid for itself many times over on an ambiguous prompt, where it prevented a wrong result. On prompts that were already clear it's a small net cost, and on vague-but-guessable prompts it broke even. Over a whole six-prompt session it broke even ($2.12 vs $2.19), and the free local check routed every prompt correctly. **Since 0.4.0 it almost never stops to ask:** zero questions over 18 session steps, with every step still right.
 
 <img src="assets/bench-net.svg" alt="Bar chart of net dollars per task with the forge minus without: V1 −$0.013, V2 +$0.010, V3 −$0.003, A1 −$0.073 with correct runs rising from 1/3 to 3/3, C1 −$0.008, C2 +$0.002. A shaded band marks ±$0.008 of run-to-run noise." width="100%">
 
@@ -183,7 +184,7 @@ The pattern: the forge saves money when a prompt can send Claude down the wrong 
 > [!NOTE]
 > **How big is the noise?** C1 sent the *identical* prompt in both arms, since the forge left it unchanged, yet its average still differed by $0.008. Treat anything within about ±$0.01 as noise, not an effect.
 
-The forge also costs you a round of questions on these prompts. It asked where the code lives even though Claude finds that itself. That's a known weakness of the current rewrite rules, and the benchmark is how we caught it.
+The 0.2 forge also cost you a round of questions on these prompts: it asked where the code lives even though Claude finds that itself. The benchmark caught it, and since 0.4.0 these prompts are rewritten without a question (see [Asking less](#asking-less-040)).
 
 ### ❌ Where the forge costs more: prompts that are already clear
 
@@ -217,7 +218,34 @@ Real work is a string of prompts on one session, not single prompts. So the same
 - **🎯 The local check made the right call 6/6 times, in about 1 µs, with zero tokens.** It skipped C2 and C1, which name a file and a finish line, and sent the four vague and ambiguous prompts to the forge. That's two Haiku calls saved per session.
 - **📈 The forge's input grows with the session, up to a cap.** Its input went from 1,647 tokens at step 1 to about 3,000 by step 4. It levels off there because the plugin sends at most 6 messages and ~3,000 characters of conversation.
 - **🔁 The ambiguous prompt stops being ambiguous mid-session.** Right after C1 renamed `getUser` to `fetchUser`, *"rename it to something clearer"* was clear enough from context: Claude got it right in all 3 sessions without the forge. The forge's big win on A1 above comes from cold starts, not long sessions.
-- **⚠️ The forge still asks too much.** It asked questions on **all four** prompts it handled, in every session: four interruptions per six prompts. On A1 it even had the answer (*"Do you mean `fetchUser` from the last task?"*) and asked anyway. The dollars hold up; the interruptions are the real cost today, and the next thing to fix is rewriting directly when the conversation makes the answer obvious.
+- **⚠️ The 0.2 forge asked too much.** It asked questions on **all four** prompts it handled, in every session: four interruptions per six prompts. On A1 it even had the answer (*"Do you mean `fetchUser` from the last task?"*) and asked anyway. **0.4.0 fixes this:** see [Asking less](#asking-less-040).
+
+### Asking less (0.4.0)
+
+Until 0.3, the forge stopped to ask whenever Haiku couldn't resolve "it" or "that" from the few messages it sees. But the agent behind it has the whole conversation and the code. In 0.4.0 Haiku asks **only for what nobody but you can know** (a value you agreed on, a name you have in mind) and leaves everything else, in your own words, for the agent. Questions to the agent (*"so this MR does nothing?"*) go through untouched, and so do prompts with an image or file attached: Haiku can't see those.
+
+**Routing** (Haiku only, 15 prompts × 3 runs, each labelled with whether a question is really needed; [`bench/policy.py`](bench/policy.py)):
+
+| Policy | Needless questions, no context | Needless questions, with conversation | Missed a question it needed |
+| --- | --- | --- | --- |
+| 0.3 (ask when unsure) | 23/33 | 15/33 | 3/24 |
+| **0.4 (ask only for your facts)** | **3/33** | **2/33** | **0/24** |
+
+**End to end**, the same six tasks and six-step sessions as above. *Times you step in* counts the forge's questions plus every time the agent stopped to ask:
+
+| | Times you step in | Correct | Mean $ |
+| --- | --- | --- | --- |
+| Single tasks, 0.3 | 3 (A1 ×3) | 18/18 | $0.208 |
+| **Single tasks, 0.4** | 3 (A1 ×3) | **18/18** | $0.242 |
+| Sessions, 0.3 | **6** (2 per session) | 18/18 | $2.53 per session |
+| **Sessions, 0.4** | **0** | **18/18** | $2.59 per session |
+
+- **🤫 In a real session it got out of the way.** Zero questions over 18 steps, every step right. The 0.3 forge asked twice per session for things the conversation already answered.
+- **🎯 It still stops for what only you know.** A1 at a cold start (*"rename it to something clearer"*, where you secretly want `findUserById`) still needs you, in both versions. 0.4 leaves "it" to the agent, which asked you itself in 2 of 3 runs, at the cost of a second Claude pass ($0.38 vs $0.21 per task). Every other task cost about the same.
+- **💵 Same money otherwise.** $2.53 vs $2.59 per session is within run-to-run noise, and the forge's own Haiku calls stayed around $0.013 per session. Both ran on the same day; the no-forge sessions above ran two days earlier and aren't directly comparable in dollars.
+- **🧪 One check was fixed along the way.** V3's check required `ann@example.com` to be accepted, but `example.com` is a reserved domain that can't receive mail, and rejecting it as junk is a fair call. The check now requires a real-looking address instead (`ann@gmail.com`) and only notes the `example.com` decision. Under the old check, forged V3 runs failed 5 of 6 times; under the new one, all 9 V3 runs across the three arms passed.
+
+Raw data: [`bench/results-final.json`](bench/results-final.json), [`bench/session-final.json`](bench/session-final.json), [`bench/results-policy.json`](bench/results-policy.json), [`bench/session-policy.json`](bench/session-policy.json), [`bench/policy-routing.json`](bench/policy-routing.json).
 
 <details>
 <summary>Method, caveats and how to reproduce</summary>
@@ -234,6 +262,9 @@ python3 bench/bench.py run --reps 3     # the benchmark (~$7 at Opus prices)
 python3 bench/bench.py strategies       # forge cost per prompt type (< $0.05)
 python3 bench/session.py run --reps 3   # the session benchmark (~$13 at Opus prices)
 python3 bench/bench.py report           # RESULTS.md and assets/bench-net.svg
+python3 bench/policy.py routing --reps 3                                        # ask-policy routing (Haiku only, cents)
+python3 bench/bench.py run --reps 3 --arms forge-ask,forge-minimal --out results-policy.json  # policies end to end
+python3 bench/session.py run --reps 3 --arms forge-minimal --out session-final.json
 ```
 </details>
 
@@ -245,13 +276,14 @@ python3 bench/bench.py report           # RESULTS.md and assets/bench-net.svg
 | `/forge off` | Send every prompt exactly as typed (remembered across sessions) |
 | `/forge on` | Turn rewriting back on |
 | `raw: <prompt>` | Send this one prompt untouched; the `raw:` prefix is removed (also drops a held prompt) |
+| `raw:` alone | While a prompt is held: send it as typed |
 | **Send as typed** / **Cancel** | On the question box: send the held prompt unchanged, or drop it |
 | **ctrl+o** | Expand the transcript to see the plain sent text without the card |
 
 ## Cost and privacy
 
-- **One or two small Haiku calls per forged prompt** (two when it asks a question), made through your own Claude Code session and billed like the rest of your usage: **under $0.003 per prompt** in the [benchmarks](#benchmarks). Short replies and commands cost nothing.
-- **What Haiku sees:** the rewrite rules, your prompt, and the text of the last few messages (at most 6 messages and about 3,000 characters), so it can resolve "it" and "that". No files, tool output or attachments.
+- **One small Haiku call per forged prompt** (two in the rare case it asks you something), made through your own Claude Code session and billed like the rest of your usage: **under $0.003 per prompt** in the [benchmarks](#benchmarks). Short replies and commands cost nothing.
+- **What Haiku sees:** the rewrite rules, your prompt, and the text of the last few messages (at most 6 messages and about 3,000 characters), so it can resolve "it" and "that". No files, tool output or attachments: a prompt with an attachment isn't sent to Haiku at all.
 - **Nothing leaves your machine any other way.** No telemetry, no third-party services.
 - The on/off switch is stored in the plugin's own store under `~/.claude/plugins/store/`. Before/after pairs for the cards live in session memory (the last 50) and are never written to disk by the plugin.
 

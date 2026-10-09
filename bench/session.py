@@ -58,11 +58,11 @@ def recent_context(msgs, budget=3000):
     return "\n\n".join(out)
 
 
-def forge_in_session(prompt, answer, convo):
+def forge_in_session(prompt, answer, convo, system):
     calls = []
     ctx = recent_context(convo)
     head = f"<recent_conversation>\n{ctx}\n</recent_conversation>\n\n" if ctx else ""
-    reply, tin, tout = haiku(forge_text("SYSTEM"), f"{head}<prompt>\n{prompt}\n</prompt>")
+    reply, tin, tout = haiku(system, f"{head}<prompt>\n{prompt}\n</prompt>")
     calls.append(dict(input=tin, output=tout))
     kind, val = parse(reply)
     if kind == "rewrite":
@@ -70,7 +70,7 @@ def forge_in_session(prompt, answer, convo):
     if kind != "ask":
         return dict(sent=prompt, route=kind, calls=calls)
     answers = "\n".join(f"Q: {q}" for q in val) + f"\nA: {answer}"
-    reply, tin, tout = haiku(forge_text("SYSTEM") + forge_text("NO_ASK"),
+    reply, tin, tout = haiku(system + forge_text("NO_ASK"),
                              f"{head}<prompt>\n{prompt}\n</prompt>\n\n<answers>\n{answers}\n</answers>")
     calls.append(dict(input=tin, output=tout))
     kind2, val2 = parse(reply)
@@ -98,10 +98,10 @@ def run_session(arm, rep, verdicts):
         answer = SESSION_ANSWER.get(tid, task["answer"])
         local = verdicts[tid]
         started = time.time()
-        if arm == "forge" and not local["clear"]:
-            f = forge_in_session(task["prompt"], answer, convo)
+        if arm.startswith("forge") and not local["clear"]:
+            f = forge_in_session(task["prompt"], answer, convo, bench.policy_text(arm))
         else:
-            f = dict(sent=task["prompt"], route="skip (local check)" if arm == "forge" else "none", calls=[])
+            f = dict(sent=task["prompt"], route="skip (local check)" if arm.startswith("forge") else "none", calls=[])
         # commit what's there, so "asked back" means this step changed nothing
         subprocess.run("git add -A && git -c user.email=b@b -c user.name=bench commit -qm step --allow-empty",
                        shell=True, cwd=cwd, check=True)
@@ -121,7 +121,7 @@ def run_session(arm, rep, verdicts):
                     problems=session_check(tid, cwd), seconds=round(time.time() - started))
         step["total_cost"] = t["cost"] + step["forge"]["cost"]
         steps.append(step)
-        print(f"{arm:8} rep{rep} step{step['step']} {tid} route={f['route']:18} ${step['total_cost']:.4f} "
+        print(f"{arm:13} rep{rep} step{step['step']} {tid} route={f['route']:18} ${step['total_cost']:.4f} "
               f"problems={step['problems']}", flush=True)
     shutil.rmtree(cwd, ignore_errors=True)
     return dict(arm=arm, rep=rep, steps=steps, total_cost=sum(s["total_cost"] for s in steps))
@@ -131,6 +131,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["run", "classify"])
     ap.add_argument("--reps", type=int, default=3)
+    ap.add_argument("--arms", default="baseline,forge")
+    ap.add_argument("--out", default="session-results.json")
     a = ap.parse_args()
     v = classify([BY_ID[t]["prompt"] for t in STEPS])
     verdicts = dict(zip(STEPS, v))
@@ -138,12 +140,12 @@ def main():
         for tid in STEPS:
             print(tid, verdicts[tid], "needs forge" if NEEDS_FORGE[tid] else "clear")
         return
-    jobs = [(arm, r) for r in range(1, a.reps + 1) for arm in ("baseline", "forge")]
+    jobs = [(arm, r) for r in range(1, a.reps + 1) for arm in a.arms.split(",")]
     with ThreadPoolExecutor(len(jobs)) as ex:
         sessions = list(ex.map(lambda j: run_session(*j, verdicts), jobs))
-    (ROOT / "session-results.json").write_text(json.dumps(
+    (ROOT / a.out).write_text(json.dumps(
         dict(steps=STEPS, verdicts=verdicts, needs_forge=NEEDS_FORGE, sessions=sessions), indent=1))
-    print("wrote", ROOT / "session-results.json")
+    print("wrote", ROOT / a.out)
 
 
 if __name__ == "__main__":

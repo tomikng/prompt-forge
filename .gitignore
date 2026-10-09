@@ -4,3 +4,8 @@ node_modules/
 bench/run.log
 bench/__pycache__/
 bench/session.log
+bench/policy-run.log
+bench/policy-session.log
+bench/final-run.log
+bench/final-session.log
+bench/policy-routing.log

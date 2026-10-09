@@ -157,6 +157,19 @@ test('a bare "raw:" sends the held prompt as typed', async ($, on) => {
   expect(seen).toBe('rename it so it is independent from the other one')
 })
 
+test('a prompt with an image goes out as typed, image and all, with no model call', async ($, on) => {
+  let calls = 0
+  let seen: { text: string; attachments?: readonly unknown[] } | undefined
+  mock.store(on)
+  on('model.complete', () => { calls += 1; return reply('ASK:\n- What is in the image?') })
+  on('prompt.submit', (_$, e) => { seen = e; return { text: e.text } })
+  const text = 'why does this look broken, fix it like in the screenshot [Image #1]'
+  await $.prompt.submit({ text, attachments: [{ type: 'image', mediaType: 'image/png' }], origin: { kind: 'composer' }, wait: false } as never)
+  expect(calls).toBe(0)
+  expect(seen?.text).toBe(text)
+  expect(seen?.attachments?.length).toBe(1)
+})
+
 test('if the answer pass fails, the original and the answer go out together', async ($, on) => {
   let seen = ''
   let n = 0

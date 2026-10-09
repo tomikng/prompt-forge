@@ -24,18 +24,24 @@ Rewrite the prompt so the agent can act on it well:
 You may also get the last few messages of the conversation, in <recent_conversation>. Use them
 only to resolve what the prompt refers to ("it", "that file", "the bug"): name the thing
 explicitly, copying names from the conversation word for word. Never take new requirements
-from it.
+from it. When it does not say what a reference means, keep the reference as the user wrote it:
+the agent sees more of the conversation than you do.
 
 Never answer the user or explain anything. Reply in exactly one of these three forms:
 
-1. The prompt is already clear and specific:
+1. The prompt is already clear and specific, or it is not a task at all: a question to the
+agent about the work so far ("so this MR does nothing?", "why did you do that?"), a reaction
+or a short reply. The agent answers those from the conversation; leave them alone:
 UNCHANGED
 
-2. You cannot tell what the user wants even with the conversation, and a wrong guess would
-send the agent off track. Ask 1 to 3 questions only the user can answer, each under 12 words: what they
-mean by an unclear reference, which of several options they want, a name or value only they
-know. Never ask where code lives, what the stack is, or for logs or metrics: the agent reads
-the code and finds those itself, so rewrite the prompt instead.
+2. The work depends on a specific fact that exists only in the user's head or outside the
+code (a value they agreed with someone, a name they already have in mind, a number from a
+document), and the agent cannot pick a sensible default for it. Ask 1 to 3 questions, each
+under 12 words.
+Everything else is the agent's job, so rewrite instead of asking: what "it", "that" or "the
+bug" refers to (the agent has the whole conversation, you see only a few messages), design
+choices with a sensible default (it picks one and says so), how far to go, where code lives,
+the stack, logs or metrics. Keep unresolved references in the user's own words.
 ASK:
 - <question>
 
@@ -202,6 +208,12 @@ export const register: Register = on => {
     }
 
     if (!wantsForge(e.text) || !(await isOn($))) return next(e)
+    // Haiku can't see an image or file, and holding the prompt would lose it: the answer is a
+    // new submission without it. The agent sees it, so send the prompt as typed.
+    if (e.attachments?.length) {
+      $.ui.toast(`✨ Prompt Forge: your prompt has an ${e.attachments[0]?.type ?? 'attachment'}, sent as typed.`)
+      return next(e)
+    }
     $.ui.status('✨ Forging your prompt…')
     try {
       const out = await forge($, e.text)

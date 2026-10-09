@@ -66,18 +66,24 @@ Rewrite the prompt so the agent can act on it well:
 You may also get the last few messages of the conversation, in <recent_conversation>. Use them
 only to resolve what the prompt refers to ("it", "that file", "the bug"): name the thing
 explicitly, copying names from the conversation word for word. Never take new requirements
-from it.
+from it. When it does not say what a reference means, keep the reference as the user wrote it:
+the agent sees more of the conversation than you do.
 
 Never answer the user or explain anything. Reply in exactly one of these three forms:
 
-1. The prompt is already clear and specific:
+1. The prompt is already clear and specific, or it is not a task at all: a question to the
+agent about the work so far ("so this MR does nothing?", "why did you do that?"), a reaction
+or a short reply. The agent answers those from the conversation; leave them alone:
 UNCHANGED
 
-2. You cannot tell what the user wants even with the conversation, and a wrong guess would
-send the agent off track. Ask 1 to 3 short questions only the user can answer: what they
-mean by an unclear reference, which of several options they want, a name or value only they
-know. Never ask where code lives, what the stack is, or for logs or metrics: the agent reads
-the code and finds those itself, so rewrite the prompt instead.
+2. The work depends on a specific fact that exists only in the user's head or outside the
+code (a value they agreed with someone, a name they already have in mind, a number from a
+document), and the agent cannot pick a sensible default for it. Ask 1 to 3 questions, each
+under 12 words.
+Everything else is the agent's job, so rewrite instead of asking: what "it", "that" or "the
+bug" refers to (the agent has the whole conversation, you see only a few messages), design
+choices with a sensible default (it picks one and says so), how far to go, where code lives,
+the stack, logs or metrics. Keep unresolved references in the user's own words.
 ASK:
 - <question>
 
@@ -100,7 +106,7 @@ The rules aim for a rewrite that makes your prompt more explicit without adding 
 
 ## When it asks you first
 
-Some prompts can't be sharpened without guessing, even with the conversation: *"rename it so it's independent from the other one"* right after a session start, for example. Instead of guessing, Prompt Forge holds the prompt and lists its questions in the transcript, with a small box above the prompt:
+Most unclear prompts don't need you: when Haiku can't tell what "it" or "the bug" means, it leaves those words as you wrote them, because the agent has the whole conversation and the code. When you leave a choice open (*"rename it to something clearer"*), the agent makes it. Prompt Forge only stops to ask when the work depends on something nobody but you can know: *"set the rate limit to what we agreed with the client"*. Instead of guessing, Prompt Forge holds the prompt and lists its questions in the transcript, with a small box above the prompt:
 
 ```text
 ● Prompt dropped by a hook: ✨ Prompt Forge asks: 1. Which plugin should be
@@ -112,6 +118,8 @@ Some prompts can't be sharpened without guessing, even with the conversation: *"
 ```
 
 "Prompt dropped by a hook" is Claude Code's own prefix: the prompt is held, not lost. On a tall terminal the box also repeats the questions and what you typed; on a short one it stays one row.
+
+Questions to the agent (*"so this MR does nothing?"*, *"why did you do that?"*) and prompts with a pasted image or file are never held: they go out as typed.
 
 - **Answer** by typing in the normal prompt box and pressing Enter. Any length counts, even two words. Your original prompt and your answer are forged together into one prompt and sent, and the agent gets to work.
 - **Send as typed** sends your original prompt unchanged.

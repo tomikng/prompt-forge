@@ -63,13 +63,16 @@ if (cartTotal([{ price: 2, quantity: 3 }, { price: 1.5, quantity: 2 }]) !== 9) t
 import { validateSignup } from './src/signup.js'
 const ok = e => validateSignup({ email: e, password: 'longenough1' }).ok
 for (const bad of ['junk', '', 'no-at-sign.com', 'a@']) if (ok(bad)) throw new Error('accepted ' + JSON.stringify(bad))
-if (!ok('ann@example.com')) throw new Error('rejected a valid email')
+if (!ok('ann@gmail.com') || !ok('first.last+tag@mail.company.io')) throw new Error('rejected a valid email')
+// example.com is reserved (RFC 2606) and can't receive mail: blocking it is a fair call for
+// "junk emails", so it's noted, not failed. (Before 0.4 benchmarks, this counted as a failure.)
+if (!ok('ann@example.com')) console.log('note: blocks example.com')
 """,
 }
 
 
-def check(task, cwd: Path):
-    problems = []
+def check(task, cwd: Path, notes=None):
+    problems, notes = [], notes if notes is not None else []
     if subprocess.run(["npm", "test"], cwd=cwd, capture_output=True).returncode != 0:
         problems.append("npm test fails")
     if (cwd / "src/api.js").read_text() != (FIXTURE / "src/api.js").read_text():
@@ -81,7 +84,9 @@ def check(task, cwd: Path):
         r = subprocess.run(["node", "_check.mjs"], cwd=cwd, capture_output=True, text=True)
         (cwd / "_check.mjs").unlink()
         if r.returncode != 0:
-            problems.append((r.stderr.strip().splitlines() or ["check failed"])[-1][:120])
+            lines = r.stderr.strip().splitlines()
+            # Node ends a crash with its version line: report the thrown error instead.
+            problems.append(next((l for l in lines if re.match(r"\s*\w*Error\b", l)), (lines or ["check failed"])[0])[:120])
     want = {"C1": "fetchUser", "A1": "findUserById"}.get(tid)
     if want and (re.search(r"\bgetUser\b", src) or want not in src):
         problems.append(f"not renamed to {want}")
@@ -132,13 +137,19 @@ def parse(reply):
     return ("rewrite", m.group(1).strip()) if m and m.group(1).strip() else ("malformed", None)
 
 
-def forge(task):
+def policy_text(arm):
+    """The forge's system prompt for an arm: "forge" is the plugin's own, "forge-<p>" bench/policies/<p>.txt."""
+    return forge_text("SYSTEM") if arm == "forge" else (ROOT / "policies" / f"{arm[6:]}.txt").read_text()
+
+
+def forge(task, system=None):
     """Runs the forge like the plugin does. Returns what gets sent, the route and the forge tokens."""
+    system = system or forge_text("SYSTEM")
     calls = []
     words = len(task["prompt"].split())
     if words < 5:
         return dict(sent=task["prompt"], route="skip", calls=calls)
-    reply, tin, tout = haiku(forge_text("SYSTEM"), f"<prompt>\n{task['prompt']}\n</prompt>")
+    reply, tin, tout = haiku(system, f"<prompt>\n{task['prompt']}\n</prompt>")
     calls.append(dict(input=tin, output=tout))
     kind, val = parse(reply)
     if kind == "rewrite":
@@ -146,7 +157,7 @@ def forge(task):
     if kind != "ask":
         return dict(sent=task["prompt"], route=kind, calls=calls)
     answers = "\n".join(f"Q: {q}" for q in val) + f"\nA: {task['answer']}"
-    reply, tin, tout = haiku(forge_text("SYSTEM") + forge_text("NO_ASK"),
+    reply, tin, tout = haiku(system + forge_text("NO_ASK"),
                              f"<prompt>\n{task['prompt']}\n</prompt>\n\n<answers>\n{answers}\n</answers>")
     calls.append(dict(input=tin, output=tout))
     kind2, val2 = parse(reply)
@@ -172,7 +183,8 @@ def claude(prompt, cwd, session=None):
 def asked_back(d, cwd):
     """Claude stopped to ask instead of working: nothing changed and the reply asks something."""
     changed = subprocess.run(["git", "status", "--porcelain"], cwd=cwd, capture_output=True, text=True).stdout.strip()
-    return not changed and "?" in (d.get("result") or "")[-400:]
+    tail = (d.get("result") or "")[-400:].lower()
+    return not changed and ("?" in tail or re.search(r"\b(confirm|which (one|name)|let me know|your call|go ahead)\b", tail) is not None)
 
 
 def tally(runs):
@@ -196,7 +208,7 @@ def run_one(task, arm, rep):
     subprocess.run("git init -q && git add -A && git -c user.email=b@b -c user.name=bench commit -qm fixture",
                    shell=True, cwd=cwd, check=True)
     started = time.time()
-    f = forge(task) if arm == "forge" else dict(sent=task["prompt"], route="none", calls=[])
+    f = forge(task, policy_text(arm)) if arm.startswith("forge") else dict(sent=task["prompt"], route="none", calls=[])
     runs = [claude(f["sent"], cwd)]
     replies = 0
     while asked_back(runs[-1], cwd) and replies < 2:
@@ -209,10 +221,10 @@ def run_one(task, arm, rep):
                questions=f.get("questions"), claude_calls=len(runs), clarifications=replies,
                claude=t, forge=dict(calls=len(f["calls"]), input=forge_in, output=forge_out,
                                     cost=forge_in * HAIKU_IN + forge_out * HAIKU_OUT),
-               problems=check(task, cwd), seconds=round(time.time() - started))
+               problems=check(task, cwd, notes := []), notes=notes, seconds=round(time.time() - started))
     res["total_cost"] = res["claude"]["cost"] + res["forge"]["cost"]
     shutil.rmtree(cwd, ignore_errors=True)
-    print(f"{task['id']} {arm:8} rep{rep} route={f['route']:10} ${res['total_cost']:.4f} "
+    print(f"{task['id']} {arm:13} rep{rep} route={f['route']:10} ${res['total_cost']:.4f} "
           f"calls={len(runs)} problems={res['problems']}", flush=True)
     return res
 
@@ -268,6 +280,8 @@ def main():
     ap.add_argument("--reps", type=int, default=2)
     ap.add_argument("--only", default="")
     ap.add_argument("--jobs", type=int, default=4)
+    ap.add_argument("--arms", default="baseline,forge", help="e.g. forge-ask,forge-minimal (bench/policies)")
+    ap.add_argument("--out", default="results.json")
     a = ap.parse_args()
     tasks = [t for t in TASKS if not a.only or t["id"] in a.only.split(",")]
     if a.cmd == "forge":
@@ -278,13 +292,14 @@ def main():
         return
     if a.cmd == "run":
         overhead()
-        jobs = [(t, arm, r) for r in range(1, a.reps + 1) for t in tasks for arm in ("baseline", "forge")]
+        jobs = [(t, arm, r) for r in range(1, a.reps + 1) for t in tasks for arm in a.arms.split(",")]
         with ThreadPoolExecutor(a.jobs) as ex:
             results = list(ex.map(lambda j: run_one(*j), jobs))
-        out = ROOT / "results.json"
+        out = ROOT / a.out
         ids = {t["id"] for t in tasks}
         old = json.loads(out.read_text())["results"] if out.exists() and a.only else []
-        results = [r for r in old if r["task"] not in ids] + results
+        arms = set(a.arms.split(","))
+        results = [r for r in old if r["task"] not in ids or r["arm"] not in arms] + results
         out.write_text(json.dumps(dict(overhead=overhead(), results=results), indent=1))
         print("wrote", out)
         return
