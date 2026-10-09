@@ -1,6 +1,8 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
+import type { Fresh, Workspace } from '../types'
+
 import { isClearEnough } from './classify'
 
 export { isClearEnough }
@@ -19,19 +21,24 @@ const freshA = atom({ plugin: 'prompt-forge', key: 'fresh' } as const, null)
 export const FRESH_MIN_TOKENS = 30_000
 const FRESH = /^(?:f|fresh|y|yes|clear)$/i
 const HERE = /^(?:h|here|n|no)$/i
+const WORKSPACE = /^(?:w|workspace)$/i
 const RAW = /^raw:\s*/i
 const MIN_WORDS = 5
 
-const TOPIC = `You decide whether a developer's new prompt to an AI coding agent continues the work in the
-recent conversation or starts an unrelated task.
+const TOPIC = `You decide where a developer's new prompt to an AI coding agent should run, given the recent
+conversation and the git branch the session works on.
 
 CONTINUES: the prompt refers to anything in the conversation ("it", "that", "the same", "the
 bug", "again", a file, function or result mentioned there), follows up on the last change, or
 could go wrong without the conversation's context.
-NEW: a self-contained task that names its own target and needs nothing said in the conversation.
+RELATED: a self-contained new task that names its own target and needs nothing said in the
+conversation, but belongs to the same piece of work: the same feature, ticket or branch.
+UNRELATED: a self-contained new task for a different piece of work, one that would belong on
+its own branch.
 
-When unsure, answer CONTINUES: starting fresh by mistake loses context the user needs.
-Reply with exactly one word: CONTINUES or NEW.`
+When unsure between CONTINUES and anything else, answer CONTINUES: moving the prompt by
+mistake loses context the user needs. When unsure between RELATED and UNRELATED, answer RELATED.
+Reply with exactly one word: CONTINUES, RELATED or UNRELATED.`
 
 /** The last few text messages of the conversation, newest last, within a character budget. */
 export function recentContext(msgs: readonly { role: string; text: string }[], budget = 3000): string {
@@ -51,8 +58,10 @@ export function recentContext(msgs: readonly { role: string; text: string }[], b
 const kTokens = (n: number) => `${Math.round(n / 1000)}k`
 
 /** The drop notice of a prompt held as a new task: one line, since the engine draws it as one. */
-export function freshNote(tokens: number): string {
-  return `✨ Prompt Forge: this looks like a new task, and every step here re-reads ${kTokens(tokens)} tokens of old conversation.  ↳ reply "f" to /clear and send it fresh, or "h" to send it here`
+export function freshNote(tokens: number, topic: 'related' | 'unrelated' = 'related', inSuperset = false): string {
+  const head = `✨ Prompt Forge: this looks like a${topic === 'unrelated' ? 'n unrelated' : ' new'} task, and every step here re-reads ${kTokens(tokens)} tokens of old conversation.  ↳ reply`
+  if (inSuperset && topic === 'unrelated') return `${head} "w" for a new Superset workspace, "f" for a new terminal in this one, or "h" to send it here`
+  return `${head} "f" to start it in a ${inSuperset ? 'new terminal in this workspace' : 'new session'}, or "h" to send it here`
 }
 
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
@@ -106,23 +115,105 @@ async function markCheap($: EngineInterface, text: string, tokens?: number) {
   cheapNext = text
 }
 
-/** Whether the prompt starts an unrelated task. Any failure answers no: never clear by mistake. */
-async function isNewTopic($: EngineInterface, text: string) {
+type Topic = 'continues' | 'related' | 'unrelated'
+
+/** Where the prompt belongs. Any failure answers "continues": never move a prompt by mistake. */
+async function topicOf($: EngineInterface, text: string): Promise<Topic> {
   const convo = await conversation($)
-  if (!convo) return false
+  if (!convo) return 'continues'
+  const branch = await currentBranch($)
   const r = await $.model.complete({
     model: 'haiku',
     system: TOPIC,
-    prompt: `<recent_conversation>\n${convo}\n</recent_conversation>\n\n<prompt>\n${text}\n</prompt>`,
-    maxTokens: 5,
+    prompt: `${branch ? `<branch>${branch}</branch>\n\n` : ''}<recent_conversation>\n${convo}\n</recent_conversation>\n\n<prompt>\n${text}\n</prompt>`,
+    maxTokens: 6,
     timeoutMs: 8_000,
   })
-  return r.isAnswered && /^\s*NEW\b/i.test(r.text)
+  if (!r.isAnswered) return 'continues'
+  const w = r.text.trim().toUpperCase()
+  return w.startsWith('UNRELATED') ? 'unrelated' : w.startsWith('RELATED') ? 'related' : 'continues'
 }
 
-/** /clear, then send the held prompt into the fresh conversation. */
-async function startFresh($: EngineInterface, text: string) {
+async function currentBranch($: EngineInterface) {
+  try {
+    const r = await $.process.run(['git', 'branch', '--show-current'], { timeoutMs: 5_000 })
+    return r.exitCode === 0 ? r.stdout.trim() : ''
+  } catch {
+    return ''
+  }
+}
+
+/** The Superset workspace this session runs in, matched by its worktree; null outside Superset. */
+async function supersetWorkspace($: EngineInterface): Promise<Workspace | null> {
+  try {
+    const cwd = await $.session.cwd()
+    if (!cwd) return null
+    const r = await $.process.run(['superset', 'ws', 'list', '--local', '--json'], { timeoutMs: 15_000 })
+    if (r.exitCode !== 0) return null
+    const list = JSON.parse(r.stdout) as { id: string; name: string; projectId: string; worktreePath?: string | null }[]
+    const ws = list.find(w => w.worktreePath && (cwd === w.worktreePath || cwd.startsWith(`${w.worktreePath}/`)))
+    return ws ? { id: ws.id, name: ws.name, projectId: ws.projectId } : null
+  } catch {
+    return null
+  }
+}
+
+/** A short branch and workspace name from the prompt's first words. */
+export function slugOf(text: string): string {
+  const words = text.toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(w => w && !STOP.has(w))
+  return (words.slice(0, 5).join('-') || 'new-task').slice(0, 48).replace(/-+$/, '')
+}
+const STOP = new Set(['a', 'an', 'the', 'in', 'on', 'to', 'of', 'and', 'for', 'please', 'can', 'you', 'u', 'pls', 'it', 'run'])
+
+/** Leaves a note for the new session: run this prompt's turn on Sonnet if it's small and clear. */
+async function handOff($: EngineInterface, text: string) {
+  if (isClearEnough(text) && (await $.store.get('route')) !== false) await $.store.set('handoff', text)
+}
+
+async function ran($: EngineInterface, argv: string[]) {
+  try {
+    return (await $.process.run(argv, { timeoutMs: 30_000 })).exitCode === 0
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Opens a new session for the held prompt and says where, or null when none could be opened:
+ * a new Superset workspace, a new terminal in this one, a tmux window, or a terminal window.
+ */
+async function openSession($: EngineInterface, held: Fresh, where: 'terminal' | 'workspace'): Promise<string | null> {
+  const { text, ws } = held
+  await handOff($, text)
+  if (ws && where === 'workspace') {
+    const slug = slugOf(text)
+    if (await ran($, ['superset', 'ws', 'create', '--local', '--project', ws.projectId, '--name', slug, '--branch', slug, '--agent', 'claude', '--prompt', text])) return `a new Superset workspace (${slug})`
+  }
+  if (ws && (await ran($, ['superset', 'agents', 'create', '--local', '--workspace', ws.id, '--agent', 'claude', '--prompt', text]))) return `a new terminal in ${ws.name}`
+  const cwd = await $.session.cwd().catch(() => '')
+  const tmuxAt = cwd ? ['-c', cwd] : []
+  if (await ran($, ['sh', '-c', 'test -n "$TMUX"']) && (await ran($, ['tmux', 'new-window', ...tmuxAt, '--', 'claude', text]))) return 'a new tmux window'
+  if (await ran($, ['sh', '-c', 'command -v xdg-terminal-exec'])) {
+    if (await ran($, ['setsid', '-f', 'xdg-terminal-exec', ...(cwd ? [`--dir=${cwd}`] : []), 'claude', text])) return 'a new terminal window'
+  }
+  await $.store.set('handoff', null)
+  return null
+}
+
+/**
+ * Starts the held prompt fresh: in a new session (keeping this one as it is), or, where none can be
+ * opened or the user prefers it, with /clear here.
+ */
+async function startFresh($: EngineInterface, held: Fresh, where: 'terminal' | 'workspace' = 'terminal') {
   await update($, freshA, () => null)
+  if ((await $.store.get('freshMode')) !== 'clear') {
+    const opened = await openSession($, held, where).catch(() => null)
+    if (opened) {
+      $.ui.toast(`✨ Prompt Forge: your new task is running in ${opened}; this session stays as it was.`)
+      return
+    }
+  }
+  const { text } = held
   try {
     await $.command.run({ command: 'clear' })
     await markCheap($, text, 0)
@@ -143,8 +234,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'forge',
-      description: 'Prompt Forge: /forge on|off, /forge fresh on|off, /forge model on|off, or /forge to see its state',
-      argumentHint: '[on|off|fresh on|off|model on|off]',
+      description: 'Prompt Forge: /forge on|off, /forge fresh on|off|new|clear, /forge model on|off, or /forge to see its state',
+      argumentHint: '[on|off|fresh on|off|new|clear|model on|off]',
     })
     return next(e)
   })
@@ -154,11 +245,13 @@ export const register: Register = on => {
     if (arg === 'on' || arg === 'off') await $.store.set('enabled', arg === 'on')
     if (arg === 'off') await update($, freshA, () => null)
     if (arg === 'fresh on' || arg === 'fresh off') await $.store.set('fresh', arg === 'fresh on')
+    if (arg === 'fresh clear' || arg === 'fresh new') await $.store.set('freshMode', arg === 'fresh clear' ? 'clear' : 'new')
     if (arg === 'model on' || arg === 'model off') await $.store.set('route', arg === 'model on')
     const flag = async (key: string) => ((await $.store.get(key)) !== false ? 'ON' : 'OFF')
     return {
       text: (await isOn($))
-        ? `✨ Prompt Forge is ON. Fresh start for new tasks in long sessions: ${await flag('fresh')} (/forge fresh on|off). ` +
+        ? `✨ Prompt Forge is ON. Fresh start for new tasks in long sessions: ${await flag('fresh')} (/forge fresh on|off), ` +
+          `${(await $.store.get('freshMode')) === 'clear' ? 'with /clear here' : 'in a new session'} (/forge fresh new|clear). ` +
           `Sonnet for small, clear tasks on a fresh context: ${await flag('route')} (/forge model on|off). ` +
           'Start a prompt with "raw:" to skip both.'
         : '✨ Prompt Forge is OFF. Prompts go out exactly as typed, on your model (/forge on).',
@@ -166,6 +259,13 @@ export const register: Register = on => {
   })
 
   on('prompt.submit', async ($, e, next) => {
+    // A session opened for a new task: run its first turn on Sonnet if the task is small and clear.
+    const handoff = await $.store.get('handoff')
+    if (typeof handoff === 'string' && norm(handoff) === norm(e.text)) {
+      await $.store.set('handoff', null)
+      await markCheap($, e.text, 0)
+      return next(e)
+    }
     if (e.origin.kind !== 'composer') return next(e)
     const typed = e.text.trim()
     if (typed.startsWith('/')) return next(e)
@@ -177,9 +277,13 @@ export const register: Register = on => {
     const held = await read($, freshA)
     if (held) {
       await update($, freshA, () => null)
+      if (WORKSPACE.test(typed) && held.ws) {
+        void startFresh($, held, 'workspace')
+        return { drop: '✨ Prompt Forge: opening a new Superset workspace for your task.' }
+      }
       if (FRESH.test(typed)) {
-        void startFresh($, held.text)
-        return { drop: '✨ Prompt Forge: starting fresh, your prompt follows the /clear.' }
+        void startFresh($, held)
+        return { drop: '✨ Prompt Forge: starting your task fresh.' }
       }
       if (HERE.test(typed)) {
         await markCheap($, held.text)
@@ -193,9 +297,13 @@ export const register: Register = on => {
     // An image or file would be lost by holding the prompt, so those always go out as typed.
     if (!e.attachments?.length && typed.split(/\s+/).length >= MIN_WORDS && (await $.store.get('fresh')) !== false) {
       const tokens = await conversationTokens($)
-      if (tokens >= FRESH_MIN_TOKENS && (await isNewTopic($, typed))) {
-        await update($, freshA, () => ({ text: e.text, tokens }))
-        return { drop: freshNote(tokens) }
+      if (tokens >= FRESH_MIN_TOKENS) {
+        const topic = await topicOf($, typed)
+        if (topic !== 'continues') {
+          const ws = await supersetWorkspace($)
+          await update($, freshA, () => ({ text: e.text, tokens, topic, ws }))
+          return { drop: freshNote(tokens, topic, ws !== null) }
+        }
       }
     }
     await markCheap($, e.text)
@@ -227,11 +335,13 @@ export const register: Register = on => {
     const fresh = await read($, freshA)
     if (!fresh || e.props.hasSurvey) return next(e)
     const { Box, Button, Text } = $.ui.resolve(e)
+    const unrelated = fresh.topic === 'unrelated' && fresh.ws
     return (
       <Box flexDirection="row" gap={1} borderStyle="round" borderColor="magenta" paddingX={1}>
-        <Text bold color="magenta">✨ New task? {kTokens(fresh.tokens)} tokens of old conversation ride along</Text>
-        <Button key="fresh" label="Start fresh & send" variant="primary" onPress={() => startFresh($, fresh.text)} />
-        <Button key="here" label="Send here" onPress={() => sendHere($, fresh.text)} />
+        <Text bold color="magenta">✨ {unrelated ? 'Unrelated task?' : 'New task?'} {kTokens(fresh.tokens)} tokens of old conversation ride along</Text>
+        {unrelated && <Button key="workspace" label="New workspace (w)" variant="primary" onPress={() => startFresh($, fresh, 'workspace')} />}
+        <Button key="fresh" label={fresh.ws ? 'New terminal (f)' : 'Start fresh (f)'} variant={unrelated ? 'secondary' : 'primary'} onPress={() => startFresh($, fresh)} />
+        <Button key="here" label="Send here (h)" onPress={() => sendHere($, fresh.text)} />
       </Box>
     )
   })

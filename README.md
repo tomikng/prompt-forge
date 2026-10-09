@@ -1,11 +1,15 @@
 <div align="center">
 
+<a href="assets/brag.mp4"><img src="assets/brag.gif" alt="Prompt Forge in 21 seconds: the cost per prompt climbs from $0.23 to $0.55 as the conversation piles up; a new task is held and, with one keypress, opens in a new terminal while the old session stays as it was; the small, clear task runs on Sonnet for $0.09 instead of $0.44; a six-prompt session drops from $2.20 to $1.29, −41%, all 18 steps still right" width="760"></a>
+
+<sub>▶ <a href="assets/brag.mp4">Watch the video</a> (21 s)</sub>
+
 # ✨ Prompt Forge
 
 **Spend your [Claude Code](https://claude.com/claude-code) tokens where they count.**
-Most of what a session costs is Claude re-reading the conversation. Prompt Forge offers a fresh start when a new task would drag a long conversation along, and runs small, clear tasks on Sonnet: **−41% per session** in [its benchmark](#benchmarks), every step still right.
+Most of what a session costs is Claude re-reading the conversation. Prompt Forge moves a new task into a fresh session (a new terminal, a new Superset workspace, or `/clear`) instead of dragging a long conversation along, and runs small, clear tasks on Sonnet: **−41% per session** in [its benchmark](#benchmarks), every step still right.
 
-[![Version](https://img.shields.io/badge/version-0.8.0-f5a6e6)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-0.9.0-f5a6e6)](.claude-plugin/marketplace.json)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-d97757)](https://claude.com/claude-code)
 [![License: MIT](https://img.shields.io/github/license/tomikng/prompt-forge?color=22c55e)](LICENSE)
 [![Benchmark](https://img.shields.io/badge/session%20cost-%E2%88%9241%25-22c55e)](#benchmarks)
@@ -21,7 +25,8 @@ Most of what a session costs is Claude re-reading the conversation. Prompt Forge
 
 In a long Claude Code session, every prompt makes Claude re-read everything said so far. In the benchmark session, the cost per prompt climbed from $0.23 to $0.55 as the conversation grew, mostly from re-reading it. Prompt Forge spends your tokens where they count:
 
-- 💸 **Fresh start for new tasks.** When a prompt starts something unrelated in a long session, it offers to `/clear` first and send your prompt into the empty conversation. One keypress (`f`), never on a follow-up.
+- 💸 **A fresh session for new tasks.** When a prompt starts something new in a long session, it offers to run it in a new session instead: a new terminal (`f`), or with Superset a new workspace for unrelated work (`w`). Your current session stays exactly as it was. One keypress, never on a follow-up.
+- 🧭 **The right place for the work.** A new task on the same feature gets a new terminal in the same workspace; an unrelated one gets its own Superset workspace and branch, so it doesn't land in this branch's diff.
 - ⚡ **Sonnet for small, clear tasks.** A prompt that names its file and its finish line, on a fresh context, runs that one turn on Claude Sonnet at about half the price. Your next prompt goes back to your model.
 - ✍️ **Your prompts, untouched.** Everything goes out exactly as you typed it, instantly. Haiku only runs one tiny check, and only in long sessions.
 - 🎯 **Measured, not guessed.** −41% per six-prompt session, every step still right, against a same-day baseline. The [benchmarks](#benchmarks) and their [caveats](#before-you-count-on-the-41) are below.
@@ -30,9 +35,9 @@ In a long Claude Code session, every prompt makes Claude re-read everything said
 
 ## See it
 
-**A new task in a long session:** Prompt Forge holds it and offers a fresh start. `f` clears the conversation and sends your prompt; since it's a small, clear task on a fresh context, that turn runs on Sonnet:
+**An unrelated task in a long session, in a Superset workspace:** Prompt Forge holds it and offers a fresh session. `w` opens a new workspace with its own branch and starts Claude there with your prompt; `f` would open a new terminal in this workspace; `h` sends it here. This session stays as it was. Since the task is small and clear, the new session's first turn runs on Sonnet:
 
-<img src="assets/fresh.png" alt="A new task in a long session: Prompt Forge says it would re-read 85k tokens of old conversation and offers Start fresh & send or Send here; after f, /clear runs, the prompt is sent, and a toast says the small, clear task runs on Sonnet" width="100%">
+<img src="assets/fresh.png" alt="An unrelated task in a long session: Prompt Forge says it would re-read 85k tokens of old conversation and offers New workspace (w), New terminal (f) or Send here (h); after w, a toast says the task is running in a new Superset workspace and this session stays as it was" width="100%">
 
 <sub>A faithful recreation of the plugin's terminal output (<code>scripts/mockups</code>, rendered by <code>scripts/render-assets.sh</code>); the wording comes straight from <code>hooks/register.tsx</code>.</sub>
 
@@ -79,17 +84,23 @@ claude plugin update prompt-forge@prompt-forge
 
 ## How it works
 
-<img src="assets/spend.svg" alt="Animated diagram: a follow-up goes straight to your model; a new task in a long session gets a fresh start (f), and because it names a file and a finish line it runs on Sonnet; short replies pass straight through" width="100%">
+<img src="assets/spend.svg" alt="Animated diagram: a follow-up goes straight to your model; a new task in a long session starts in a new session (f), and because it names a file and a finish line it runs on Sonnet; short replies pass straight through" width="100%">
 
 | What happens | When |
 | --- | --- |
-| Held, with a fresh-start offer | A new, unrelated task while the session re-reads 30k+ tokens of earlier conversation. Reply `f` to `/clear` and send it fresh, `h` to send it here; or use the buttons |
+| Held, with a fresh-session offer | A new task while the session re-reads 30k+ tokens of earlier conversation. `f` starts it in a new session, `w` (Superset, unrelated work) in a new workspace, `h` sends it here; or use the buttons |
 | Run on Sonnet | A clear prompt (it names a file, path, `code` or identifier **and** a finish line like *run npm test*, *should*, *make sure*) while the conversation is at most 10k tokens |
 | Sent as typed | Everything else: follow-ups, short sessions, short replies, slash commands, prompts with an image or file, `raw:` prompts, and anything while `/forge off` |
 
 - **New task or follow-up?** One tiny Haiku call reads the last few messages and your prompt. Anything that says "it", "that", "again" or names something from the conversation is a follow-up, and when unsure it answers follow-up: starting fresh by mistake would lose context you need.
+- **Where the new session opens.** Prompt Forge tries, in order:
+  1. **Superset:** if this session runs in a Superset workspace, a new Claude terminal in it (`superset agents create`), or for unrelated work with `w`, a new workspace with its own branch named after your prompt (`superset ws create`).
+  2. **tmux:** a new window running `claude "<your prompt>"`.
+  3. **A desktop terminal:** your default terminal via `xdg-terminal-exec`, in the same folder.
+  4. **Otherwise** `/clear` here, then your prompt. `/forge fresh clear` makes that the first choice.
+- **Related or unrelated?** The same Haiku check also sees the current git branch: a new task on the same feature, ticket or branch is *related* (new terminal), anything else *unrelated* (new workspace offered). When unsure it says related.
 - **Only the conversation counts.** Every request also carries the system prompt, tools and MCP servers (27k tokens on a bare install, often far more with plugins), which `/clear` can't remove. Prompt Forge takes the smallest context it has seen as that fixed part and counts only what's above it.
-- **Sonnet only on a small context.** The prompt cache is per model: switching a long conversation would make Sonnet re-read all of it uncached, which costs more than staying on Opus. So routing waits for a fresh start or a new session.
+- **Sonnet only on a small context.** The prompt cache is per model: switching a long conversation would make Sonnet re-read all of it uncached, which costs more than staying on Opus. So routing waits for a new session: the one Prompt Forge opens for your task leaves itself a note to run that first turn on Sonnet.
 - **Only prompts you type** are checked. Messages from other plugins, background tasks or other agents pass straight through.
 
 ## Benchmarks
@@ -104,7 +115,7 @@ Six coding tasks on a small Node project ran **in order on one Claude Code sessi
 | --- | --- | --- | --- | --- |
 | Without Prompt Forge | $2.20 | $2.13–$2.25 | 18/18 | – |
 | Fresh starts only (0.5, prompts still rewritten) | $1.64 | $1.48–$1.76 | 18/18 | 4 / – |
-| **Fresh starts + Sonnet (0.8)** | **$1.29** | **$1.11–$1.47** | **18/18** | **6 / 3** |
+| **Fresh starts + Sonnet (0.8+)** | **$1.29** | **$1.11–$1.47** | **18/18** | **6 / 3** |
 
 | Step | Task | Without | With | What Prompt Forge did |
 | --- | --- | --- | --- | --- |
@@ -135,13 +146,13 @@ Prompt Forge started as a prompt rewriter: Haiku sharpened each prompt before Cl
 <summary>Method and how to reproduce</summary>
 
 - **Models:** Claude Code with Claude Opus 5.5 does the work; Claude Haiku 4.5 runs the new-task check; Claude Sonnet 5.5 runs the routed turns. Dollar amounts come from Claude Code's own cost accounting (`claude -p --output-format json`), at list prices.
-- **Sessions:** each step ran with `claude -p --resume` on the same session; a fresh start began a new session, as `/clear` does; a Sonnet turn ran with `--model sonnet`. Each step's check runs on the working tree right after that step. If Claude stopped to ask instead of working, the task's canned answer was sent, and both calls were counted. The local check is the plugin's own `hooks/classify.ts`, run by Node.
+- **Sessions:** each step ran with `claude -p --resume` on the same session; a fresh start began a new session, as `f` does (a new terminal and `/clear` start from the same empty conversation, so they cost the same); a Sonnet turn ran with `--model sonnet`. Each step's check runs on the working tree right after that step. If Claude stopped to ask instead of working, the task's canned answer was sent, and both calls were counted. The local check is the plugin's own `hooks/classify.ts`, run by Node.
 - **Every number** is in [`bench/session-results.json`](bench/session-results.json) (this run), [`bench/results-route.json`](bench/results-route.json) (Sonnet single tasks) and [`bench/RESULTS.md`](bench/RESULTS.md). RESULTS.md's per-task section is from 0.6, when prompts were still rewritten.
 
 ```bash
 python3 bench/session.py run --reps 3 --arms baseline --out session-baseline.json      # without Prompt Forge
 python3 bench/session.py run --reps 3 --arms guardroute-none --out session-results.json # fresh starts + Sonnet
-python3 bench/session.py run --reps 3 --arms guard-none --out session-guard.json        # fresh starts only
+python3 bench/session.py run --reps 3 --arms guard-none --out session-guard.json        # fresh sessions only
 python3 bench/bench.py run --reps 3 --only C1,C2 --arms route-none --out results-route.json  # Sonnet single tasks
 python3 bench/bench.py report                                                          # RESULTS.md and the charts
 ```
@@ -151,9 +162,10 @@ python3 bench/bench.py report                                                   
 
 | Command | What it does |
 | --- | --- |
-| `f` / `h` | While a new task is held: start fresh (`/clear`, then send it) / send it here |
+| `f` / `w` / `h` | While a new task is held: start it in a new session (a new terminal) / in a new Superset workspace (unrelated work, in Superset) / send it here |
+| `/forge fresh clear` | Start new tasks with `/clear` here instead of a new session (`/forge fresh new` switches back) |
 | `/forge` | Show what's on |
-| `/forge fresh off` | Never offer a fresh start (`/forge fresh on` turns it back on) |
+| `/forge fresh off` | Never offer a fresh session (`/forge fresh on` turns it back on) |
 | `/forge model off` | Never switch a turn to Sonnet (`/forge model on` turns it back on) |
 | `/forge off` | Turn Prompt Forge off: every prompt goes out as typed, on your model (`/forge on` turns it back on) |
 | `raw: <prompt>` | Send this one prompt with no checks; the `raw:` prefix is removed |
@@ -171,7 +183,7 @@ python3 bench/bench.py report                                                   
 
 **Does it slow me down?** Not in short sessions. In a long session the new-task check adds about a second before the prompt is sent.
 
-**What if a fresh start was the wrong call?** Answer `h` and the prompt is sent where you are, nothing lost. The check leans towards "follow-up" when unsure, and `/forge fresh off` turns the offer off for good.
+**What if a fresh session was the wrong call?** Answer `h` and the prompt is sent where you are, nothing lost. And when it opens a new session, this one stays exactly as it was, so you can always go back. The check leans towards "follow-up" when unsure, and `/forge fresh off` turns the offer off for good.
 
 **Is Sonnet as good as Opus for those tasks?** On the benchmark's clear tasks, yes: every run passed its checks. It's only used when the prompt names its file and its finish line, and only on a small context. `/forge model off` keeps every turn on your model.
 
@@ -188,7 +200,7 @@ python3 bench/bench.py report                   # rebuild benchmark tables and c
 
 ```text
 plugins/prompt-forge/
-├── hooks/register.tsx   # new-task check and fresh start, Sonnet routing, /forge command
+├── hooks/register.tsx   # new-task check, new sessions (Superset, tmux, terminal, /clear), Sonnet routing, /forge
 ├── hooks/classify.ts    # the local "clear prompt" check
 ├── types/index.d.ts     # state contract
 └── tests/forge.test.ts

@@ -143,10 +143,11 @@ def spend() -> str:
     b.append(text(395, 230, "f", 13, PINK, 700, "middle"))
     b.append(text(412, 282, "h", 13, DIM, 700, "middle"))
     b.append(text(550, 478, "short reply, /command, raw:, an image or file, /forge off → sent exactly as typed, no checks", 12, GRAY, 400, "middle"))
+    b.append(text(525, 132, "Superset: new terminal, or w for a new workspace · else a new window · else /clear", 11.5, DIM, 400, "middle"))
 
     b.append(node(clk, 30, 255, 140, 70, "⏎ You press Enter", "sent as typed", BLUE, [(0.2, 1.2), (6.4, 7.4), (14.4, 15.4)]))
     b.append(node(clk, 215, 255, 170, 70, "New task?", "Haiku, long sessions only", PINK, [(1.3, 2.4), (7.6, 9.4)]))
-    b.append(node(clk, 440, 150, 170, 56, "🧹 Fresh start", "/clear, then your prompt", PINK, [(9.6, 10.8)]))
+    b.append(node(clk, 440, 150, 170, 56, "🪟 New session", "terminal · workspace", PINK, [(9.6, 10.8)]))
     b.append(node(clk, 440, 255, 170, 70, "Small & clear?", "local check, small context", YELLOW, [(2.6, 3.5), (10.9, 11.8)]))
     b.append(node(clk, 680, 150, 190, 56, "⚡ Sonnet", "this turn, ~½ the price", GREEN, [(11.9, 12.8)]))
     b.append(node(clk, 680, 262, 190, 56, "Your model", "as typed, instantly", GRAY, [(3.7, 4.6)]))
@@ -165,7 +166,7 @@ def spend() -> str:
                     + text(300, 221, "new task · 85k tokens of", 11.5, "#11111b", 700, "middle")
                     + text(300, 236, "old conversation ride along", 11.5, "#11111b", 700, "middle")))
     b.append(pill(clk, P["nt-fr"], 9.2, 10.0, "f", PINK, width=40))
-    b.append(pill(clk, P["fr-sc"], 10.3, 11.0, "fresh context", PINK, mono=False, width=110))
+    b.append(pill(clk, P["fr-sc"], 10.3, 11.0, "empty context", PINK, mono=False, width=120))
     b.append(pill(clk, P["sc-son"], 11.3, 12.1, "names file + finish line", YELLOW, mono=False))
     b.append(pill(clk, P["son-cl"], 12.3, 13.1, "⚡ Sonnet turn", GREEN, mono=False))
     b.append(fading(clk, 13.0, 14.2, text(1000, 360, "$0.09 instead of $0.44", 13, GREEN, 700, "middle")))
@@ -174,7 +175,7 @@ def spend() -> str:
     b.append(pill(clk, P["by"], 15.8, 17.8, "yes push them", GRAY))
 
     caps = [(0.0, 6.4, "1", "A follow-up stays in the conversation, on your model, sent instantly as you typed it.", GRAY),
-            (6.4, 14.4, "2", "A new task in a long session: f clears the old conversation; small and clear, so Sonnet runs it.", PINK),
+            (6.4, 14.4, "2", "A new task in a long session: f starts it in a new session; small and clear, so Sonnet runs it.", PINK),
             (14.4, 20.0, "3", "Short replies, /commands, raw: and attachments pass straight through: no checks, no cost.", BLUE)]
     for t0, t1, num, cap, col in caps:
         b.append(fading(clk, t0, t1, f'<circle cx="45" cy="529" r="10" fill="{col}"/>' + text(45, 533.5, num, 12, "#11111b", 700, "middle")

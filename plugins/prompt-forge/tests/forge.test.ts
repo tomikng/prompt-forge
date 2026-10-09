@@ -1,6 +1,6 @@
 import { describe, expect, mock, test } from 'claude-code/testing'
 
-import { isClearEnough, recentContext } from '../hooks/register'
+import { freshNote, isClearEnough, recentContext, slugOf } from '../hooks/register'
 
 const reply = (text: string) => ({ value: { isAnswered: true, text, usage: { inputTokens: 1, outputTokens: 1 } } }) as never
 const ABOVE = { component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false, maxRows: 20, bodyColumns: 100 } }
@@ -15,7 +15,21 @@ const session = (on: Parameters<typeof mock.store>[0], tokens = 90_000, floor = 
     { role: 'assistant', text: 'Fixed ordersPageRows in src/orders.js; tests pass.' },
   ] }) as never)
 }
-const isTopic = (e: { system?: string }) => (e.system ?? '').startsWith('You decide whether')
+const isTopic = (e: { system?: string }) => (e.system ?? '').startsWith('You decide where')
+/** Fakes the host: which commands succeed, and what `superset ws list` returns. */
+const host = (on: Parameters<typeof mock.store>[0], ok: (argv: readonly string[]) => boolean, workspaces: unknown[] = []) => {
+  const calls: string[][] = []
+  on('session.cwd', () => ({ value: '/home/me/.superset/worktrees/shop/orders-speed' }) as never)
+  on('process.run', (_$, e) => {
+    const argv = (e as unknown as { argv: string[] }).argv
+    calls.push([...argv])
+    if (argv[0] === 'superset' && argv[1] === 'ws' && argv[2] === 'list') return { value: { exitCode: 0, stdout: JSON.stringify(workspaces), stderr: '' } } as never
+    return { value: { exitCode: ok(argv) ? 0 : 1, stdout: '', stderr: '' } } as never
+  })
+  return calls
+}
+const WS = { id: 'ws-1', name: 'orders-speed', projectId: 'p-1', worktreePath: '/home/me/.superset/worktrees/shop/orders-speed' }
+
 /** The fresh start runs after the hook returns: give it a moment. */
 const sleep = (ms: number) => new Promise<void>(r => (globalThis as unknown as { setTimeout: (f: () => void, ms: number) => void }).setTimeout(r, ms))
 const NEW_TASK = 'In src/signup.js make validateSignup reject emails without an @, and run npm test.'
@@ -26,7 +40,7 @@ test('prompts go out exactly as typed, with no model call, in a short session', 
   let seen = ''
   mock.store(on)
   session(on, 5_000)
-  on('model.complete', () => { calls += 1; return reply('NEW') })
+  on('model.complete', () => { calls += 1; return reply('UNRELATED') })
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   await $.prompt.submit({ text: 'can u make the orders page faster its really slow, dont touch the api', origin: { kind: 'composer' }, wait: false })
@@ -46,7 +60,7 @@ test('a new task in a long session is held with a fresh-start offer; "h" sends i
   let seen = ''
   mock.store(on)
   session(on)
-  on('model.complete', (_$, e) => reply(isTopic(e) ? 'NEW' : 'x'))
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   seen = ''
@@ -60,12 +74,13 @@ test('a new task in a long session is held with a fresh-start offer; "h" sends i
   expect(seen).toBe(NEW_TASK)
 })
 
-test('"f" runs /clear, then sends the held prompt into the fresh conversation', async ($, on) => {
+test('"f" with no way to open a session falls back to /clear, then sends the prompt', async ($, on) => {
   const order: string[] = []
   mock.store(on)
   session(on)
-  on('model.complete', (_$, e) => reply(isTopic(e) ? 'NEW' : 'x'))
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
   on('command.run', { command: 'clear' }, () => { order.push('clear'); return { text: '' } })
+  on('process.run', () => ({ value: { exitCode: 1, stdout: '', stderr: '' } }) as never)
   on('prompt.submit', (_$, e) => { order.push(e.text); return { text: e.text } })
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   order.length = 0
@@ -79,7 +94,7 @@ test('"Send here" on the band sends the held prompt where you are', async ($, on
   let seen = ''
   mock.store(on)
   session(on)
-  on('model.complete', (_$, e) => reply(isTopic(e) ? 'NEW' : 'x'))
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
@@ -106,7 +121,7 @@ test('below 30k tokens of conversation no check is made, however big the fixed p
   let topicCalls = 0
   mock.store(on)
   session(on, 12_000, 60_000)
-  on('model.complete', (_$, e) => { if (isTopic(e)) topicCalls += 1; return reply('NEW') })
+  on('model.complete', (_$, e) => { if (isTopic(e)) topicCalls += 1; return reply('UNRELATED') })
   on('prompt.submit', (_$, e) => ({ text: e.text }))
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
@@ -118,7 +133,7 @@ test('a prompt with an image is never held, so the image always reaches Claude',
   let seen: { text: string; attachments?: readonly unknown[] } | undefined
   mock.store(on)
   session(on)
-  on('model.complete', () => { calls += 1; return reply('NEW') })
+  on('model.complete', () => { calls += 1; return reply('UNRELATED') })
   on('prompt.submit', (_$, e) => { seen = e; return { text: e.text } })
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   const text = 'why does this look broken, fix it like in the screenshot [Image #1]'
@@ -132,7 +147,7 @@ test('/forge off sends everything as typed; /forge shows both switches', async (
   let calls = 0
   mock.store(on, { enabled: false })
   session(on)
-  on('model.complete', () => { calls += 1; return reply('NEW') })
+  on('model.complete', () => { calls += 1; return reply('UNRELATED') })
   on('prompt.submit', (_$, e) => ({ text: e.text }))
   await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
   await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
@@ -166,4 +181,96 @@ describe('isClearEnough', () => {
     expect(isClearEnough('make the tests pass, they should all be green')).toBe(false)
     expect(isClearEnough('it should work like before in src/app.ts')).toBe(false)
   })
+})
+
+test('"f" opens a new terminal window and leaves this session as it is', async ($, on) => {
+  const sent: string[] = []
+  let cleared = false
+  mock.store(on)
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
+  on('command.run', { command: 'clear' }, () => { cleared = true; return { text: '' } })
+  const calls = host(on, argv => argv.join(' ').includes('command -v xdg-terminal-exec') || argv[0] === 'setsid')
+  on('prompt.submit', (_$, e) => { sent.push(e.text); return { text: e.text } })
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  sent.length = 0
+  const held = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect('drop' in held && held.drop).toContain('"f" to start it in a new session')
+  await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  expect(calls.some(a => a[0] === 'setsid' && a.includes('xdg-terminal-exec') && a.at(-1) === NEW_TASK)).toBe(true)
+  expect(cleared).toBe(false)
+  expect(sent).toEqual([])
+})
+
+test('in Superset, a related task gets a new terminal in the same workspace', async ($, on) => {
+  mock.store(on)
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
+  const calls = host(on, argv => argv[0] === 'superset', [WS])
+  on('prompt.submit', (_$, e) => ({ text: e.text }))
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  const held = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect('drop' in held && held.drop).toContain('new terminal in this workspace')
+  await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  expect(calls.find(a => a[1] === 'agents')).toEqual(['superset', 'agents', 'create', '--local', '--workspace', 'ws-1', '--agent', 'claude', '--prompt', NEW_TASK])
+})
+
+test('in Superset, an unrelated task can get its own workspace with "w"', async ($, on) => {
+  mock.store(on)
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'UNRELATED' : 'x'))
+  const calls = host(on, argv => argv[0] === 'superset', [WS])
+  on('prompt.submit', (_$, e) => ({ text: e.text }))
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  const held = await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect('drop' in held && held.drop).toContain('"w" for a new Superset workspace')
+  const ui = await $.ui.mount({ plugin: 'prompt-forge', surface: 'terminal', ...ABOVE } as never)
+  expect(await ui.find({ type: 'Button', key: 'workspace' })).toBeDefined()
+  await ui.unmount()
+  await $.prompt.submit({ text: 'w', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  const create = calls.find(a => a[1] === 'ws' && a[2] === 'create')
+  expect(create).toEqual(['superset', 'ws', 'create', '--local', '--project', 'p-1', '--name', slugOf(NEW_TASK), '--branch', slugOf(NEW_TASK), '--agent', 'claude', '--prompt', NEW_TASK])
+})
+
+test('/forge fresh clear prefers /clear over a new session', async ($, on) => {
+  const order: string[] = []
+  mock.store(on)
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
+  host(on, () => true, [WS])
+  on('command.run', { command: 'clear' }, () => { order.push('clear'); return { text: '' } })
+  on('prompt.submit', (_$, e) => { order.push(e.text); return { text: e.text } })
+  await $.command.run({ command: 'forge', args: 'fresh clear' } as never)
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  order.length = 0
+  await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  expect(order).toEqual(['clear', NEW_TASK])
+})
+
+test('a new session leaves a note so its first turn can run on Sonnet', async ($, on) => {
+  const store = new Map<string, unknown>()
+  on('store.get', (_$, e) => ({ value: store.get((e as unknown as { key: string }).key) }) as never)
+  on('store.set', (_$, e) => { const { key, value } = e as unknown as { key: string; value: unknown }; store.set(key, value); return { value: undefined } as never })
+  session(on)
+  on('model.complete', (_$, e) => reply(isTopic(e) ? 'RELATED' : 'x'))
+  host(on, argv => argv.join(' ').includes('command -v xdg-terminal-exec') || argv[0] === 'setsid')
+  on('prompt.submit', (_$, e) => ({ text: e.text }))
+  await $.prompt.submit({ text: WARMUP, origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  await $.prompt.submit({ text: 'f', origin: { kind: 'composer' }, wait: false })
+  await sleep(50)
+  expect(store.get('handoff')).toBe(NEW_TASK)
+  // the new session's first prompt takes the note
+  await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
+  expect(store.get('handoff')).toBe(null)
+})
+
+test('slugOf makes a short branch name from the prompt', async () => {
+  expect(slugOf('In src/users.js rename getUser to fetchUser everywhere; run npm test.')).toBe('src-users-js-rename-getuser')
+  expect(freshNote(85_000, 'unrelated', true)).toContain('"w" for a new Superset workspace')
 })
