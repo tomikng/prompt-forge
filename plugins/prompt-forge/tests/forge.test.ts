@@ -28,7 +28,7 @@ describe('wantsForge', () => {
 
 test('a forged prompt reaches the session rewritten', async ($, on) => {
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => ({ value: {
     isAnswered: true,
     text: 'PROMPT:\nMake the dashboard load faster. Done when first paint is under 1s.\nADDED:\n- added done check',
@@ -41,7 +41,7 @@ test('a forged prompt reaches the session rewritten', async ($, on) => {
 
 test('raw: goes out untouched, prefix stripped', async ($, on) => {
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   await $.prompt.submit({ text: 'raw: leave this prompt exactly alone', origin: { kind: 'composer' }, wait: false })
   expect(seen).toBe('leave this prompt exactly alone')
@@ -56,7 +56,7 @@ test('/forge off sends prompts as typed', async ($, on) => {
 })
 
 test('the transcript row shows the before/after card', async ($, on) => {
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => ({ value: {
     isAnswered: true,
     text: 'PROMPT:\nMake the dashboard load faster. Done when first paint is under 1s.\nADDED:\n- stated the goal\n- added done check',
@@ -78,7 +78,7 @@ test('the transcript row shows the before/after card', async ($, on) => {
 
 test('a chatty model reply is never sent as the prompt', async ($, on) => {
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => ({ value: {
     isAnswered: true,
     text: 'I need more context to help sharpen this prompt. What is "it"?',
@@ -106,7 +106,7 @@ const ABOVE = { component: 'AbovePrompt', props: { hasSurvey: false, isWorking: 
 test('an unclear prompt is held, its questions asked, and the answer sends a forged prompt', async ($, on) => {
   let seen = ''
   const asked: string[] = []
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', (_$, e) => {
     asked.push(e.prompt)
     return asked.length === 1
@@ -136,7 +136,7 @@ test('an unclear prompt is held, its questions asked, and the answer sends a for
 
 test('"Send as typed" on the question band sends the original prompt', async ($, on) => {
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => reply('ASK:\n- Which one?'))
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
@@ -148,7 +148,7 @@ test('"Send as typed" on the question band sends the original prompt', async ($,
 
 test('a bare "raw:" sends the held prompt as typed', async ($, on) => {
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => reply('ASK:\n- Which one?'))
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   const first = await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
@@ -160,7 +160,7 @@ test('a bare "raw:" sends the held prompt as typed', async ($, on) => {
 test('a prompt with an image goes out as typed, image and all, with no model call', async ($, on) => {
   let calls = 0
   let seen: { text: string; attachments?: readonly unknown[] } | undefined
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => { calls += 1; return reply('ASK:\n- What is in the image?') })
   on('prompt.submit', (_$, e) => { seen = e; return { text: e.text } })
   const text = 'why does this look broken, fix it like in the screenshot [Image #1]'
@@ -173,7 +173,7 @@ test('a prompt with an image goes out as typed, image and all, with no model cal
 test('if the answer pass fails, the original and the answer go out together', async ($, on) => {
   let seen = ''
   let n = 0
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => (++n === 1 ? reply('ASK:\n- Which one?') : reply('ASK:\n- Still unsure?')))
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   await $.prompt.submit({ text: 'rename it so it is independent from the other one', origin: { kind: 'composer' }, wait: false })
@@ -200,7 +200,7 @@ describe('isClearEnough', () => {
 test('a clear prompt makes no model call at all', async ($, on) => {
   let calls = 0
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   on('model.complete', () => { calls += 1; return reply('UNCHANGED') })
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
   const text = 'In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.'
@@ -224,7 +224,7 @@ const NEW_TASK = 'In src/signup.js make validateSignup reject emails without an 
 
 test('a new task in a long session is held with a fresh-start offer; "h" sends it here', async ($, on) => {
   let seen = ''
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   bigSession(on)
   on('model.complete', (_$, e) => reply(e.system.startsWith('You decide whether') ? 'NEW' : 'UNCHANGED'))
   on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
@@ -242,7 +242,7 @@ test('a new task in a long session is held with a fresh-start offer; "h" sends i
 
 test('"f" runs /clear, then sends the held prompt into the fresh conversation', async ($, on) => {
   const order: string[] = []
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   bigSession(on)
   on('model.complete', (_$, e) => reply(e.system.startsWith('You decide whether') ? 'NEW' : 'UNCHANGED'))
   on('command.run', { command: 'clear' }, () => { order.push('clear'); return { text: '' } })
@@ -258,7 +258,7 @@ test('"f" runs /clear, then sends the held prompt into the fresh conversation', 
 test('a follow-up, or any prompt in a short session, is never held', async ($, on) => {
   let seen = ''
   let topicCalls = 0
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   bigSession(on)
   on('model.complete', (_$, e) => {
     if (e.system.startsWith('You decide whether')) { topicCalls += 1; return reply('CONTINUES') }
@@ -273,7 +273,7 @@ test('a follow-up, or any prompt in a short session, is never held', async ($, o
 
 test('below the threshold of conversation no topic check is made, however big the fixed part', async ($, on) => {
   let topicCalls = 0
-  mock.store(on)
+  mock.store(on, { rewrite: true })
   bigSession(on, 12_000, 60_000)
   on('model.complete', (_$, e) => {
     if (e.system.startsWith('You decide whether')) topicCalls += 1
@@ -283,4 +283,26 @@ test('below the threshold of conversation no topic check is made, however big th
   await $.prompt.submit({ text: 'look at the orders page first please', origin: { kind: 'composer' }, wait: false })
   await $.prompt.submit({ text: NEW_TASK, origin: { kind: 'composer' }, wait: false })
   expect(topicCalls).toBe(0)
+})
+
+test('by default prompts go out as typed, instantly, with no rewrite call', async ($, on) => {
+  let calls = 0
+  let seen = ''
+  mock.store(on)
+  on('model.complete', () => { calls += 1; return reply('PROMPT:\nSomething else.\nADDED:\n- x') })
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  await $.prompt.submit({ text: 'can u make the orders page faster its really slow, dont touch the api', origin: { kind: 'composer' }, wait: false })
+  expect(calls).toBe(0)
+  expect(seen).toBe('can u make the orders page faster its really slow, dont touch the api')
+})
+
+test('/forge rewrite on turns the rewrite back on', async ($, on) => {
+  let seen = ''
+  mock.store(on)
+  on('model.complete', () => reply('PROMPT:\nMake the orders page faster. Do not change the API.\nADDED:\n- kept your API limit'))
+  on('prompt.submit', (_$, e) => { seen = e.text; return { text: e.text } })
+  const out = await $.command.run({ command: 'forge', args: 'rewrite on' })
+  expect(out.text).toContain('Prompt rewriting: ON')
+  await $.prompt.submit({ text: 'can u make the orders page faster its really slow, dont touch the api', origin: { kind: 'composer' }, wait: false })
+  expect(seen).toBe('Make the orders page faster. Do not change the API.')
 })

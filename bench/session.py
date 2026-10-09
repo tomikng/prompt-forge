@@ -109,7 +109,9 @@ def run_session(arm, rep, verdicts):
                 session, convo = None, []
         else:
             topic_cost = 0.0
-        policy_arm = "forge-" + arm.split("-", 1)[1] if arm.startswith("guard") else arm
+        # "<guard arm>-none": no rewriting at all, the prompt goes out as typed
+        suffix = arm.split("-", 1)[1] if arm.startswith("guard") else ""
+        policy_arm = ("none" if suffix == "none" else "forge-" + suffix) if arm.startswith("guard") else arm
         # model routing ("guardroute-"): a clear prompt on a fresh context runs on Sonnet
         routed = arm.startswith("guardroute") and local["clear"] and not convo
         if policy_arm.startswith("forge") and not local["clear"]:

@@ -110,16 +110,16 @@ All six prompts in one Claude Code session, in the order V1 → V2 → C2 → V3
 | Session total | Mean | Min | Max |
 | --- | --- | --- | --- |
 | without the forge | $2.199 | $2.127 | $2.249 |
-| with the forge | $1.235 | $1.047 | $1.567 |
+| with the forge | $1.287 | $1.114 | $1.469 |
 
 | Step | Task | Local check | Right call? | Forge route | Forge $ | Forge input tokens | $ without | $ with | Correct without → with |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | V1 | forge (0.9 µs) | yes | rewrite | $0.0016 | 1,279 | $0.2316 | $0.2440 | 3/3 → 3/3 |
-| 2 | V2 | forge (0.5 µs) | yes | rewrite, unchanged | $0.0021 | 1,385 | $0.2810 | $0.2162 | 3/3 → 3/3 |
-| 3 | C2 | clear → skip (0.3 µs) | yes | skip (local check) | $0.0000 | 0 | $0.3193 | $0.2488 | 3/3 → 3/3 |
-| 4 | V3 | forge (0.4 µs) | yes | unchanged | $0.0027 | 1,528 | $0.3838 | $0.2829 | 3/3 → 3/3 |
+| 1 | V1 | forge (0.9 µs) | yes | none | $0.0000 | 0 | $0.2316 | $0.2430 | 3/3 → 3/3 |
+| 2 | V2 | forge (0.5 µs) | yes | none | $0.0000 | 0 | $0.2810 | $0.2525 | 3/3 → 3/3 |
+| 3 | C2 | clear → skip (0.3 µs) | yes | none | $0.0000 | 0 | $0.3193 | $0.2805 | 3/3 → 3/3 |
+| 4 | V3 | forge (0.4 µs) | yes | none | $0.0000 | 0 | $0.3838 | $0.2682 | 3/3 → 3/3 |
 | 5 | C1 | clear → skip (0.2 µs) | yes | sonnet (local check) | $0.0000 | 0 | $0.4386 | $0.0886 | 3/3 → 3/3 |
-| 6 | A1 | forge (0.4 µs) | yes | rewrite | $0.0038 | 1,443 | $0.5449 | $0.1547 | 3/3 → 3/3 |
+| 6 | A1 | forge (0.4 µs) | yes | none | $0.0000 | 0 | $0.5449 | $0.1541 | 3/3 → 3/3 |
 
-Local check: 6/6 prompts routed as labelled. Cumulative: without $2.199, with $1.235.
+Local check: 6/6 prompts routed as labelled. Cumulative: without $2.199, with $1.287.
 

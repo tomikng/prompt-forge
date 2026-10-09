@@ -2,6 +2,11 @@
 
 Everything Prompt Forge does, in detail. For the quick tour, see the [README](README.md).
 
+- [Where the tokens go](#where-the-tokens-go)
+- [What happens when you press Enter](#what-happens-when-you-press-enter)
+- [When it offers a fresh start](#when-it-offers-a-fresh-start)
+- [When it uses a cheaper model](#when-it-uses-a-cheaper-model)
+- [Prompt rewriting (opt-in)](#prompt-rewriting-opt-in)
 - [What a good prompt has](#what-a-good-prompt-has)
 - [When a prompt is forged](#when-a-prompt-is-forged)
 - [The rewrite rules](#the-rewrite-rules)
@@ -12,6 +17,30 @@ Everything Prompt Forge does, in detail. For the quick tour, see the [README](RE
 - [Cost, speed and privacy](#cost-speed-and-privacy)
 - [Using it with other plugins](#using-it-with-other-plugins)
 - [Troubleshooting](#troubleshooting)
+
+## Where the tokens go
+
+Every prompt you send makes Claude re-read the whole conversation so far: the system prompt, every message, every tool result. In the benchmark's six-prompt session, the cost per prompt climbed from $0.23 to $0.55 as the conversation grew, mostly from re-reading it. Prompt Forge cuts that in two ways:
+
+1. **A fresh start** when a prompt begins an unrelated task: the old conversation stops riding along. See [When it offers a fresh start](#when-it-offers-a-fresh-start).
+2. **A cheaper model** for small, clear tasks on a small context. See [When it uses a cheaper model](#when-it-uses-a-cheaper-model).
+
+Together: −41% per session in the benchmark, every step still right. Everything else goes out exactly as you typed it, instantly.
+
+## What happens when you press Enter
+
+| Check | Result |
+| --- | --- |
+| Not typed by you (another plugin, a background task, another agent) | Passed through untouched |
+| Starts with `raw:` or `/`, has fewer than 5 words, carries an image or file, or `/forge off` is set | Sent as typed |
+| The session re-reads 30k+ tokens of conversation, and a Haiku check says the prompt starts a new task | Held with a fresh-start offer: `f` or `h` |
+| Names a target and a finish line, on at most 10k tokens of conversation | This turn runs on Sonnet |
+| `/forge rewrite on` is set | Forged first (see below) |
+| Otherwise | Sent as typed, on your model, instantly |
+
+## Prompt rewriting (opt-in)
+
+`/forge rewrite on` adds a small Haiku call to every prompt of 5+ words that rewrites it when that adds information. It's **off by default**: on its own it measured break-even on spend (+3%, inside run-to-run noise) and adds a second or two before each prompt is sent. The rest of this guide, from here to [Reading the card](#reading-the-card), describes it.
 
 ## What a good prompt has
 
@@ -26,7 +55,7 @@ You usually know all four while typing, but only some of them make it into the p
 
 ## When a prompt is forged
 
-Every time you press Enter, Prompt Forge checks the prompt in this order:
+With `/forge rewrite on`, every time you press Enter Prompt Forge checks the prompt in this order:
 
 | Check | Result |
 | --- | --- |
@@ -190,6 +219,7 @@ The card stays a few rows tall so it doesn't scroll away on a small terminal; a 
 | Start a new task fresh | Reply `f` to the fresh-start offer, or `h` to stay |
 | Never offer a fresh start | `/forge fresh off` |
 | Never switch to a cheaper model | `/forge model off` |
+| Rewrite prompts before sending | `/forge rewrite on` (off by default) |
 | Skip a question | **Send as typed** (sends your prompt unchanged) or **Cancel** (sends nothing) |
 | Fix a bad rewrite | Press Esc to interrupt, then resend with `raw:` |
 

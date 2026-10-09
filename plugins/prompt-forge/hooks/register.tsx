@@ -252,7 +252,8 @@ async function forge($: EngineInterface, text: string, answers?: string): Promis
 /** Forges a composer prompt (or skips it) and sends the result on. */
 async function forgeAndSend($: EngineInterface, e: PromptSubmitInput, next: (e: PromptSubmitInput) => Promise<PromptSubmitResult>): Promise<PromptSubmitResult> {
   await markCheap($, e.text)
-  if (!wantsForge(e.text)) return next(e)
+  // Rewriting is opt-in: it measured break-even on spend and costs a second or two per prompt.
+  if (!(await $.store.get('rewrite')) || !wantsForge(e.text)) return next(e)
   // Haiku can't see an image or file, and holding the prompt would lose it: the answer is a
   // new submission without it. The agent sees it, so send the prompt as typed.
   if (e.attachments?.length) {
@@ -288,8 +289,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'forge',
-      description: 'Prompt Forge: /forge on|off, /forge fresh on|off, /forge model on|off, or /forge to see its state',
-      argumentHint: '[on|off|fresh on|off|model on|off]',
+      description: 'Prompt Forge: /forge on|off, /forge fresh|model|rewrite on|off, or /forge to see its state',
+      argumentHint: '[on|off|fresh on|off|model on|off|rewrite on|off]',
     })
     return next(e)
   })
@@ -304,13 +305,18 @@ export const register: Register = on => {
     if (arg === 'fresh on' || arg === 'fresh off') await $.store.set('fresh', arg === 'fresh on')
     const onNow = await isOn($)
     if (arg === 'model on' || arg === 'model off') await $.store.set('route', arg === 'model on')
+    if (arg === 'rewrite on' || arg === 'rewrite off') await $.store.set('rewrite', arg === 'rewrite on')
+    if (arg === 'rewrite off') await update($, pendingA, () => null)
     const freshNow = (await $.store.get('fresh')) !== false
     const routeNow = (await $.store.get('route')) !== false
+    const rewriteNow = (await $.store.get('rewrite')) === true
+    const flag = (b: boolean) => (b ? 'ON' : 'OFF')
     return {
-      text: `✨ Prompt Forge is ${onNow ? 'ON' : 'OFF'}. ` +
-        (onNow ? 'Prompts of 5+ words get sharpened before sending; start one with "raw:" to send it untouched. ' : 'Prompts go out exactly as typed. ') +
-        `Fresh-start offers are ${freshNow ? 'ON' : 'OFF'} (/forge fresh on|off). ` +
-        `Sonnet for small, clear tasks on a fresh context is ${routeNow ? 'ON' : 'OFF'} (/forge model on|off).`,
+      text: onNow
+        ? `✨ Prompt Forge is ON. Fresh start for new tasks in long sessions: ${flag(freshNow)} (/forge fresh on|off). ` +
+          `Sonnet for small, clear tasks on a fresh context: ${flag(routeNow)} (/forge model on|off). ` +
+          `Prompt rewriting: ${flag(rewriteNow)} (/forge rewrite on|off). Start a prompt with "raw:" to skip all of it.`
+        : '✨ Prompt Forge is OFF. Prompts go out exactly as typed (/forge on).',
     }
   })
 
