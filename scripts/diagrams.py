@@ -143,7 +143,7 @@ def pipeline() -> str:
           edge("M775,318 C775,352 525,362 525,327", dashed=True),
           edge("M300,325 L300,488 L1000,488 L1000,327", dashed=True)]
     b.append(text(650, 360, "your answer", 11.5, PEACH, 600, "middle"))
-    b.append(text(650, 478, "skipped: short reply, /command, raw:, /forge off, or already specific → sent exactly as typed", 12, GRAY, 400, "middle"))
+    b.append(text(650, 478, "skipped: short reply, /command, raw:, /forge off, image attached, or already specific → sent exactly as typed", 12, GRAY, 400, "middle"))
 
     # node highlight spans per scenario (see timeline below)
     b.append(node(clk, 30, 255, 140, 70, "⏎ You press Enter", "in the prompt box", BLUE, [(0.2, 1.3), (7.0, 8.0), (15.6, 16.6)]))
@@ -151,7 +151,7 @@ def pipeline() -> str:
     b.append(node(clk, 440, 255, 170, 70, "✨ Haiku forge", "one small model call", PINK, [(2.4, 3.9), (9.1, 10.3), (13.3, 14.2)]))
     b.append(node(clk, 440, 115, 170, 60, "Recent conversation", "last ≤ 6 messages", GRAY, [(2.0, 3.0), (8.6, 9.6)]))
     b.append(node(clk, 680, 150, 190, 56, "PROMPT → rewrite", "before/after card", GREEN, [(4.4, 5.3), (14.6, 15.2)]))
-    b.append(node(clk, 680, 262, 190, 56, "ASK → questions", "prompt held, you answer", PEACH, [(10.8, 13.0)]))
+    b.append(node(clk, 680, 262, 190, 56, "ASK → questions", "only you know it: held", PEACH, [(10.8, 13.0)]))
     b.append(node(clk, 680, 374, 190, 56, "UNCHANGED", "already sharp → as typed", GRAY, []))
     b.append(node(clk, 930, 255, 140, 70, "Claude works", "the agent continues", MAUVE, [(5.8, 7.0), (15.2, 16.2), (19.2, 20.6)]))
 
@@ -177,7 +177,7 @@ def pipeline() -> str:
     b.append(pill(clk, P["by"], 17.2, 19.3, "yes push them", GRAY))
 
     caps = [(0.0, 7.0, "1", "A rough prompt is rewritten: goal first, your limits kept, a finish line added.", GREEN),
-            (7.0, 15.6, "2", "An unclear prompt is held. The forge asks, you answer, Claude continues with both.", PEACH),
+            (7.0, 15.6, "2", "Only you know a missing fact (a value, a new name)? The forge asks, you answer, Claude continues.", PEACH),
             (15.6, 21.0, "3", "Short replies, /commands and already-specific prompts skip the forge: no model call.", GRAY)]
     for t0, t1, num, cap, col in caps:
         b.append(fading(clk, t0, t1, f'<circle cx="45" cy="529" r="10" fill="{col}"/>' + text(45, 533.5, num, 12, "#11111b", 700, "middle")
@@ -254,8 +254,8 @@ def anatomy() -> str:
 def context() -> str:
     clk = Clock(16)
     W, H = 1100, 500
-    b = [text(36, 46, "Context first, questions second", 20, FG, 700),
-         text(36, 70, "Recent messages resolve what “it” means. Only what nobody said yet becomes a question.", 13, DIM)]
+    b = [text(36, 46, "Context first, questions last", 20, FG, 700),
+         text(36, 70, "Recent messages resolve what “it” means; the rest is left to the agent. Only a fact only you know becomes a question.", 13, DIM)]
 
     # left: recent conversation
     b.append(text(36, 112, "RECENT CONVERSATION", 11.5, GRAY, 700, extra='letter-spacing="1.5"'))
@@ -289,9 +289,9 @@ def context() -> str:
     # forge verdict: ask for the one missing piece
     b.append(fading(clk, 4.0, 13.8,
                     f'<rect x="36" y="262" width="1028" height="58" rx="10" fill="{CARD}" stroke="{PEACH}" stroke-width="1.5"/>'
-                    + text(56, 287, "✨ Before I send this, I need a bit more context", 13.5, PEACH, 700)
-                    + text(56, 308, "1. What should the new name be?", 13.5, FG, font=MONO)
-                    + text(1048, 298, "the new name was never mentioned", 12, DIM, 400, "end")))
+                    + text(56, 287, "✨ Prompt Forge asks:", 13.5, PEACH, 700)
+                    + text(56, 308, "What should the new name be?", 13.5, FG, font=MONO)
+                    + text(1048, 298, "a name only you have in mind: the agent can't find it", 12, DIM, 400, "end")))
     b.append(fading(clk, 6.2, 13.8,
                     f'<rect x="36" y="334" width="1028" height="40" rx="10" fill="{CARD}" stroke="{BLUE}" stroke-width="1.5"/>'
                     + text(56, 359, "you  ›", 13, BLUE, 700) + text(110, 359, "prompt-smith", 13.5, FG, font=MONO)))

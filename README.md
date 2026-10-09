@@ -96,7 +96,7 @@ claude plugin update prompt-forge@prompt-forge
 
 ## How it works
 
-<img src="assets/pipeline.svg" alt="Animated diagram: a prompt goes from Enter through the 'worth forging?' check to the Haiku forge, which rewrites it, asks a question first, or leaves it unchanged, before Claude works. Short replies skip the forge." width="100%">
+<img src="assets/pipeline.svg" alt="Animated diagram: a prompt goes from Enter through the 'worth forging?' check to the Haiku forge, which rewrites it, asks only for a fact only you know, or leaves it unchanged, before Claude works. Short replies skip the forge." width="100%">
 
 <details>
 <summary>The same flow as text</summary>
@@ -144,7 +144,7 @@ Every detail you typed stays word for word. The forge reorders it so the goal co
 
 The forge reads the last few messages of the conversation to work out what "it" or "that" means. What it can't resolve, it leaves in your words for the agent, which has the whole conversation. Only what nobody but you can know becomes a question:
 
-<img src="assets/context.svg" alt="Animated diagram: 'prompt-forge' in the conversation resolves 'it' in the new prompt; the forge asks only for the missing new name, the answer is folded in, and Claude starts working" width="100%">
+<img src="assets/context.svg" alt="Animated diagram: 'prompt-forge' in the conversation resolves 'it' in the new prompt; the forge asks only for the new name, which only you know, the answer is folded in, and Claude starts working" width="100%">
 
 The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
