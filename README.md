@@ -9,7 +9,7 @@
 **Sharper prompts for [Claude Code](https://claude.com/claude-code), without retyping them.**
 Type the way you think. Prompt Forge rewrites it into a clear, actionable prompt before Claude sees it, and shows you exactly what it changed.
 
-[![Version](https://img.shields.io/badge/version-0.5.0-f5a6e6)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-0.6.0-f5a6e6)](.claude-plugin/marketplace.json)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-d97757)](https://claude.com/claude-code)
 [![License: MIT](https://img.shields.io/github/license/tomikng/prompt-forge?color=22c55e)](LICENSE)
 [![Rewrites with](https://img.shields.io/badge/rewrites%20with-Haiku-38bdf8)](#cost-and-privacy)
@@ -30,6 +30,7 @@ Claude does its best work when a prompt states the goal, the limits and what "do
 - 🚫 **No inventions.** It never adds files, APIs or requirements you didn't mention.
 - 🧭 **Knows what "it" means.** The last few messages of the conversation are used to name what you're referring to.
 - 🤫 **Asks only when it must.** It asks you only for what nobody else can know (a value you agreed on, a name you have in mind). Everything the agent can work out itself, it leaves to the agent.
+- ⚡ **Small, clear tasks run on Sonnet.** A prompt that names its file and its finish line, on a fresh context, runs that one turn on Claude Sonnet at about half the price.
 - 💸 **Cuts spend on long sessions.** When a prompt starts an unrelated task in a long session, it offers to start fresh (`/clear`, then your prompt), so Claude stops re-reading the old conversation on every step: **−25% per session** in the benchmark. One keypress, and never on a follow-up.
 - 🖼️ **Keeps your images.** A prompt with a pasted image or file goes out exactly as typed, attachment and all.
 - 👀 **Nothing hidden.** Every rewrite shows up as a before/after card in the transcript.
@@ -126,6 +127,7 @@ rewritten prompt is sent to Claude ──▶ before/after card, and the agent ge
 | What happens | When |
 | --- | --- |
 | Rewritten | Prompts you typed with **5 or more words** |
+| Run on Sonnet, no forge call | A clear prompt (below) while the conversation is at most 10k tokens: that turn runs on Claude Sonnet |
 | Skipped by the local check, no model call | Prompts that already name a target (a file, path, `code` or identifier) **and** a finish line (*run npm test*, *should*, *make sure*…), with no unresolved "it"/"that" |
 | Sent as typed | Slash commands, short replies ("yes go ahead"), prompts with an image or file attached, prompts starting with `raw:`, and anything while `/forge off` |
 | Left alone, with a notice | A rewrite would add nothing (most rough prompts Claude already understands), or it's not a task at all (a question to the agent like *"so this MR does nothing?"*) |
@@ -151,7 +153,7 @@ The exact rewrite rules are in the [📖 guide](HELP.md#the-rewrite-rules).
 
 ## Benchmarks
 
-**In short:** with its fresh-start offer, Prompt Forge 0.5 **cut spend by 25%** over a six-prompt session ($1.64 vs $2.20), with **every step still right** (18/18). The rewriting alone (0.4.1) is break-even: +3%, inside run-to-run noise, with every task right and almost no questions. Its own Haiku calls cost **about $0.002 per prompt**. See [Starting fresh](#starting-fresh-050).
+**In short:** Prompt Forge 0.6 **cut spend by 44%** over a six-prompt session ($1.24 vs $2.20), with **every step still right** (18/18). Two features do the saving: a [fresh start](#starting-fresh-050) for new tasks in long sessions (−25% on its own) and [Sonnet for small, clear tasks](#a-cheaper-model-for-small-tasks-060) on a fresh context (−43% to −49% on those tasks). The prompt rewriting itself is break-even. Its own Haiku calls cost **about $0.002 per prompt**.
 
 That's the result of three rounds of benchmarking, each one changing the rewrite rules (full story [below](#how-we-got-here)):
 
@@ -160,9 +162,10 @@ That's the result of three rounds of benchmarking, each one changing the rewrite
 | 0.2 | Asked whenever it was unsure | 4 | about even (its questions pulled file names out of you) |
 | 0.4.0 | Rarely asked, rewrote freely | 0–1 | **+17%**: rewrites added scope, so Claude did more work |
 | 0.4.1 | Rarely asks, rewrites only to add information | 0–1 | +3% (noise) |
-| **0.5.0** | **0.4.1, plus a fresh-start offer for new tasks in long sessions** | **0, plus ~1 keypress for a fresh start** | **−25%** |
+| 0.5.0 | 0.4.1, plus a fresh-start offer for new tasks in long sessions | 0, plus ~1 keypress for a fresh start | −25% |
+| **0.6.0** | **0.5.0, plus Sonnet for small, clear tasks on a fresh context** | **0, plus ~2 keypresses for fresh starts** | **−44%** |
 
-<img src="assets/bench-net.svg" alt="Bar chart of net dollars per task with the forge minus without: V1 −$0.010, V2 −$0.003, V3 +$0.003, A1 +$0.104 with correct runs rising from 2/3 to 3/3, C1 +$0.001, C2 +$0.000." width="100%">
+<img src="assets/bench-net.svg" alt="Bar chart of net dollars per task with the forge minus without: V1 −$0.010, V2 −$0.003, V3 +$0.003, A1 +$0.104 with correct runs rising from 2/3 to 3/3, C1 −$0.082 and C2 −$0.076 on Sonnet." width="100%">
 
 Six coding tasks on a small Node project, each run 3 times **without** the forge (prompt as typed → Claude) and 3 times **with** it (prompt → Haiku forge → Claude), all on the same day. Every run was checked automatically: tests pass, the behaviour asked for works, and the protected API file is untouched.
 
@@ -172,27 +175,32 @@ Six coding tasks on a small Node project, each run 3 times **without** the forge
 | V2 · vague | *"the cart total is wrong when ppl buy more than one of something fix it"* | $0.191 | $0.188 | 3/3 → 3/3 | left it alone |
 | V3 · vague | *"signup lets ppl in with junk emails, fix that"* | $0.217 | $0.220 | 3/3 → 3/3 | left it alone |
 | A1 · ambiguous | *"rename it to something clearer, everywhere it's used"*, cold start | $0.376 | $0.479 | **2/3 → 3/3** | left it alone (see below) |
-| C1 · clear | names the file, the change and *run npm test* | $0.169 | $0.170 | 3/3 → 3/3 | left it alone |
-| C2 · clear | names the file, the change and the test to add | $0.175 | $0.175 | 3/3 → 3/3 | left it alone |
+| C1 · clear | names the file, the change and *run npm test* | $0.169 | **$0.087** | 3/3 → 3/3 | ran it on Sonnet |
+| C2 · clear | names the file, the change and the test to add | $0.175 | **$0.099** | 3/3 → 3/3 | ran it on Sonnet |
 
 - **Rough prompts are fine as they are.** Claude Opus found the right code and fixed it from V1–V3 as typed. 0.4.1 doesn't rewrite them, so nothing changes and you pay only the Haiku call. 0.4.0 polished them and added requirements nobody asked for (*"…reject disposable-email domains, with a clear error"*), which made Claude do 8–15% more work for the same result.
 - **A1 is about who asks, not about the forge.** At a cold start, "it" and the new name can't be known. The forge sent the prompt unchanged, so Claude saw exactly what it sees without the forge. In all 3 runs it stopped to ask you and then got it right; without the forge it asked twice and guessed wrong once. The extra $0.10 is that second round trip, not the forge.
-- **Run-to-run noise** is about ±$0.01 per task (V1–V3 and C1–C2 sent the identical prompt in both arms): treat smaller differences as zero.
+- **Clear tasks run on Sonnet, at about half the price.** C1 and C2 name the file and the finish line, so the free local check sends them to Sonnet on a fresh context: −49% and −43%, every run still right.
+- **Run-to-run noise** is about ±$0.01 per task (V1–V3 sent the identical prompt in both arms): treat smaller differences as zero.
 
 ### Over a whole session
 
-Real work is a string of prompts on one session. The same six prompts ran **in order on one Claude Code session** (V1 → V2 → C2 → V3 → C1 → A1), 3 sessions with the forge and 3 without. Context grows with every step, and in the forge sessions Haiku also gets the recent conversation, as the plugin does.
+Real work is a string of prompts on one session. The same six prompts ran **in order on one Claude Code session** (V1 → V2 → C2 → V3 → C1 → A1), 3 sessions with each version and 3 without. Context grows with every step, and in the forge sessions Haiku also gets the recent conversation, as the plugin does. Every fresh start the forge offered was accepted.
 
-<img src="assets/bench-session.svg" alt="Line chart of cumulative dollars over six session steps: without the forge ends at $2.20, with the forge at $2.27; the two lines nearly overlap. Chips under each step show the local check skipping C2 and C1." width="100%">
+<img src="assets/bench-session.svg" alt="Line chart of cumulative dollars over six session steps: without the forge ends at $2.20, with the forge 0.6 at $1.24. Chips under each step show what the local check decided." width="100%">
 
-| Per session | Mean | Range (3 sessions) | Steps done right | Times you step in |
+| Per session | Mean | Range (3 sessions) | Steps done right | Fresh starts / Sonnet turns |
 | --- | --- | --- | --- | --- |
-| Without the forge | **$2.20** | $2.13–$2.25 | 18/18 | 0 |
-| With the forge 0.4.1 | **$2.27** | $2.13–$2.35 | 18/18 | 1 (in 18 steps) |
+| Without the forge | $2.20 | $2.13–$2.25 | 18/18 | – |
+| With the forge 0.4.1 (rewriting only) | $2.27 | $2.13–$2.35 | 18/18 | – |
+| With the forge 0.5.0 (+ fresh starts) | $1.64 | $1.48–$1.76 | 18/18 | 4 / – |
+| **With the forge 0.6.0 (+ Sonnet for small tasks)** | **$1.24** | **$1.05–$1.57** | **18/18** | **7 / 3** |
 
-- **💵 Break-even.** +$0.07 per session (+3%), inside the spread of the sessions themselves.
-- **🧮 The forge is a rounding error.** All its Haiku calls came to about **$0.011 per session**. The big cost is Claude re-reading a growing conversation: about $0.23 at step 1, $0.55 by step 6, in both arms.
-- **🎯 The local check made the right call 6/6 times, in about 1 µs, with zero tokens.** It skipped C2 and C1, which name a file and a finish line, and sent the other four to the forge.
+- **💸 −44% per session with 0.6.** After a fresh start, the users rename (C1) ran on Sonnet for **$0.09** (vs $0.44 without the forge), and the follow-up rename (A1) cost **$0.15** (vs $0.55), because its conversation was small.
+- **💵 Rewriting alone is break-even.** 0.4.1: +$0.07 per session (+3%), inside the spread of the sessions themselves.
+- **🧮 The forge's own calls are a rounding error:** about **$0.01–0.02 per session**, rewrites and new-task checks together. The big cost is Claude re-reading a growing conversation: about $0.23 at step 1, $0.55 by step 6, in both arms.
+- **🎯 The local check made the right call 6/6 times, in about 1 µs, with zero tokens.** It spotted C2 and C1, which name a file and a finish line, and sent the other four to the forge.
+- **📏 The new-task check varies.** In 0.6's sessions it also offered a fresh start before the cart task (V2) in 2 of 3 sessions, so part of the extra saving over 0.5 is more fresh starts, at about 2 keypresses per session, not only Sonnet.
 - **🔁 In a session, "it" resolves itself.** Right after C1 renamed `getUser` to `fetchUser`, A1 (*"rename it to something clearer"*) was clear from context: the forge named `fetchUser` in its rewrite, and Claude got it right in all 3 sessions.
 
 ### Starting fresh (0.5.0)
@@ -224,6 +232,14 @@ The same six-prompt session, with the fresh-start offer accepted every time it w
 - **🧮 The check is nearly free:** about $0.006 per session.
 - **Caveats:** each fresh start is one keypress from you. The benchmark offered it on every topic change; the plugin also requires 30k+ tokens of conversation, which every one of these steps had. In your own work, a fresh start is only as good as the new task's independence: if it needs something from earlier, answer `h`.
 
+### A cheaper model for small tasks (0.6.0)
+
+A task that names its file and its finish line doesn't need your session's biggest model. When the free local check sees one and the conversation is still small (at most 10k tokens: the start of a session, or right after a fresh start), **that one turn runs on Claude Sonnet**, and a toast says so. The next prompt goes back to your model.
+
+- **Only on a small context.** The prompt cache is per model: switching a long conversation would make Sonnet read all of it uncached, which costs more than staying on Opus.
+- **Subagents keep their own model**, and a session already on Sonnet or Haiku is left alone. `/forge model off` turns it off.
+- **Benchmarked:** C1 $0.169 → $0.087 and C2 $0.175 → $0.099 as single tasks, every run right; in sessions it ran C1 after each fresh start, 3/3 right, and the Opus follow-up (A1) stayed right too.
+
 ### Asking less
 
 Haiku asks **only for what nobody but you can know** (a value you agreed on, a name you have in mind) and leaves everything else, in your own words, for the agent, which has the whole conversation. Questions to the agent (*"so this MR does nothing?"*) go through untouched, and so do prompts with an image or file attached: Haiku can't see those.
@@ -250,7 +266,7 @@ The V3 check was fixed along the way: it required `ann@example.com` to be accept
 - **Models:** Claude Code with Claude Opus 5.5 does the work; Claude Haiku 4.5 runs the forge. Dollar amounts come from Claude Code's own cost accounting (`claude -p --output-format json`), at list prices.
 - **Forge cost is an upper bound.** Forge calls ran through `claude -p --model haiku` with the forge's exact system prompt and message shape, with skills, MCP servers and settings switched off. The CLI's identity block (~335 tokens) is still counted, so the real plugin call costs the same or less.
 - **Replies:** if Claude ended a run by asking a question instead of working, the task's canned answer was sent on the same session, in both arms, and both calls were counted. The same canned answer was used to answer the forge's questions.
-- **Scope:** a small fixture project (`bench/fixture`: 8 source files, 4 test files), 6 tasks, 3 runs each with and without the forge, plus 3 six-step sessions each, all run on 2026-10-09. Earlier rounds are kept: `bench/*-0.2.json` (0.2) and `bench/*-0.4.0.json` (0.4.0).
+- **Scope:** a small fixture project (`bench/fixture`: 8 source files, 4 test files), 6 tasks, 3 runs each with and without the forge, plus 3 six-step sessions each, all run on 2026-10-09. Earlier rounds are kept: `bench/*-0.2.json`, `bench/*-0.4.0.json`, `bench/*-0.4.1.json`.
 - **Sessions:** each step's check runs on the working tree right after that step. In the session, A1's target is `fetchUser` (renamed by C1), and the canned answer names it. The local check is the plugin's own `hooks/classify.ts`, run by Node. In a large codebase, a vague prompt can cost more file searching, which these numbers don't capture. Your results will differ.
 - **Every number** is in [`bench/RESULTS.md`](bench/RESULTS.md), generated from the raw [`bench/results.json`](bench/results.json).
 
@@ -263,6 +279,8 @@ python3 bench/policy.py routing --reps 3                                        
 python3 bench/bench.py run --reps 3 --arms forge-ask,forge-minimal --out results-policy.json  # policies end to end
 python3 bench/session.py run --reps 3 --arms forge-minimal --out session-final.json
 python3 bench/session.py run --reps 3 --arms guard-lean --out session-guard.json   # fresh-start offer, always accepted
+python3 bench/session.py run --reps 3 --arms guardroute-lean --out session-guardroute.json   # + Sonnet routing
+python3 bench/bench.py run --reps 3 --only C1,C2 --arms route-lean --out results-route.json
 ```
 </details>
 
@@ -277,6 +295,7 @@ python3 bench/session.py run --reps 3 --arms guard-lean --out session-guard.json
 | `raw:` alone | While a prompt is held: send it as typed |
 | `f` / `h` | While a new task is held: start fresh (`/clear`, then send it) / send it here |
 | `/forge fresh off` | Never offer a fresh start (`/forge fresh on` turns it back on) |
+| `/forge model off` | Never switch a turn to Sonnet (`/forge model on` turns it back on) |
 | **Send as typed** / **Cancel** | On the question box: send the held prompt unchanged, or drop it |
 | **ctrl+o** | Expand the transcript to see the plain sent text without the card |
 
@@ -284,6 +303,7 @@ python3 bench/session.py run --reps 3 --arms guard-lean --out session-guard.json
 
 - **One small Haiku call per forged prompt** (two in the rare case it asks you something, plus a tiny new-task check in long sessions), made through your own Claude Code session and billed like the rest of your usage: **under $0.003 per prompt** in the [benchmarks](#benchmarks). Short replies and commands cost nothing.
 - **What Haiku sees:** the rewrite rules (or, in a long session, the new-task check), your prompt, and the text of the last few messages (at most 6 messages and about 3,000 characters), so it can resolve "it" and "that". No files, tool output or attachments: a prompt with an attachment isn't sent to Haiku at all.
+- **Sonnet turns** are billed at Sonnet's price through your own session, like any `/model sonnet` turn.
 - **Nothing leaves your machine any other way.** No telemetry, no third-party services.
 - The on/off switch is stored in the plugin's own store under `~/.claude/plugins/store/`. Before/after pairs for the cards live in session memory (the last 50) and are never written to disk by the plugin.
 

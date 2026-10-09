@@ -171,6 +171,24 @@ async function conversation($: EngineInterface) {
 let floor = Infinity
 
 /**
+ * Model routing: a clear, small task on a small context runs on Sonnet for that turn. Only on a
+ * small context: the prompt cache is per model, so switching a long conversation would make
+ * Sonnet read it all uncached and cost more than staying.
+ */
+export const ROUTE_MAX_TOKENS = 10_000
+const ROUTE_MODEL = 'claude-sonnet-5-5'
+let cheapNext: string | null = null
+const cheapTurns = new Set<string>()
+
+/** Marks the prompt about to be sent for Sonnet when it's clear and the context is small. */
+async function markCheap($: EngineInterface, text: string, tokens?: number) {
+  cheapNext = null
+  if (!isClearEnough(text) || (await $.store.get('route')) === false) return
+  if ((tokens ?? (await conversationTokens($))) > ROUTE_MAX_TOKENS) return
+  cheapNext = text
+}
+
+/**
  * Tokens of conversation the session re-reads each step: the context less its floor, the
  * smallest context seen (taken as the fixed part). 0 when the engine can't say.
  */
@@ -204,6 +222,7 @@ async function startFresh($: EngineInterface, text: string) {
   await update($, freshA, () => null)
   try {
     await $.command.run({ command: 'clear' })
+    await markCheap($, text, 0)
     await $.prompt.submit({ text, asUser: true })
   } catch (err) {
     $.ui.toast(`✨ Prompt Forge couldn't start fresh (${String(err)}); your prompt: ${clip(text, 200)}`)
@@ -232,6 +251,7 @@ async function forge($: EngineInterface, text: string, answers?: string): Promis
 
 /** Forges a composer prompt (or skips it) and sends the result on. */
 async function forgeAndSend($: EngineInterface, e: PromptSubmitInput, next: (e: PromptSubmitInput) => Promise<PromptSubmitResult>): Promise<PromptSubmitResult> {
+  await markCheap($, e.text)
   if (!wantsForge(e.text)) return next(e)
   // Haiku can't see an image or file, and holding the prompt would lose it: the answer is a
   // new submission without it. The agent sees it, so send the prompt as typed.
@@ -268,8 +288,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'forge',
-      description: 'Prompt Forge: /forge on|off, /forge fresh on|off, or /forge to see its state',
-      argumentHint: '[on|off|fresh on|fresh off]',
+      description: 'Prompt Forge: /forge on|off, /forge fresh on|off, /forge model on|off, or /forge to see its state',
+      argumentHint: '[on|off|fresh on|off|model on|off]',
     })
     return next(e)
   })
@@ -283,11 +303,14 @@ export const register: Register = on => {
     }
     if (arg === 'fresh on' || arg === 'fresh off') await $.store.set('fresh', arg === 'fresh on')
     const onNow = await isOn($)
+    if (arg === 'model on' || arg === 'model off') await $.store.set('route', arg === 'model on')
     const freshNow = (await $.store.get('fresh')) !== false
+    const routeNow = (await $.store.get('route')) !== false
     return {
       text: `✨ Prompt Forge is ${onNow ? 'ON' : 'OFF'}. ` +
         (onNow ? 'Prompts of 5+ words get sharpened before sending; start one with "raw:" to send it untouched. ' : 'Prompts go out exactly as typed. ') +
-        `Fresh-start offers are ${freshNow ? 'ON' : 'OFF'} (/forge fresh on|off).`,
+        `Fresh-start offers are ${freshNow ? 'ON' : 'OFF'} (/forge fresh on|off). ` +
+        `Sonnet for small, clear tasks on a fresh context is ${routeNow ? 'ON' : 'OFF'} (/forge model on|off).`,
     }
   })
 
@@ -342,6 +365,26 @@ export const register: Register = on => {
       }
     }
     return forgeAndSend($, e, next)
+  })
+
+  // Model routing: the marked prompt's turn runs on Sonnet, every request of it but subagents'.
+  on('turn.start', async ($, e, next) => {
+    if (cheapNext !== null && norm(e.text) === norm(cheapNext)) {
+      cheapTurns.add(e.turnId)
+      $.ui.toast('⚡ Prompt Forge: small, clear task on a fresh context, so this turn runs on Sonnet (/forge model off)')
+    }
+    cheapNext = null
+    return next(e)
+  })
+
+  on('turn.step', async function* ($, e, next) {
+    if (e.agentId || !cheapTurns.has(e.turnId) || /sonnet|haiku/i.test(e.model)) return yield* next(e)
+    return yield* next({ ...e, model: ROUTE_MODEL })
+  })
+
+  on('turn.complete', async ($, e, next) => {
+    cheapTurns.delete(e.turnId)
+    return next(e)
   })
 
   // A prompt held as a new task: the fresh-start offer, above the prompt.

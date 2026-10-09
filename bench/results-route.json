@@ -1,0 +1,197 @@
+{
+ "overhead": 531,
+ "results": [
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "route-lean",
+   "rep": 1,
+   "route": "sonnet (local check)",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69805,
+    "cache_write": 17379,
+    "output": 337,
+    "cost": 0.086859,
+    "turns": 3,
+    "models": [
+     "claude-sonnet-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 15,
+   "total_cost": 0.086859
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "route-lean",
+   "rep": 1,
+   "route": "sonnet (local check)",
+   "sent": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99698,
+    "cache_write": 18040,
+    "output": 671,
+    "cost": 0.0988256,
+    "turns": 6,
+    "models": [
+     "claude-sonnet-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 18,
+   "total_cost": 0.0988256
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "route-lean",
+   "rep": 2,
+   "route": "sonnet (local check)",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69804,
+    "cache_write": 17374,
+    "output": 344,
+    "cost": 0.0869088,
+    "turns": 3,
+    "models": [
+     "claude-sonnet-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 13,
+   "total_cost": 0.0869088
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "route-lean",
+   "rep": 2,
+   "route": "sonnet (local check)",
+   "sent": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99670,
+    "cache_write": 18047,
+    "output": 728,
+    "cost": 0.09941799999999999,
+    "turns": 6,
+    "models": [
+     "claude-sonnet-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 17,
+   "total_cost": 0.09941799999999999
+  },
+  {
+   "task": "C1",
+   "kind": "clear",
+   "arm": "route-lean",
+   "rep": 3,
+   "route": "sonnet (local check)",
+   "sent": "In src/users.js rename getUser to fetchUser and update every call site; run npm test and make sure it passes.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 6,
+    "cache_read": 69799,
+    "cache_write": 17377,
+    "output": 346,
+    "cost": 0.08693980000000001,
+    "turns": 3,
+    "models": [
+     "claude-sonnet-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 15,
+   "total_cost": 0.08693980000000001
+  },
+  {
+   "task": "C2",
+   "kind": "clear",
+   "arm": "route-lean",
+   "rep": 3,
+   "route": "sonnet (local check)",
+   "sent": "In src/cart.js, make cartTotal multiply each item's price by its quantity, add a test with quantity 3 to test/cart.test.js, and run npm test.",
+   "questions": null,
+   "claude_calls": 1,
+   "clarifications": 0,
+   "claude": {
+    "input": 8,
+    "cache_read": 99678,
+    "cache_write": 18033,
+    "output": 666,
+    "cost": 0.09874360000000001,
+    "turns": 6,
+    "models": [
+     "claude-sonnet-5-5"
+    ]
+   },
+   "forge": {
+    "calls": 0,
+    "input": 0,
+    "output": 0,
+    "cost": 0.0
+   },
+   "problems": [],
+   "notes": [],
+   "seconds": 15,
+   "total_cost": 0.09874360000000001
+  }
+ ]
+}

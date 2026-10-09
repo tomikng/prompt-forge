@@ -151,6 +151,18 @@ It only asks when both are true:
 
 Prompts with an image or file attached are never held. `/forge fresh off` turns the offer off for good (`/forge fresh on` turns it back on); `/forge off` turns all of Prompt Forge off.
 
+## When it uses a cheaper model
+
+A small, clear task doesn't need your session's biggest model. When the local check sees a prompt that names its target **and** a finish line (*"In src/users.js rename getUser to fetchUser…; run npm test"*), and the conversation is still small, that one turn runs on **Claude Sonnet**. A toast says so:
+
+```text
+⚡ Prompt Forge: small, clear task on a fresh context, so this turn runs on Sonnet (/forge model off)
+```
+
+- **Only on a small context:** at most 10k tokens of conversation, so at the start of a session or right after a fresh start. The prompt cache is per model: switching a long conversation would make Sonnet read all of it uncached, which costs more than staying.
+- **Only that turn.** The next prompt goes back to your model. Subagents keep their own model, and a session already on Sonnet or Haiku is left alone.
+- **`/forge model off`** turns it off (`/forge model on` turns it back on).
+
 ## Reading the card
 
 ```text
@@ -177,6 +189,7 @@ The card stays a few rows tall so it doesn't scroll away on a small terminal; a 
 | See the plain sent text | ctrl+o |
 | Start a new task fresh | Reply `f` to the fresh-start offer, or `h` to stay |
 | Never offer a fresh start | `/forge fresh off` |
+| Never switch to a cheaper model | `/forge model off` |
 | Skip a question | **Send as typed** (sends your prompt unchanged) or **Cancel** (sends nothing) |
 | Fix a bad rewrite | Press Esc to interrupt, then resend with `raw:` |
 

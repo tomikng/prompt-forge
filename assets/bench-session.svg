@@ -8,16 +8,14 @@
 <rect x="226" y="86" width="12" height="12" rx="3" fill="#d55181"/><text x="244" y="97" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" fill="#cdd6f4">with the forge (Haiku + Claude)</text>
 <line x1="110" y1="390.0" x2="900" y2="390.0" stroke="#585b70" stroke-width="1"/>
 <text x="98" y="394.0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$0.00</text>
-<line x1="110" y1="338.9" x2="900" y2="338.9" stroke="#313244" stroke-width="1"/>
-<text x="98" y="342.9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$0.50</text>
-<line x1="110" y1="287.8" x2="900" y2="287.8" stroke="#313244" stroke-width="1"/>
-<text x="98" y="291.8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$1.00</text>
-<line x1="110" y1="236.6" x2="900" y2="236.6" stroke="#313244" stroke-width="1"/>
-<text x="98" y="240.6" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$1.50</text>
-<line x1="110" y1="185.5" x2="900" y2="185.5" stroke="#313244" stroke-width="1"/>
-<text x="98" y="189.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$2.00</text>
-<line x1="110" y1="134.4" x2="900" y2="134.4" stroke="#313244" stroke-width="1"/>
-<text x="98" y="138.4" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$2.50</text>
+<line x1="110" y1="337.2" x2="900" y2="337.2" stroke="#313244" stroke-width="1"/>
+<text x="98" y="341.2" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$0.50</text>
+<line x1="110" y1="284.4" x2="900" y2="284.4" stroke="#313244" stroke-width="1"/>
+<text x="98" y="288.4" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$1.00</text>
+<line x1="110" y1="231.7" x2="900" y2="231.7" stroke="#313244" stroke-width="1"/>
+<text x="98" y="235.7" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$1.50</text>
+<line x1="110" y1="178.9" x2="900" y2="178.9" stroke="#313244" stroke-width="1"/>
+<text x="98" y="182.9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#9399b2" text-anchor="end">$2.00</text>
 <text x="110.0" y="414" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#cdd6f4" text-anchor="middle">1 · V1</text>
 <rect x="83.0" y="424" width="54" height="22" rx="11" fill="none" stroke="#d55181" stroke-width="1.5"/><text x="110.0" y="439" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#cdd6f4" text-anchor="middle">forge</text>
 <text x="268.0" y="414" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#cdd6f4" text-anchor="middle">2 · V2</text>
@@ -30,21 +28,21 @@
 <rect x="699.0" y="424" width="86" height="22" rx="11" fill="none" stroke="#9399b2" stroke-width="1.5"/><text x="742.0" y="439" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#cdd6f4" text-anchor="middle">skip: clear</text>
 <text x="900.0" y="414" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#cdd6f4" text-anchor="middle">6 · A1</text>
 <rect x="873.0" y="424" width="54" height="22" rx="11" fill="none" stroke="#d55181" stroke-width="1.5"/><text x="900.0" y="439" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11.5" fill="#cdd6f4" text-anchor="middle">forge</text>
-<polyline points="110.0,366.3 268.0,337.6 426.0,304.9 584.0,265.7 742.0,220.9 900.0,165.1" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
-<circle cx="110.0" cy="366.3" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="268.0" cy="337.6" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="426.0" cy="304.9" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="584.0" cy="265.7" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="742.0" cy="220.9" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="900.0" cy="165.1" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
-<polyline points="110.0,364.7 268.0,333.9 426.0,299.8 584.0,259.0 742.0,213.7 900.0,157.9" fill="none" stroke="#d55181" stroke-width="2" stroke-linejoin="round"/>
-<circle cx="110.0" cy="364.7" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="268.0" cy="333.9" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="426.0" cy="299.8" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="584.0" cy="259.0" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="742.0" cy="213.7" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
-<circle cx="900.0" cy="157.9" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
-<text x="914" y="175.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4">without: $2.20</text>
-<text x="914" y="155.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4">with: $2.27</text>
+<polyline points="110.0,365.6 268.0,335.9 426.0,302.2 584.0,261.7 742.0,215.4 900.0,157.9" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="110.0" cy="365.6" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="268.0" cy="335.9" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="426.0" cy="302.2" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="584.0" cy="261.7" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="742.0" cy="215.4" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="900.0" cy="157.9" r="4.5" fill="#3987e5" stroke="#1e1e2e" stroke-width="2"/>
+<polyline points="110.0,364.2 268.0,341.4 426.0,315.2 584.0,285.3 742.0,276.0 900.0,259.6" fill="none" stroke="#d55181" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="110.0" cy="364.2" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="268.0" cy="341.4" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="426.0" cy="315.2" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="584.0" cy="285.3" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="742.0" cy="276.0" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
+<circle cx="900.0" cy="259.6" r="4.5" fill="#d55181" stroke="#1e1e2e" stroke-width="2"/>
+<text x="914" y="161.9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4">without: $2.20</text>
+<text x="914" y="263.6" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#cdd6f4">with: $1.24</text>
 <text x="36" y="482" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#9399b2">Source: bench/session-results.json · generated by bench/report.py</text>
 </svg>

@@ -137,6 +137,12 @@ def parse(reply):
     return ("rewrite", m.group(1).strip()) if m and m.group(1).strip() else ("malformed", None)
 
 
+def is_clear(prompt):
+    """The plugin's own local check (hooks/classify.ts), run by node."""
+    js = f"import {{ isClearEnough }} from {json.dumps(str(ROOT.parent / 'plugins/prompt-forge/hooks/classify.ts'))}\nconsole.log(isClearEnough({json.dumps(prompt)}))"
+    return subprocess.run(["node", "--input-type=module", "-e", js], capture_output=True, text=True, check=True).stdout.strip() == "true"
+
+
 def policy_text(arm):
     """The forge's system prompt for an arm: "forge" is the plugin's own, "forge-<p>" bench/policies/<p>.txt."""
     return forge_text("SYSTEM") if arm == "forge" else (ROOT / "policies" / f"{arm[6:]}.txt").read_text()
@@ -171,9 +177,11 @@ ALLOWED = ["Read", "Edit", "Write", "Grep", "Glob", "Bash(npm test*)", "Bash(npm
            "Bash(ls*)", "Bash(cat *)", "Bash(grep *)", "Bash(git diff*)", "Bash(git status*)"]
 
 
-def claude(prompt, cwd, session=None):
+def claude(prompt, cwd, session=None, model=None):
     cmd = ["claude", "-p", "--output-format", "json", "--permission-mode", "acceptEdits",
            "--max-budget-usd", "2", "--allowedTools", *ALLOWED]
+    if model:
+        cmd += ["--model", model]
     if session:
         cmd += ["--resume", session]
     r = subprocess.run(cmd + ["--", prompt], cwd=cwd, capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=900)
@@ -208,12 +216,19 @@ def run_one(task, arm, rep):
     subprocess.run("git init -q && git add -A && git -c user.email=b@b -c user.name=bench commit -qm fixture",
                    shell=True, cwd=cwd, check=True)
     started = time.time()
-    f = forge(task, policy_text(arm)) if arm.startswith("forge") else dict(sent=task["prompt"], route="none", calls=[])
-    runs = [claude(f["sent"], cwd)]
+    # "route-<policy>": the forge plus model routing, a clear prompt on a fresh context goes to Sonnet
+    routed = arm.startswith("route") and is_clear(task["prompt"])
+    policy = "forge-" + arm.split("-", 1)[1] if arm.startswith("route") else arm
+    if routed:
+        f = dict(sent=task["prompt"], route="sonnet (local check)", calls=[])
+    else:
+        f = forge(task, policy_text(policy)) if policy.startswith("forge") else dict(sent=task["prompt"], route="none", calls=[])
+    model = "sonnet" if routed else None
+    runs = [claude(f["sent"], cwd, model=model)]
     replies = 0
     while asked_back(runs[-1], cwd) and replies < 2:
         replies += 1
-        runs.append(claude(task["answer"], cwd, session=runs[-1]["session_id"]))
+        runs.append(claude(task["answer"], cwd, session=runs[-1]["session_id"], model=model))
     t = tally(runs)
     forge_in = sum(c["input"] for c in f["calls"])
     forge_out = sum(c["output"] for c in f["calls"])

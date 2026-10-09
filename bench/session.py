@@ -110,6 +110,8 @@ def run_session(arm, rep, verdicts):
         else:
             topic_cost = 0.0
         policy_arm = "forge-" + arm.split("-", 1)[1] if arm.startswith("guard") else arm
+        # model routing ("guardroute-"): a clear prompt on a fresh context runs on Sonnet
+        routed = arm.startswith("guardroute") and local["clear"] and not convo
         if policy_arm.startswith("forge") and not local["clear"]:
             f = forge_in_session(task["prompt"], answer, convo, bench.policy_text(policy_arm))
         else:
@@ -117,13 +119,16 @@ def run_session(arm, rep, verdicts):
         # commit what's there, so "asked back" means this step changed nothing
         subprocess.run("git add -A && git -c user.email=b@b -c user.name=bench commit -qm step --allow-empty",
                        shell=True, cwd=cwd, check=True)
-        runs = [bench.claude(f["sent"], cwd, session=session)]
+        model = "sonnet" if routed else None
+        if routed:
+            f["route"] = "sonnet (local check)"
+        runs = [bench.claude(f["sent"], cwd, session=session, model=model)]
         session = runs[-1].get("session_id", session)
         convo += [("user", f["sent"]), ("assistant", runs[-1].get("result") or "")]
         replies = 0
         while bench.asked_back(runs[-1], cwd) and replies < 2:
             replies += 1
-            runs.append(bench.claude(answer, cwd, session=session))
+            runs.append(bench.claude(answer, cwd, session=session, model=model))
             convo += [("user", answer), ("assistant", runs[-1].get("result") or "")]
         t = tally(runs)
         fin, fout = sum(c["input"] for c in f["calls"]), sum(c["output"] for c in f["calls"])
@@ -131,7 +136,7 @@ def run_session(arm, rep, verdicts):
                     questions=f.get("questions"), clarifications=replies, claude=t,
                     forge=dict(calls=len(f["calls"]), input=fin, output=fout, cost=fin * HAIKU_IN + fout * HAIKU_OUT),
                     problems=session_check(tid, cwd), seconds=round(time.time() - started))
-        step["fresh"], step["topic_cost"] = fresh, topic_cost
+        step["fresh"], step["topic_cost"], step["model"] = fresh, topic_cost, model or "default"
         step["total_cost"] = t["cost"] + step["forge"]["cost"] + topic_cost
         steps.append(step)
         print(f"{arm:13} rep{rep} step{step['step']} {tid} {'FRESH ' if fresh else ''}route={f['route']:18} ${step['total_cost']:.4f} "
